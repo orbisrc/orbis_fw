@@ -1,0 +1,30 @@
+{
+    "configurations": [
+        {
+            "name": "orbis_fw",
+            "includePath": [
+                "${default}",
+                "${workspaceRoot}/lib",
+                "${workspaceRoot}/lib/ST/STM32_USB_Device_Library/Core/Inc",
+                "${workspaceRoot}/lib/ST/STM32_USB_Device_Library/Core/Src",
+                "${workspaceRoot}/lib/STM32F4xx_HAL_Driver",
+                "${workspaceRoot}/lib/STM32F4xx_HAL_Driver/Src",
+                "${workspaceRoot}/lib/STM32F4xx_HAL_Driver/Inc",
+                "${workspaceRoot}/lib/CMSIS/Device/ST/STM32F4xx/Include",
+                "${workspaceRoot}/lib/Third_Party/FatFs/src"
+            ],
+            "defines": [
+              "_DEBUG",
+              "UNICODE",
+              "_UNICODE",
+              "USE_HAL_DRIVER",
+              "STM32F103xE"  
+          ],
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "linux-gcc-arm64"
+        }
+    ],
+    "version": 4
+}
