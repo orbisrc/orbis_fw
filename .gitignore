@@ -1,0 +1,32 @@
+*.o
+.DS_Store
+*~
+*.uvopt
+*.dep
+*.bak
+*.uvgui.*
+*.swp
+*.save
+.project
+.settings
+.cproject
+obj/
+patches/
+tools/
+startup_stm32f10x_md_gcc.s
+.idea
+
+# artefacts of top-level Makefile
+
+build/
+
+
+# artefacts for VisualGDB (running in Visual Studio)
+mcu.mak
+mcu.mak.old
+stm32.mak
+
+
+# artefacts for Visual Studio Code
+/.vscode/
+.vscode/
