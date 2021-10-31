@@ -1,2 +1,2 @@
-# orbis_fw
+# ORBIS
 Firmware for DIY rc transmitters
