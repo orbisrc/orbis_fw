@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *.o
 .DS_Store
 *~
@@ -30,3 +31,7 @@ stm32.mak
 # artefacts for Visual Studio Code
 /.vscode/
 .vscode/
+=======
+.vscode/
+.vscode/c_cpp_properties.json
+>>>>>>> epic-added-mvp
