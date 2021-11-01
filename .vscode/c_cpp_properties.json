@@ -4,6 +4,13 @@
             "name": "orbis_fw",
             "includePath": [
                 "${default}",
+                "${workspaceRoot}/src",
+                "${workspaceRoot}/src/cli",
+                "${workspaceRoot}/src/core",
+                "${workspaceRoot}/src/fatio",
+                "${workspaceRoot}/src/gui",
+                "${workspaceRoot}/src/gui/**",
+                "${workspaceRoot}/src/usb",
                 "${workspaceRoot}/lib",
                 "${workspaceRoot}/lib/ST/STM32_USB_Device_Library/Core/Inc",
                 "${workspaceRoot}/lib/ST/STM32_USB_Device_Library/Core/Src",
@@ -11,6 +18,7 @@
                 "${workspaceRoot}/lib/STM32F4xx_HAL_Driver/Src",
                 "${workspaceRoot}/lib/STM32F4xx_HAL_Driver/Inc",
                 "${workspaceRoot}/lib/CMSIS/Device/ST/STM32F4xx/Include",
+                "${workspaceRoot}/lib/CMSIS/Include",
                 "${workspaceRoot}/lib/Third_Party/FatFs/src"
             ],
             "defines": [

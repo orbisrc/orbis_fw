@@ -11,9 +11,9 @@
 ######################################
 
 
-FW_VER_MAJOR := $(shell grep " FW_VERSION_MAJOR" inc/version.h | awk '{print $$3}' )
-FW_VER_MINOR := $(shell grep " FW_VERSION_MINOR" inc/version.h | awk '{print $$3}' )
-FW_VER_PATCH  := $(shell grep " FW_VERSION_PATCH" inc/version.h | awk '{print $$3}' )
+FW_VER_MAJOR := $(shell grep " FW_VERSION_MAJOR" src/version.h | awk '{print $$3}' )
+FW_VER_MINOR := $(shell grep " FW_VERSION_MINOR" src/version.h | awk '{print $$3}' )
+FW_VER_PATCH  := $(shell grep " FW_VERSION_PATCH" src/version.h | awk '{print $$3}' )
 
 FW_VER := $(FW_VER_MAJOR).$(FW_VER_MINOR).$(FW_VER_PATCH)
 
@@ -111,7 +111,7 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -Ilib \
--Iinc \
+-Isrc \
 -Ilib/NimaLTD/Inc \
 -Ilib/ST/STM32_USB_Device_Library/Core/Inc \
 -Ilib/ST/STM32_USB_Device_Library/Class/Inc \
@@ -125,14 +125,14 @@ C_INCLUDES =  \
 -Ilib/STM32F4xx_HAL_Driver/Inc/Legacy \
 -Ilib/CMSIS/Device/ST/STM32F4xx/Include \
 -Ilib/CMSIS/Include \
--Iinc/CLI \
--Iinc/STCORE \
--Iinc/STFATIO \
--Iinc/STGUI \
--Iinc/STGUI/dispdriver \
--Iinc/STGUI/Fonts \
--Iinc/STGUI/screens \
--Iinc/STUSB \
+-Isrc/cli \
+-Isrc/core \
+-Isrc/fatio \
+-Isrc/gui \
+-Isrc/gui/dispdriver \
+-Isrc/gui/fonts \
+-Isrc/gui/screens \
+-Isrc/usb \
 
 
 # compile gcc flags
