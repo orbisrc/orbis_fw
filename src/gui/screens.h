@@ -20,8 +20,8 @@
 #define STGUI_SCREENS_H_
 
 #include <stdlib.h>
-#include "rtc.h"
-#include "adc.h"
+#include "periphery/rtc.h"
+#include "periphery/adc.h"
 #include "gui/gui.h"
 #include <stdio.h>
 #include <string.h>

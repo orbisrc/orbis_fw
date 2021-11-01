@@ -24,7 +24,7 @@
 #include "core/common.h"
 #include "core/iosettings.h"
 #include "stconfig.h"
-#include "rtc.h"
+#include "periphery/rtc.h"
 
 uint8_t retSD;    		/* Return value for SD */
 uint8_t	FSmout;

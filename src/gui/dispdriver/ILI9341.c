@@ -19,8 +19,8 @@
 
 #include "gui/dispdriver/ILI9341.h"
 #include "stm32f4xx_hal.h"
-#include "spi.h"
-#include "gpio.h"
+#include "periphery/spi.h"
+#include "periphery/gpio.h"
 
 #define LCD_WIDTH					240
 #define LCD_HEIGHT					320

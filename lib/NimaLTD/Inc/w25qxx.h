@@ -24,7 +24,7 @@
 #endif
 
 #include <stdbool.h>
-#include "spi.h"
+#include "periphery/spi.h"
 
 typedef enum
 {

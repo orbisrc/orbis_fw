@@ -26,7 +26,7 @@
 #include "gui/screens.h"
 #include "gui/stgui.h"
 #include "gui/stapp.h"
-#include "rtc.h"
+#include "periphery/rtc.h"
 #include "core/auxiliary.h"
 
 #define KEYBOARD_SCREEN_HEIGHT			260

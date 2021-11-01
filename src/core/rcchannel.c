@@ -21,7 +21,7 @@
 #include <core/rcchannel.h>
 #include <core/rccurve.h>
 #include "stdlib.h"
-#include "adc.h"
+#include "periphery/adc.h"
 #include "core/filter.h"
 #include "core/analog.h"
 #include "core/buffer.h"

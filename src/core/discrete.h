@@ -19,7 +19,7 @@
 #ifndef INC_STCORE_DISCRETE_H_
 #define INC_STCORE_DISCRETE_H_
 
-#include "gpio.h"
+#include "periphery/gpio.h"
 #include "stconfig.h"
 
 typedef struct {

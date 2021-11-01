@@ -19,7 +19,7 @@
 
 #include "stconfig.h"
 #include "main.h"
-#include "gpio.h"
+#include "periphery/gpio.h"
 #include "core/periphery.h"
 #include "gui/guiconfig.h"
 #include "tim.h"

@@ -6,7 +6,7 @@
 #include "gui/stdispdriver.h"
 #include "gui/dispdriver/S6D0154X.h"
 #include "gui/dispdriver/ILI9341.h"
-#include "spi.h"
+#include "periphery/spi.h"
 #include "tim.h"
 
 #define LCD_BOARD				2					/* 1 -  ILI9341

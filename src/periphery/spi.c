@@ -18,7 +18,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "spi.h"
+#include "periphery/spi.h"
 
 /* USER CODE BEGIN 0 */
 

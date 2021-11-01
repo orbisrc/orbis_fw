@@ -20,7 +20,7 @@
 #define INC_STGUI_DISPDRIVER_ILI9341_H_
 
 #include "main.h"
-#include "gpio.h"
+#include "periphery/gpio.h"
 
 #define ILI9341_SCREEN_HEIGHT   			320
 #define ILI9341_SCREEN_WIDTH 				240

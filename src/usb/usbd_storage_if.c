@@ -23,7 +23,7 @@
 #include "usbd_storage_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-#include "sdio.h"
+#include "periphery/sdio.h"
 #include "stm32f4xx_hal_sd.h"
 /* USER CODE END INCLUDE */
 

@@ -20,7 +20,7 @@
 #define INC_STGUI_DISPDRIVER_S6D0154X_H_
 
 #include "main.h"
-#include "gpio.h"
+#include "periphery/gpio.h"
 
 #define S6D0154X_SCREEN_HEIGHT   			320
 #define S6D0154X_SCREEN_WIDTH 				240

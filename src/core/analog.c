@@ -20,7 +20,7 @@
 #include "core/filter.h"
 #include "core/iosettings.h"
 #include "main.h"
-#include "adc.h"
+#include "periphery/adc.h"
 
 /*
  *

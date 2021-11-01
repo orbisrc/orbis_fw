@@ -17,7 +17,7 @@
  */
 
 #include "main.h"
-#include "spi.h"
+#include "periphery/spi.h"
 #include "gui/stdispdriver.h"
 #include "gui/logo.h"
 #include "stconfig.h"

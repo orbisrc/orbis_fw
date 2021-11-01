@@ -18,7 +18,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "rtc.h"
+#include "periphery/rtc.h"
 
 /* USER CODE BEGIN 0 */
 

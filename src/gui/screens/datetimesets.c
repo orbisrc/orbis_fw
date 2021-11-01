@@ -29,7 +29,7 @@
 #include <gui/fonts/verdana_26pt.h>
 #include <gui/fonts/verdana_8pt.h>
 #include <gui/fonts/verdana_8pt.h>
-#include "rtc.h"
+#include "periphery/rtc.h"
 
 #define DATE_NAME_X					4
 #define DATE_SETS_INPUT_X			80

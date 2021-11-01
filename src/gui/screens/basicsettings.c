@@ -33,7 +33,7 @@
 #include <gui/fonts/verdana_8pt.h>
 #include "gui/stdispdriver.h"
 #include "core/analog.h"
-#include "rtc.h"
+#include "periphery/rtc.h"
 
 #define BASIC_SETTINGS_FIELD_WIDTH					70
 #define BASIC_SETTINGS_FIELD_HEIGHT					25

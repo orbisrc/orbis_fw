@@ -21,7 +21,7 @@
 #include "tim.h"
 
 /* USER CODE BEGIN 0 */
-#include "adc.h"
+#include "periphery/adc.h"
 #include "core/analog.h"
 #include "core/rcchannel.h"
 #include "core/buffer.h"

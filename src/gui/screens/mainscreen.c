@@ -21,7 +21,7 @@
 #include "gui/screens.h"
 #include "gui/stgui.h"
 #include "gui/stapp.h"
-#include "rtc.h"
+#include "periphery/rtc.h"
 #include "core/auxiliary.h"
 #include <core/analog.h>
 #include <core/iosettings.h>

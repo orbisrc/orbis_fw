@@ -22,7 +22,7 @@
 #include <core/rcchannel.h>
 #include <core/analog.h>
 #include "stm32f4xx_hal.h"
-#include "adc.h"
+#include "periphery/adc.h"
 #include "w25qxx.h"
 #include "gui/stdispdriver.h"
 #include "gui/stapp.h"

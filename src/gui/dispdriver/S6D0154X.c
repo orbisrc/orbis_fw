@@ -18,7 +18,7 @@
 
 #include "gui/dispdriver//S6D0154X.h"
 #include "stm32f4xx_hal.h"
-#include "spi.h"
+#include "periphery/spi.h"
 
 
 #define COMMAND_BYTE	       		0x70

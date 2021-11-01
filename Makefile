@@ -125,6 +125,7 @@ C_INCLUDES =  \
 -Ilib/STM32F4xx_HAL_Driver/Inc/Legacy \
 -Ilib/CMSIS/Device/ST/STM32F4xx/Include \
 -Ilib/CMSIS/Include \
+-Isrc/periphery \
 -Isrc/cli \
 -Isrc/core \
 -Isrc/fatio \

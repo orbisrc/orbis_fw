@@ -18,7 +18,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "sdio.h"
+#include "periphery/sdio.h"
 
 /* USER CODE BEGIN 0 */
 HAL_SD_CardInfoTypeDef SDCardInfo = {0};

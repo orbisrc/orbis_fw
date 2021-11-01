@@ -18,7 +18,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "adc.h"
+#include "periphery/adc.h"
 
 /* USER CODE BEGIN 0 */
 #include "core/filter.h"

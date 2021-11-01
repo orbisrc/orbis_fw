@@ -31,7 +31,7 @@
 #include "core/filter.h"
 #include "core/iosettings.h"
 #include "core/common.h"
-#include "sdio.h"
+#include "periphery/sdio.h"
 
 #define INFO_STRING_NUM				8
 
