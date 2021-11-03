@@ -20,8 +20,9 @@
 #define STCONFIG_H_
 
 #include "version.h"
+#include "target.h"
 
-#define __ORBIS_AIR__
+//#define __ORBIS_AIR__
 //#define __ORBIS_SURFACE__
 
 

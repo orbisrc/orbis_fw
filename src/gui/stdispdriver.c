@@ -8,10 +8,8 @@
 #include "gui/dispdriver/ILI9341.h"
 #include "periphery/spi.h"
 #include "tim.h"
+#include "target.h"
 
-#define LCD_BOARD				2					/* 1 -  ILI9341
- 	 	 	 	 	 	 	 	 	 	 	 	 	   2 - 	S6D0154X
- 	 	 	 	 	 	 	 	 	 	 	 	 	*/
 
 void STLCDinit(void)
 {

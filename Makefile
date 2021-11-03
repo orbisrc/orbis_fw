@@ -14,20 +14,20 @@
 FW_VER_MAJOR := $(shell grep " FW_VERSION_MAJOR" src/version.h | awk '{print $$3}' )
 FW_VER_MINOR := $(shell grep " FW_VERSION_MINOR" src/version.h | awk '{print $$3}' )
 FW_VER_PATCH  := $(shell grep " FW_VERSION_PATCH" src/version.h | awk '{print $$3}' )
-
 FW_VER := $(FW_VER_MAJOR).$(FW_VER_MINOR).$(FW_VER_PATCH)
-
 VERSION := $(FW_VER)
-
-REVISION := $(shell git log -1 --format="%h")
 
 ######################################
 # target
 ######################################
+#CI_TARGET := SURFACE_ILI9341 
+#CI_TARGET := SURFACE_S6D0154X 
+#CI_TARGET := AIR_ILI9341
+CI_TARGET := AIR_S6D0154X
 
-TARGET_PCB = air
+TARGET_NAME = $(CI_TARGET)
 
-TARGET = _orbis_$(TARGET_PCB)_$(VERSION)
+TARGET := orbis_$(TARGET_NAME)_$(VERSION)
 
 ######################################
 # building variables
@@ -40,6 +40,7 @@ OPT = -Ofast -Wall
 # paths
 #######################################
 # Build path
+ROOT := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
 BUILD_DIR = build
 FW_DIR = 	FW
 TOOLS_DIR = tools
@@ -110,6 +111,7 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
+-Isrc/target/${CI_TARGET} \
 -Ilib \
 -Isrc \
 -Ilib/NimaLTD/Inc \
@@ -147,7 +149,7 @@ endif
 
 
 # Generate dependency information
-CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
+CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" 
 
 
 #######################################
@@ -159,13 +161,14 @@ LDSCRIPT = STM32F407VETx_FLASH.ld
 # libraries
 LIBS = -lc -lm -lnosys 
 LIBDIR = 
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
-
-.PHONY: all
-
+LDFLAGS = 	$(MCU) -specs=nano.specs \
+			-T$(LDSCRIPT) $(LIBDIR) $(LIBS) \
+			-Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref \
+			-Wl,--gc-sections,--print-memory-usage
 # default action: build all
-all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+all: current_target copy
 
+current_target: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 #######################################
 # build the application
@@ -178,16 +181,16 @@ OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
-	@echo $<
-	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+	@echo "-> compiling $@ "
+	@$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-	@echo $<
-	$(AS) -c $(CFLAGS) $< -o $@
+	@echo "-> compiling $@ "
+	@$(AS) -c $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
-	$(SZ) $@
+	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	@$(SZ) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@
@@ -206,13 +209,15 @@ dfu:
 
 	$(TOOLS_DIR)/$(DFU)  $(FW_DIR)/$(TARGET).hex -out $(FW_DIR)/$(TARGET).dfu
 
-
 #######################################
 # copy to FW folder
 #######################################
 copy:
+	-mkdir -p $(FW_DIR)
+	-cp -p $(BUILD_DIR)/$(TARGET).bin $(FW_DIR)/$(TARGET).bin
 
-	-cp $(BUILD_DIR)/$(TARGET).hex $(FW_DIR)/$(TARGET).hex
+target: 
+	@echo $(TARGET)
 
 #######################################
 # clean up
@@ -226,8 +231,7 @@ clean:
 # remake
 #######################################
 .PHONY: remake
-remake:
-	clean all
+remake:	clean alll
   
  #######################################
 # remake
