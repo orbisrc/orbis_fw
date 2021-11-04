@@ -20,10 +20,10 @@ VERSION := $(FW_VER)
 ######################################
 # target
 ######################################
-#CI_TARGET := SURFACE_ILI9341 
-#CI_TARGET := SURFACE_S6D0154X 
-#CI_TARGET := AIR_ILI9341
-CI_TARGET := AIR_S6D0154X
+#CI_TARGET := SURFACE_ILI9341
+#CI_TARGET := SURFACE_S6D0154X
+CI_TARGET := AIR_ILI9341
+#CI_TARGET := AIR_S6D0154X
 
 TARGET_NAME = $(CI_TARGET)
 
@@ -166,7 +166,7 @@ LDFLAGS = 	$(MCU) -specs=nano.specs \
 			-Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref \
 			-Wl,--gc-sections,--print-memory-usage
 # default action: build all
-all: current_target dfu
+all: current_target copy  dfu
 
 current_target: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
@@ -193,13 +193,9 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 	@$(SZ) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	@mkdir -p $(FW_DIR)
-	@cp -p $(BUILD_DIR)/$(TARGET).hex $(FW_DIR)/$(TARGET).hex
 	@$(HEX) $< $@
 	
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	@mkdir -p $(FW_DIR)
-	@cp -p $(BUILD_DIR)/$(TARGET).bin $(FW_DIR)/$(TARGET).bin
 	@$(BIN) $< $@	
 	
 $(BUILD_DIR):
