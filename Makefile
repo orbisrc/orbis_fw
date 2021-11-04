@@ -207,13 +207,14 @@ $(BUILD_DIR):
 .PHONY: dfu
 dfu:
 
-	$(TOOLS_DIR)/$(DFU)  $(FW_DIR)/$(TARGET).hex -out $(FW_DIR)/$(TARGET).dfu
+	$(PYTHON) $(DFUSE-PACK) -i  $(FW_DIR)/$(TARGET).hex  $(FW_DIR)/$(TARGET).dfu
 
 #######################################
 # copy to FW folder
 #######################################
 copy:
 	-mkdir -p $(FW_DIR)
+	-cp -p $(BUILD_DIR)/$(TARGET).hex $(FW_DIR)/$(TARGET).hex
 	-cp -p $(BUILD_DIR)/$(TARGET).bin $(FW_DIR)/$(TARGET).bin
 
 target: 
