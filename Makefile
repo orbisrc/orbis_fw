@@ -166,7 +166,7 @@ LDFLAGS = 	$(MCU) -specs=nano.specs \
 			-Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref \
 			-Wl,--gc-sections,--print-memory-usage
 # default action: build all
-all: current_target copy
+all: current_target dfu
 
 current_target: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
@@ -193,10 +193,14 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 	@$(SZ) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(HEX) $< $@
+	@mkdir -p $(FW_DIR)
+	@cp -p $(BUILD_DIR)/$(TARGET).hex $(FW_DIR)/$(TARGET).hex
+	@$(HEX) $< $@
 	
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
+	@mkdir -p $(FW_DIR)
+	@cp -p $(BUILD_DIR)/$(TARGET).bin $(FW_DIR)/$(TARGET).bin
+	@$(BIN) $< $@	
 	
 $(BUILD_DIR):
 	mkdir $@
@@ -206,7 +210,6 @@ $(BUILD_DIR):
 #######################################
 .PHONY: dfu
 dfu:
-
 	$(PYTHON) $(DFUSE-PACK) -i  $(FW_DIR)/$(TARGET).hex  $(FW_DIR)/$(TARGET).dfu
 
 #######################################
