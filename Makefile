@@ -20,9 +20,9 @@ VERSION := $(FW_VER)
 ######################################
 # target
 ######################################
-#CI_TARGET := SURFACE_ILI9341
+CI_TARGET := SURFACE_ILI9341
 #CI_TARGET := SURFACE_S6D0154X
-CI_TARGET := AIR_ILI9341
+#CI_TARGET := AIR_ILI9341
 #CI_TARGET := AIR_S6D0154X
 
 TARGET_NAME = $(CI_TARGET)
@@ -104,7 +104,8 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F407xx \
--DDEBUG
+-DDEBUG \
+-DLV_LVGL_H_INCLUDE_SIMPLE
 
 # AS includes
 AS_INCLUDES = 
@@ -136,6 +137,35 @@ C_INCLUDES =  \
 -Isrc/gui/fonts \
 -Isrc/gui/screens \
 -Isrc/usb \
+-Isrc/usb \
+-Ilib/lvgl/src \
+-Ilib/lvgl/src/core \
+-Ilib/lvgl/src/draw \
+-Ilib/lvgl/src/extra \
+-Ilib/lvgl/src/font \
+-Ilib/lvgl/src/gpu \
+-Ilib/lvgl/src/hal \
+-Ilib/lvgl/src/misc \
+-Ilib/lvgl/src/widgets \
+-Ilib/lvgl/src/extra/layouts \
+-Ilib/lvgl/src/extra/layouts/flex \
+-Ilib/lvgl/src/extra/layouts/grid \
+-Ilib/lvgl/src/extra/themes \
+-Ilib/lvgl/src/extra/themes/basic \
+-Ilib/lvgl/src/extra/themes/default \
+-Ilib/lvgl/src/extra/widgets/calendar \
+-Ilib/lvgl/src/extra/widgets/colorwheel \
+-Ilib/lvgl/src/extra/widgets \
+-Ilib/lvgl/src/extra/widgets/imgbtn \
+-Ilib/lvgl/src/extra/widgets/keyboard \
+-Ilib/lvgl/src/extra/widgets/led \
+-Ilib/lvgl/src/extra/widgets/list \
+-Ilib/lvgl/src/extra/widgets/msgbox \
+-Ilib/lvgl/src/extra/widgets/spinbox \
+-Ilib/lvgl/src/extra/widgets/spinner \
+-Ilib/lvgl/src/extra/widgets/tabview \
+-Ilib/lvgl/src/extra/widgets/tileview \
+-Ilib/lvgl/src/extra/widgets/win
 
 
 # compile gcc flags
