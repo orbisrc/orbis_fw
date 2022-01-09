@@ -137,7 +137,7 @@ C_INCLUDES =  \
 -Isrc/gui/fonts \
 -Isrc/gui/screens \
 -Isrc/usb \
--Isrc/usb \
+-Isrc/gui_lvgl \
 -Ilib/lvgl/src \
 -Ilib/lvgl/src/core \
 -Ilib/lvgl/src/draw \

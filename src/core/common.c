@@ -34,6 +34,7 @@
 #include "usbd_desc.h"
 #include "core/buffer.h"
 #include "usbd_cdc_if.h"
+#include "gui_lvgl/gui_lvgl.h"
 
 #define RC_LOOP_DIVIDER 80
 
@@ -74,8 +75,8 @@ void CommonInit(void)
 	RCtimerInitHandler();
 
 	STreadSettingsFromFlash();
-
-	GUI_Init();
+	gui_lvgl_init();
+	// GUI_Init();
 	//	HAL_Delay(1000);
 	PPMhandlerInit();
 
@@ -118,7 +119,8 @@ void CommonRun(void)
 
 	StartTimePoint = HAL_GetTick();
 
-	GUI();
+	// GUI();
+	gui_lvgl();
 	DiscreteInputMain();
 	DiscretBufferHandler();
 	AlarmWarningHandler();

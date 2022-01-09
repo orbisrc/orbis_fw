@@ -42,8 +42,8 @@
 
 
 #define FW_VERSION_MAJOR            1  // increment when a major release is made (big new feature, etc)
-#define FW_VERSION_MINOR            0  // increment when a minor release is made (small new feature, change etc)
-#define FW_VERSION_PATCH_LEVEL      1  // increment when a bug is fixed
+#define FW_VERSION_MINOR            3  // increment when a minor release is made (small new feature, change etc)
+#define FW_VERSION_PATCH_LEVEL      0  // increment when a bug is fixed
 
 #define FW_VERSION_STRING STR(FW_VERSION_MAJOR) "." STR(FW_VERSION_MINOR) "." STR(FW_VERSION_PATCH_LEVEL)
 
