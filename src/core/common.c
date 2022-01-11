@@ -75,7 +75,7 @@ void CommonInit(void)
 
 	STreadSettingsFromFlash();
 
-	GUI_Init();
+	// GUI_Init();
 	//	HAL_Delay(1000);
 	PPMhandlerInit();
 
@@ -118,7 +118,7 @@ void CommonRun(void)
 
 	StartTimePoint = HAL_GetTick();
 
-	GUI();
+	// GUI();
 	DiscreteInputMain();
 	DiscretBufferHandler();
 	AlarmWarningHandler();

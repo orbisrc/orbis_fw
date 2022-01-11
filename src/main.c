@@ -50,22 +50,22 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  // MX_DMA_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_RTC_Init();
   MX_SPI1_Init();
   MX_SPI2_Init();
-  // MX_ADC1_Init();
-  // MX_TIM2_Init();
-  // MX_TIM3_Init();
-  // MX_TIM4_Init();
-  // MX_TIM6_Init();
-  // MX_TIM7_Init();
-  // MX_TIM10_Init();
-  // MX_TIM13_Init();
-  // MX_TIM14_Init();
+  MX_ADC1_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
+  MX_TIM6_Init();
+  MX_TIM7_Init();
+  MX_TIM10_Init();
+  MX_TIM13_Init();
+  MX_TIM14_Init();
 
-  // CommonInit();
+  CommonInit();
 
   // MX_DAC_Init();
   // /*
@@ -78,10 +78,8 @@ int main(void)
 
   lv_init();
 
-  STDrawPixel(10, 10, 0xFFFF);
-  STDrawPixel(20, 20, 0xFFFF);
   lv_port_disp_init();
-  STDrawPixel(30, 30, 0xFFFF);
+  
 
   lv_obj_t *win = lv_win_create(lv_scr_act(), 40);
   lv_obj_t *btn;
@@ -95,25 +93,27 @@ int main(void)
 
   lv_obj_t *cont = lv_win_get_content(win); /*Content can be aded here*/
   lv_obj_t *label = lv_label_create(cont);
-  lv_label_set_text(label, "This is\n"
-                           "a pretty\n"
-                           "long text\n"
-                           "to see how\n"
-                           "the window\n"
-                           "becomes\n"
-                           "scrollable.\n"
-                           "\n"
-                           "\n"
-                           "Some more\n"
-                           "text to be\n"
-                           "sure it\n"
-                           "overflows. ");
+  lv_label_set_text(label, "Lorem ipsum dolor sit amet,\n"
+                            "consectetur adipiscing elit,\n"
+                            "sed do eiusmod tempor\n"
+                            "incididunt ut labore et\n"
+                            "dolore magna aliqua. Ut\n" 
+                            "enim ad minim veniam, quis\n"
+                            "nostrud exercitation ullamco\n"
+                            "laboris nisi ut aliquip ex ea\n"
+                            "commodo consequat. Duis aute\n"
+                            "irure dolor in reprehenderit in\n"
+                            "voluptate velit esse cillum\n"
+                            "dolore eu fugiat nulla pariatur.\n"
+                            "Excepteur sint occaecat cupidatat\n"
+                            "non proident, sunt in culpa qui\n"
+                            "officia deserunt mollit anim id\n"
+                            "est laborum. ");
 
-  STDrawPixel(40, 40, 0xFFFF);
 
   while (1)
   {
-    // CommonRun();
+    CommonRun();
     lv_task_handler();
   
   }

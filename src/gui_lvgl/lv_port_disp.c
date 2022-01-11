@@ -3,8 +3,7 @@
  *
  */
 
- /*Copy this file as "lv_port_disp.c" and set this value to "1" to enable content*/
-
+/*Copy this file as "lv_port_disp.c" and set this value to "1" to enable content*/
 
 /*********************
  *      INCLUDES
@@ -27,7 +26,7 @@
  **********************/
 static void disp_init(void);
 
-static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
+static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p);
 //static void gpu_fill(lv_disp_drv_t * disp_drv, lv_color_t * dest_buf, lv_coord_t dest_width,
 //        const lv_area_t * fill_area, lv_color_t color);
 
@@ -50,19 +49,18 @@ void lv_port_disp_init(void)
      * -----------------------*/
     disp_init();
 
-   	static lv_color_t disp_buf1[MY_DISP_HOR_RES * 60];
-	static lv_color_t disp_buf2[MY_DISP_HOR_RES * 60];
-	static lv_disp_draw_buf_t buf;
-	lv_disp_draw_buf_init(&buf, disp_buf1, disp_buf2, MY_DISP_HOR_RES * 40);
+    static lv_color_t disp_buf1[MY_DISP_HOR_RES * 50];
+    static lv_color_t disp_buf2[MY_DISP_HOR_RES * 50];
+    static lv_disp_draw_buf_t buf;
+    lv_disp_draw_buf_init(&buf, disp_buf1, disp_buf2, MY_DISP_HOR_RES * 50);
 
-	lv_disp_drv_init(&disp_drv);
+    lv_disp_drv_init(&disp_drv);
 
-	disp_drv.draw_buf = &buf;
-	disp_drv.flush_cb = disp_flush;
-	disp_drv.hor_res = 240;
-	disp_drv.ver_res = 320;
-	lv_disp_drv_register(&disp_drv);
-
+    disp_drv.draw_buf = &buf;
+    disp_drv.flush_cb = disp_flush;
+    disp_drv.hor_res = 240;
+    disp_drv.ver_res = 320;
+    lv_disp_drv_register(&disp_drv);
 }
 
 /**********************
@@ -78,25 +76,35 @@ static void disp_init(void)
 /*Flush the content of the internal buffer the specific area on the display
  *You can use DMA or any hardware acceleration to do this operation in the background but
  *'lv_disp_flush_ready()' has to be called when finished.*/
-static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
+static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
 {
     /*The most simple case (but also the slowest) to put all pixels to the screen one-by-one*/
 
-     STDrawPixel(40, 10, 0xFFFF);
+    STDrawPixel(40, 10, 0xFFFF);
 
     int32_t x;
     int32_t y;
-    for(y = area->y1; y <= area->y2; y++) {
-        for(x = area->x1; x <= area->x2; x++) {
-            /*Put a pixel to the display. For example:*/
-            /*put_px(x, y, *color_p)*/
-            STDrawPixel(x, y, color_p->full);
-            color_p++;
+
+    uint16_t Width = area->x1 + area->x2;
+    uint16_t Height = area->y1 + area->y1;
+
+    if (Width > 1 || Height > 1)
+    {
+        for (y = area->y1; y <= area->y2; y++)
+        {
+            for (x = area->x1; x <= area->x2; x++)
+            {
+
+                STDrawPixel(x, y, color_p);
+                color_p++;
+            }
         }
     }
+    else
+    {
+        STDrawFilledRectangle(area->x1, area->y1, Width, Height, color_p->full);
+    }
 
-    /*IMPORTANT!!!
-     *Inform the graphics library that you are ready with the flushing*/
     lv_disp_flush_ready(disp_drv);
 }
 
@@ -118,7 +126,5 @@ static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_colo
 //    }
 //}
 
-
 /*This dummy typedef exists purely to silence -Wpedantic.*/
 typedef int keep_pedantic_happy;
-
