@@ -1,5 +1,5 @@
 /**
- * @file lv_port_disp_templ.h
+ * @file lv_port_disp_.h
  *
  */
 
@@ -16,14 +16,6 @@ extern "C" {
  *      INCLUDES
  *********************/
 #include "lvgl/lvgl.h"
-
-/*********************
- *      DEFINES
- *********************/
-
-/**********************
- *      TYPEDEFS
- **********************/
 
 /**********************
  * GLOBAL PROTOTYPES
