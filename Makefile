@@ -20,9 +20,9 @@ VERSION := $(FW_VER)
 ######################################
 # target
 ######################################
-#CI_TARGET := SURFACE_ILI9341
+CI_TARGET := SURFACE_ILI9341
 #CI_TARGET := SURFACE_S6D0154X
-CI_TARGET := AIR_ILI9341
+#CI_TARGET := AIR_ILI9341
 #CI_TARGET := AIR_S6D0154X
 
 TARGET_NAME = $(CI_TARGET)
