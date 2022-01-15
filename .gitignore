@@ -20,6 +20,10 @@ startup_stm32f10x_md_gcc.s
 
 build/
 
+FW/
+/FW/
+/FW
+
 
 # artefacts for VisualGDB (running in Visual Studio)
 mcu.mak

@@ -90,7 +90,7 @@ LoopFillZerobss:
   bcc  FillZerobss
 
 	// Call from C
-  // bl  JumpToBootloader
+  bl  JumpToBootloader
 /* Call the clock system intitialization function.*/
   bl  SystemInit   
 /* Call static constructors */
