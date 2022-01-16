@@ -74,41 +74,7 @@ int main(void)
   // HAL_Delay(1000);
   // MX_SDIO_SD_Init();
   // MX_USB_DEVICE_Init();
-  STLCDinit();
-
-  lv_init();
-
-  lv_port_disp_init();
   
-
-  lv_obj_t *win = lv_win_create(lv_scr_act(), 40);
-  lv_obj_t *btn;
-  btn = lv_win_add_btn(win, LV_SYMBOL_LEFT, 40);
-
-  lv_win_add_title(win, "A title");
-
-  btn = lv_win_add_btn(win, LV_SYMBOL_RIGHT, 40);
-
-  btn = lv_win_add_btn(win, LV_SYMBOL_CLOSE, 60);
-
-  lv_obj_t *cont = lv_win_get_content(win); /*Content can be aded here*/
-  lv_obj_t *label = lv_label_create(cont);
-  lv_label_set_text(label, "Lorem ipsum dolor sit amet,\n"
-                            "consectetur adipiscing elit,\n"
-                            "sed do eiusmod tempor\n"
-                            "incididunt ut labore et\n"
-                            "dolore magna aliqua. Ut\n" 
-                            "enim ad minim veniam, quis\n"
-                            "nostrud exercitation ullamco\n"
-                            "laboris nisi ut aliquip ex ea\n"
-                            "commodo consequat. Duis aute\n"
-                            "irure dolor in reprehenderit in\n"
-                            "voluptate velit esse cillum\n"
-                            "dolore eu fugiat nulla pariatur.\n"
-                            "Excepteur sint occaecat cupidatat\n"
-                            "non proident, sunt in culpa qui\n"
-                            "officia deserunt mollit anim id\n"
-                            "est laborum. ");
 
 
   while (1)

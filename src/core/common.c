@@ -34,6 +34,7 @@
 #include "usbd_desc.h"
 #include "core/buffer.h"
 #include "usbd_cdc_if.h"
+#include "gui_lvgl/lv_gui.h"
 
 #define RC_LOOP_DIVIDER 80
 
@@ -78,6 +79,8 @@ void CommonInit(void)
 	// GUI_Init();
 	//	HAL_Delay(1000);
 	PPMhandlerInit();
+
+	lv_gui_init();
 
 	/*
 	 * Start loop
@@ -124,6 +127,7 @@ void CommonRun(void)
 	AlarmWarningHandler();
 	BeeperHandler(&MainBeeper);
 	RCtimerMain();
+	lv_gui();
 
 	/*
 	 * Подсчет частоты вызова основного потока выполнения
