@@ -20,6 +20,8 @@ extern "C" {
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
+lv_disp_drv_t disp_drv;
+
 void lv_port_disp_init(void);
 /**********************
  *      MACROS

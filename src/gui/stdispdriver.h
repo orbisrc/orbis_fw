@@ -20,6 +20,7 @@
 #define STGUI_STDISPDRIVER_H_
 
 #include "gui/fonts/font.h"
+#include "lvgl.h"
 
 void STDrawPicture(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, const unsigned char *Picture);
 
@@ -57,5 +58,7 @@ void STLCDsetBrightness(uint16_t Value);
 uint16_t STLCDgetBrightness(void);
 
 void STLCDsetBrightnessInit(void);
+
+void lv_draw_area(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, lv_color_t *buff);
 
 #endif /* STGUI_STDISPDRIVER_H_ */
