@@ -24,9 +24,10 @@ char *__CHLabelShort[] = {"Ail",
 						  "CH15",
 						  "CH16"};
 
- void lv_screen_change(lv_obj_t *screen){
-	 lv_scr_load_anim(screen, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, true);
- }					  
+void lv_screen_change(lv_obj_t *screen)
+{
+	lv_scr_load_anim(screen, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, true);
+}
 
 void lv_styles_create(void)
 {
@@ -35,6 +36,10 @@ void lv_styles_create(void)
 
 void lv_gui_create(void)
 {
+
+	lv_init();
+	lv_port_disp_init();
+
 	lv_styles_create();
 
 	lv_scr_load(lv_gui_main_screen());
