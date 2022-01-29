@@ -1,30 +1,50 @@
 #include "lv_gui.h"
 #include "lvgl/lvgl.h"
 #include "lv_gui_servoview.h"
+#include "lv_gui_main_screen.h"
+#include "lv_gui_styles.h"
 
 extern lv_obj_t *chBar;
+extern int32_t value = 0;
 
-void lv_gui_init(void)
+char *CHLabelShort[] = {"Ail",
+						  "Ele",
+						  "Thr",
+						  "Rud",
+						  "CH5",
+						  "CH6",
+						  "CH7",
+						  "CH8",
+						  "CH9",
+						  "CH10",
+						  "CH11",
+						  "CH12",
+						  "CH13",
+						  "CH14",
+						  "CH15",
+						  "CH16"};
+
+void lv_screen_change(lv_obj_t *screen)
 {
-    lv_init();
-    lv_port_disp_init();
+	lv_scr_load_anim(screen, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, true);
+}
 
-    lv_gui_servoview();
+void lv_styles_create(void)
+{
+	lv_styles_init();
+}
+
+void lv_gui_create(void)
+{
+
+	lv_init();
+	lv_port_disp_init();
+
+	lv_styles_create();
+
+	lv_scr_load(lv_gui_main_screen());
 }
 
 void lv_gui()
 {
-    static int32_t value = 0;
-    static int32_t increment = 1;
-    // lv_bar_set_value(chBar,  value++, LV_ANIM_OFF);
-    // if (value > 125) value = -125;
-    value += increment;
-    for (uint16_t i = 0; i < NUMBER_OF_CHANNELS - 1; i++)
-    {
-        lv_ch_list_set_channel_value(i, value);
-    }
-    if (value > 125)
-        increment = -1;
-    if (value < -125)
-        increment = 1;
 }
