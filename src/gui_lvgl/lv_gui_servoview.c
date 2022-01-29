@@ -126,7 +126,7 @@ static void lv_ch_list(lv_obj_t *parent)
 
     for (uint16_t i = 0; i < NUMBER_OF_CHANNELS; i++)
     {
-        ___lv_ch_bar[i] = lv_ch_bar_w_desc(parent, __CHLabelShort[i], i * 18);
+        ___lv_ch_bar[i] = lv_ch_bar_w_desc(parent, CHLabelShort[i], i * 18);
         chIds[i] = i;
         lv_obj_set_user_data(___lv_ch_bar[i], i);
     }

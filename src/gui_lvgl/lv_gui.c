@@ -7,7 +7,7 @@
 extern lv_obj_t *chBar;
 extern int32_t value = 0;
 
-char *__CHLabelShort[] = {"Ail",
+char *CHLabelShort[] = {"Ail",
 						  "Ele",
 						  "Thr",
 						  "Rud",

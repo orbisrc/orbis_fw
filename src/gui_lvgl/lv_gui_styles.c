@@ -1,4 +1,5 @@
 #include "lv_gui_styles.h"
+#include "lvgl/lvgl.h"
 
 // Bar
 lv_style_t bar_bg;

@@ -80,7 +80,7 @@ void CommonInit(void)
 	//	HAL_Delay(1000);
 	PPMhandlerInit();
 
-	lv_gui_init();
+	lv_gui_create();
 
 	/*
 	 * Start loop

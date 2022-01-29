@@ -6,7 +6,7 @@
 
 lv_obj_t *chBar;
 int32_t value;
-extern char *__CHLabelShort[];
+extern char *CHLabelShort[];
 
 void lv_styles_create(void);
 
