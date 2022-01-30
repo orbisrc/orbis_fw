@@ -3,6 +3,12 @@
 #include "lv_gui_servoview.h"
 #include "lv_gui.h"
 #include "lv_gui_common.h"
+#include "lv_gui_model_menu.h"
+#include "tim.h"
+
+static lv_obj_t *lv_menu(lv_obj_t *parent, const char *title);
+
+static lv_obj_t *lv_winow(lv_obj_t *parent);
 
 static void servoview_button_handler(lv_event_t *e)
 {
@@ -24,7 +30,7 @@ static void model_button_handler(lv_event_t *e)
     {
         LV_LOG_USER("Clicked");
 
-        lv_screen_change(lv_gui_servoview());
+        lv_screen_change(lv_gui_model_menu());
     }
 }
 
@@ -36,20 +42,22 @@ static void settings_button_handler(lv_event_t *e)
     {
         LV_LOG_USER("Clicked");
 
-        lv_screen_change(lv_gui_servoview());
+        // lv_screen_change(lv_gui_servoview());
+
+        lv_menu(e->current_target->parent, "Model");
     }
 }
 
-static void set_timer2_data(lv_event_t *e)
+static void set_timer2_data(lv_obj_t *label)
 {
-
-    lv_label_set_text(e->current_target, "00:00:00");
+    lv_label_set_text(label, "00:00:00");
 }
 
-static void set_timer1_data(lv_event_t *e)
+static void set_timer1_data(lv_obj_t *label)
 {
+    static uint16_t i;
 
-    lv_label_set_text(e->current_target, "11:00:00");
+    lv_label_set_text_fmt(label, "Enc: %d", TIM4->CNT);
 }
 
 static lv_obj_t *lv_model_name(lv_obj_t *parent)
@@ -73,14 +81,9 @@ static lv_obj_t *lv_model_name(lv_obj_t *parent)
 
 static lv_obj_t *lv_timer(lv_obj_t *parent, lv_event_cb_t event_cb)
 {
-    lv_obj_t *label = lv_label_create(parent);
-    lv_obj_add_event_cb(label, event_cb, LV_EVENT_DRAW_MAIN_END, NULL);
-    lv_obj_set_width(label, 100);
-    lv_label_set_long_mode(label, LV_LABEL_LONG_DOT);
-    lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_LEFT, 0);
-    lv_label_set_text(label, "00h:00m:00s");
-
-    lv_obj_remove_style_all(label); /*Remove the styles coming from the theme*/
+    lv_obj_t *label = lv_dynamic_label(parent, LV_TEXT_ALIGN_LEFT, event_cb, "00:00");
+    lv_obj_set_width(label, 160);
+    lv_obj_set_height(label, 30);
     lv_obj_add_style(label, &timer_style, LV_PART_MAIN);
 
     return label;
@@ -100,6 +103,34 @@ static lv_obj_t *lv_slider(lv_obj_t *parent, uint32_t ini_value)
     lv_obj_center(slider);
 
     return slider;
+}
+
+static void menu_close_handle(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        LV_LOG_USER("Clicked");
+
+        lv_obj_del(e->current_target->parent);
+    }
+}
+
+static lv_obj_t *lv_menu(lv_obj_t *parent, const char *title)
+{
+
+    lv_obj_t *container = lv_obj_create(parent);
+    lv_obj_set_size(container, 180, 240);
+    lv_obj_align(container, LV_ALIGN_CENTER, 2, 0);
+
+    lv_obj_t *header_title = lv_title(container, title);
+    lv_obj_t *back_button = lv_button_back(container, menu_close_handle);
+
+    lv_obj_align(header_title, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_align(back_button, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+
+    return container;
 }
 
 lv_obj_t *lv_gui_main_screen(void)

@@ -29,15 +29,16 @@ void Encoder_Init(void)
 	Encoder.TIMx = TIM4;
 	Encoder.Deadband = 0;
 
-	EncoderSetPeriod(20, &Encoder);
+	EncoderSetPeriod(10000, &Encoder);
 
-	HAL_TIM_Encoder_Start(&htim4,TIM_CHANNEL_ALL);
+	EncoderSetCounter(5000, &Encoder);
+
+	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
 }
-
 
 uint16_t EncoderGetCounter(Encoder_HandlerTypeDef *Encoder)
 {
-	return (uint16_t)Encoder->TIMx->CNT/(Encoder->Divider);
+	return (uint16_t)Encoder->TIMx->CNT / (Encoder->Divider);
 }
 
 void EncoderSetCounter(uint16_t Counter, Encoder_HandlerTypeDef *Encoder)
