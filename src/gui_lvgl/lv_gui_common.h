@@ -15,4 +15,6 @@ lv_obj_t *lv_title(lv_obj_t *parent, const char *title);
 
 lv_obj_t *lv_screen(const char *title, lv_event_cb_t event_cb);
 
+lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], const void *items_callbak[]);
+
 #endif
