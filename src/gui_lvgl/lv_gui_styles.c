@@ -1,5 +1,4 @@
 #include "lv_gui_styles.h"
-#include "lvgl/lvgl.h"
 
 // Bar
 lv_style_t bar_bg;
@@ -8,6 +7,7 @@ lv_style_t bar_knob;
 
 // Labels
 lv_style_t timer_style;
+lv_style_t model_name_style;
 
 void lv_styles_init(void)
 {
@@ -37,4 +37,9 @@ void lv_styles_init(void)
     lv_style_init(&timer_style);
     // lv_style_set_text_color(&timer_style, lv_color_black());
     lv_style_set_text_font(&timer_style, &lv_font_montserrat_28);
+
+    /* Model name*/
+    lv_style_init(&model_name_style);
+    lv_style_set_text_color(&model_name_style, lv_color_darken(lv_palette_main(LV_PALETTE_RED), 50));
+    lv_style_set_text_font(&model_name_style, &lv_font_montserrat_18);
 }

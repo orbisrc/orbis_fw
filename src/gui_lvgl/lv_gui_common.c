@@ -1,4 +1,5 @@
 #include "lv_gui_common.h"
+#include "lv_gui_conf.h"
 
 lv_obj_t *lv_button_back(lv_obj_t *parent, lv_event_cb_t event_cb)
 {
@@ -99,7 +100,7 @@ lv_obj_t *lv_dynamic_label(lv_obj_t *parent, lv_text_align_t value, void *event_
 
     if (event_cb != NULL)
     {
-        lv_timer_t *timer = lv_timer_create(lv_label_timer_cb, 500, label);
+        lv_timer_t *timer = lv_timer_create(lv_label_timer_cb, GUI_DATA_UPDATE_PERIOD, label);
         lv_obj_add_event_cb(label, lv_delete_timer_cb, LV_EVENT_DELETE, timer);
     }
 
