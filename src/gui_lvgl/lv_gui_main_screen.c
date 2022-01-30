@@ -4,7 +4,9 @@
 #include "lv_gui.h"
 #include "lv_gui_common.h"
 
-static lv_obj_t *lv_menu(lv_obj_t *parent, const char *title);
+static lv_obj_t *lv_menu_model(lv_obj_t *parent, const char *title);
+
+static lv_obj_t *lv_menu_system(lv_obj_t *parent, const char *title);
 
 static lv_obj_t *lv_winow(lv_obj_t *parent);
 
@@ -28,7 +30,7 @@ static void model_button_handler(lv_event_t *e)
     {
         LV_LOG_USER("Clicked");
 
-        lv_menu(e->current_target->parent, "Model");
+        lv_menu_model(e->current_target->parent, "Model");
     }
 }
 
@@ -39,6 +41,8 @@ static void settings_button_handler(lv_event_t *e)
     if (code == LV_EVENT_CLICKED)
     {
         LV_LOG_USER("Clicked");
+
+        lv_menu_system(e->current_target->parent, "System");
     }
 }
 
@@ -53,33 +57,6 @@ static void set_timer1_data(lv_obj_t *label)
 
     lv_label_set_text_fmt(label, "%02d:%02d:%02d", i++, i++, i++);
 }
-
-static void menu_close_handle(lv_event_t *e)
-{
-    lv_event_code_t code = lv_event_get_code(e);
-
-    if (code == LV_EVENT_CLICKED)
-    {
-        LV_LOG_USER("Clicked");
-
-        lv_obj_del(e->current_target->parent);
-    }
-}
-
-static void menu_button_handle(lv_event_t *e)
-{
-    lv_event_code_t code = lv_event_get_code(e);
-
-    if (code == LV_EVENT_CLICKED)
-    {
-        LV_LOG_USER("Clicked %d", e->current_target->user_data);
-
-        lv_obj_t *(*event_cb)() = lv_obj_get_user_data(e->current_target);
-
-        lv_screen_change(event_cb());
-    }
-}
-
 
 static lv_obj_t *lv_model_name(lv_obj_t *parent)
 {
@@ -120,8 +97,29 @@ static lv_obj_t *lv_slider(lv_obj_t *parent, uint32_t ini_value)
     return slider;
 }
 
+static lv_obj_t *lv_menu_system(lv_obj_t *parent, const char *title)
+{
+    const char *lv_menu_buttons_label[] = {
+        "CALIBRATE",
+        "ANALOG INPUT",
+        "DISCRETE INPUT",
+        "BASIC SETTINGS",
+        "INFO"};
 
-static lv_obj_t *lv_menu(lv_obj_t *parent, const char *title)
+    void *lv_menu_buttons_callback[] = {lv_gui_main_screen,
+                                        lv_gui_main_screen,
+                                        lv_gui_main_screen,
+                                        lv_gui_main_screen,
+                                        lv_gui_main_screen,
+                                        NULL,
+                                        NULL};
+
+    lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback);
+
+    return container;
+}
+
+static lv_obj_t *lv_menu_model(lv_obj_t *parent, const char *title)
 {
     const char *lv_menu_buttons_label[] = {"MODEL SELECT",
                                            "CH SETTINGS",
@@ -131,34 +129,15 @@ static lv_obj_t *lv_menu(lv_obj_t *parent, const char *title)
                                            "CH INVERT",
                                            "\n"};
 
-    const char *lv_menu_buttons_callback[] = {lv_gui_main_screen,
-                                              lv_gui_main_screen,
-                                              lv_gui_main_screen,
-                                              lv_gui_main_screen,
-                                              lv_gui_main_screen,
-                                              lv_gui_main_screen,
-                                              NULL};
+    void *lv_menu_buttons_callback[] = {lv_gui_main_screen,
+                                        lv_gui_main_screen,
+                                        lv_gui_main_screen,
+                                        lv_gui_main_screen,
+                                        lv_gui_main_screen,
+                                        lv_gui_main_screen,
+                                        NULL};
 
-    lv_obj_t *container = lv_obj_create(parent);
-    lv_obj_set_size(container, 180, 290);
-    lv_obj_align(container, LV_ALIGN_CENTER, 2, 0);
-    lv_obj_t *header_title = lv_title(container, title);
-
-    uint16_t i = 0;
-    while (lv_menu_buttons_label[i] != "\n")
-    {
-        lv_obj_t *button = lv_button(container, menu_button_handle, lv_menu_buttons_label[i]);
-        lv_obj_set_user_data(button, lv_menu_buttons_callback[i]);
-        lv_obj_align(button, LV_ALIGN_TOP_MID, 0, 30 + i * (GUI_BUTTON_MENU_HEIGHT + GUI_MARGIN * 2));
-        lv_obj_set_width(button, GUI_BUTTON_MENU_WIDTH);
-        lv_obj_set_height(button, GUI_BUTTON_MENU_HEIGHT);
-        i++;
-    }
-
-    lv_obj_t *back_button = lv_button_back(container, menu_close_handle);
-
-    lv_obj_align(header_title, LV_ALIGN_TOP_MID, 0, 0);
-    lv_obj_align(back_button, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+    lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback);
 
     return container;
 }

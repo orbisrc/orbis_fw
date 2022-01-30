@@ -106,3 +106,60 @@ lv_obj_t *lv_dynamic_label(lv_obj_t *parent, lv_text_align_t value, void *event_
 
     return label;
 };
+
+/* 
+    Menu
+ */
+
+static void menu_close_handle(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        LV_LOG_USER("Clicked");
+
+        lv_obj_del(e->current_target->parent);
+    }
+}
+
+static void menu_button_handle(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        LV_LOG_USER("Clicked %d", e->current_target->user_data);
+
+        lv_obj_t *(*event_cb)() = lv_obj_get_user_data(e->current_target);
+
+        lv_screen_change(event_cb());
+    }
+}
+
+lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], const void *items_callbak[])
+{
+
+    lv_obj_t *container = lv_obj_create(parent);
+    lv_obj_set_size(container, 180, 290);
+    lv_obj_align(container, LV_ALIGN_CENTER, 2, 0);
+    lv_obj_t *header_title = lv_title(container, title);
+
+    uint16_t i = 0;
+    while (items_callbak[i] != NULL)
+    {
+        lv_obj_t *button = lv_button(container, menu_button_handle, items[i]);
+        lv_obj_set_user_data(button, items_callbak[i]);
+        lv_obj_align(button, LV_ALIGN_TOP_MID, 0, 30 + i * (GUI_BUTTON_MENU_HEIGHT + GUI_MARGIN * 2));
+        lv_obj_set_width(button, GUI_BUTTON_MENU_WIDTH);
+        lv_obj_set_height(button, GUI_BUTTON_MENU_HEIGHT);
+        i++;
+    }
+
+    lv_obj_t *back_button = lv_button_back(container, menu_close_handle);
+
+    lv_obj_align(header_title, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_align(back_button, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+
+    return container;
+}
