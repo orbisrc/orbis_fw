@@ -3,8 +3,6 @@
 #include "lv_gui_servoview.h"
 #include "lv_gui.h"
 #include "lv_gui_common.h"
-#include "lv_gui_model_menu.h"
-#include "tim.h"
 
 static lv_obj_t *lv_menu(lv_obj_t *parent, const char *title);
 
@@ -30,7 +28,7 @@ static void model_button_handler(lv_event_t *e)
     {
         LV_LOG_USER("Clicked");
 
-        lv_screen_change(lv_gui_model_menu());
+        lv_menu(e->current_target->parent, "Model");
     }
 }
 
@@ -41,32 +39,50 @@ static void settings_button_handler(lv_event_t *e)
     if (code == LV_EVENT_CLICKED)
     {
         LV_LOG_USER("Clicked");
-
-        // lv_screen_change(lv_gui_servoview());
-
-        lv_menu(e->current_target->parent, "Model");
     }
 }
 
 static void set_timer2_data(lv_obj_t *label)
 {
-    lv_label_set_text(label, "00:00:00");
+    lv_label_set_text_fmt(label, "%02d:%02d:%02d", 0, 0, 0);
 }
 
 static void set_timer1_data(lv_obj_t *label)
 {
     static uint16_t i;
 
-    lv_label_set_text_fmt(label, "Enc: %d", TIM4->CNT);
+    lv_label_set_text_fmt(label, "%02d:%02d:%02d", i++, i++, i++);
 }
+
+static void menu_close_handle(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        LV_LOG_USER("Clicked");
+
+        lv_obj_del(e->current_target->parent);
+    }
+}
+
+static void menu_button_handle(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        LV_LOG_USER("Clicked %d", e->current_target->user_data);
+
+        lv_obj_t *(*event_cb)() = lv_obj_get_user_data(e->current_target);
+
+        lv_screen_change(event_cb());
+    }
+}
+
 
 static lv_obj_t *lv_model_name(lv_obj_t *parent)
 {
-    static lv_style_t style;
-    lv_style_init(&style);
-    lv_style_set_text_color(&style, lv_color_darken(lv_palette_main(LV_PALETTE_RED), 50));
-    lv_style_set_text_font(&style, &lv_font_montserrat_18);
-
     lv_obj_t *label = lv_label_create(parent);
     lv_obj_set_width(label, 100);
     lv_label_set_long_mode(label, LV_LABEL_LONG_DOT);
@@ -74,7 +90,7 @@ static lv_obj_t *lv_model_name(lv_obj_t *parent)
     lv_label_set_text(label, "Model");
 
     lv_obj_remove_style_all(label); /*Remove the styles coming from the theme*/
-    lv_obj_add_style(label, &style, LV_PART_MAIN);
+    lv_obj_add_style(label, &model_name_style, LV_PART_MAIN);
 
     return label;
 };
@@ -95,7 +111,6 @@ static lv_obj_t *lv_slider(lv_obj_t *parent, uint32_t ini_value)
     lv_slider_set_mode(slider, LV_SLIDER_MODE_SYMMETRICAL);
     lv_slider_set_range(slider, GUI_TRIM_MIN, GUI_TRIM_MAX);
 
-    // lv_obj_remove_style_all(slider); /*Remove the styles coming from the theme*/
     lv_obj_add_style(slider, &bar_bg, LV_PART_MAIN);
     lv_obj_add_style(slider, &bar_indic, LV_PART_INDICATOR);
     lv_obj_add_style(slider, &bar_knob, LV_PART_KNOB);
@@ -105,26 +120,41 @@ static lv_obj_t *lv_slider(lv_obj_t *parent, uint32_t ini_value)
     return slider;
 }
 
-static void menu_close_handle(lv_event_t *e)
-{
-    lv_event_code_t code = lv_event_get_code(e);
-
-    if (code == LV_EVENT_CLICKED)
-    {
-        LV_LOG_USER("Clicked");
-
-        lv_obj_del(e->current_target->parent);
-    }
-}
 
 static lv_obj_t *lv_menu(lv_obj_t *parent, const char *title)
 {
+    const char *lv_menu_buttons_label[] = {"MODEL SELECT",
+                                           "CH SETTINGS",
+                                           "END POINT",
+                                           "SUB TRIM",
+                                           "CH MAPPING",
+                                           "CH INVERT",
+                                           "\n"};
+
+    const char *lv_menu_buttons_callback[] = {lv_gui_main_screen,
+                                              lv_gui_main_screen,
+                                              lv_gui_main_screen,
+                                              lv_gui_main_screen,
+                                              lv_gui_main_screen,
+                                              lv_gui_main_screen,
+                                              NULL};
 
     lv_obj_t *container = lv_obj_create(parent);
-    lv_obj_set_size(container, 180, 240);
+    lv_obj_set_size(container, 180, 290);
     lv_obj_align(container, LV_ALIGN_CENTER, 2, 0);
-
     lv_obj_t *header_title = lv_title(container, title);
+
+    uint16_t i = 0;
+    while (lv_menu_buttons_label[i] != "\n")
+    {
+        lv_obj_t *button = lv_button(container, menu_button_handle, lv_menu_buttons_label[i]);
+        lv_obj_set_user_data(button, lv_menu_buttons_callback[i]);
+        lv_obj_align(button, LV_ALIGN_TOP_MID, 0, 30 + i * (GUI_BUTTON_MENU_HEIGHT + GUI_MARGIN * 2));
+        lv_obj_set_width(button, GUI_BUTTON_MENU_WIDTH);
+        lv_obj_set_height(button, GUI_BUTTON_MENU_HEIGHT);
+        i++;
+    }
+
     lv_obj_t *back_button = lv_button_back(container, menu_close_handle);
 
     lv_obj_align(header_title, LV_ALIGN_TOP_MID, 0, 0);
@@ -153,9 +183,9 @@ lv_obj_t *lv_gui_main_screen(void)
     lv_obj_t *st_value = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "0");
     lv_obj_t *th_value = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "0");
 
-    lv_obj_align(rssi_label, LV_ALIGN_TOP_LEFT, 2, 0);
-    lv_obj_align(battery_icon, LV_ALIGN_TOP_RIGHT, -2, 0);
-    lv_obj_align_to(battery_label, battery_icon, LV_ALIGN_OUT_LEFT_MID, 4, 0);
+    lv_obj_align(rssi_label, LV_ALIGN_TOP_LEFT, GUI_MARGIN, 0);
+    lv_obj_align(battery_icon, LV_ALIGN_TOP_RIGHT, -GUI_MARGIN, 0);
+    lv_obj_align_to(battery_label, battery_icon, LV_ALIGN_OUT_LEFT_MID, GUI_MARGIN, 0);
 
     lv_obj_align_to(model_name, rssi_label, LV_ALIGN_OUT_BOTTOM_LEFT, 16, 10);
     lv_obj_align_to(timer1, model_name, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 10);
@@ -169,9 +199,9 @@ lv_obj_t *lv_gui_main_screen(void)
     lv_obj_align_to(th_name, th_trim, LV_ALIGN_OUT_LEFT_MID, -8, 0);
     lv_obj_align_to(th_value, th_trim, LV_ALIGN_OUT_RIGHT_MID, 8, 0);
 
-    lv_obj_align(servoview_button, LV_ALIGN_BOTTOM_RIGHT, -4, -4);
-    lv_obj_align(model_button, LV_ALIGN_BOTTOM_MID, 0, -4);
-    lv_obj_align(settings_button, LV_ALIGN_BOTTOM_LEFT, 4, -4);
+    lv_obj_align(servoview_button, LV_ALIGN_BOTTOM_RIGHT, -GUI_MARGIN, -GUI_MARGIN);
+    lv_obj_align(model_button, LV_ALIGN_BOTTOM_MID, 0, -GUI_MARGIN);
+    lv_obj_align(settings_button, LV_ALIGN_BOTTOM_LEFT, GUI_MARGIN, -GUI_MARGIN);
 
     return screen;
 }
