@@ -20,6 +20,8 @@ static void back_button_handler(lv_event_t *e)
     }
 }
 
+
+
 static void lv_ch_list_set_channel_value(lv_event_t *event)
 {
     char buff[32];
