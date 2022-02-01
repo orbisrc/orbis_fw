@@ -1,8 +1,10 @@
 #include "lv_gui_main_screen.h"
 #include "lv_gui_styles.h"
 #include "lv_gui_servoview.h"
+#include "lv_gui_info.h"
 #include "lv_gui.h"
 #include "lv_gui_common.h"
+#include "core/auxiliary.h"
 
 static lv_obj_t *lv_menu_model(lv_obj_t *parent, const char *title);
 
@@ -48,14 +50,12 @@ static void settings_button_handler(lv_event_t *e)
 
 static void set_timer2_data(lv_obj_t *label)
 {
-    lv_label_set_text_fmt(label, "%02d:%02d:%02d", 0, 0, 0);
+    lv_label_set_text_fmt(label, "%02d:%02d", RCStimerGetMinute(&RCTimer2), RCStimerGetSecond(&RCTimer2));
 }
 
 static void set_timer1_data(lv_obj_t *label)
 {
-    static uint16_t i;
-
-    lv_label_set_text_fmt(label, "%02d:%02d:%02d", i++, i++, i++);
+    lv_label_set_text_fmt(label, "%02d:%02d", RCStimerGetMinute(&RCTimer1), RCStimerGetSecond(&RCTimer1));
 }
 
 static lv_obj_t *lv_model_name(lv_obj_t *parent)
@@ -110,7 +110,7 @@ static lv_obj_t *lv_menu_system(lv_obj_t *parent, const char *title)
                                         lv_gui_main_screen,
                                         lv_gui_main_screen,
                                         lv_gui_main_screen,
-                                        lv_gui_main_screen,
+                                        lv_gui_info,
                                         NULL,
                                         NULL};
 
