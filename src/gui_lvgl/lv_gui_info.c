@@ -4,6 +4,8 @@
 #include "lv_gui_styles.h"
 #include "lv_gui_main_screen.h"
 #include "lv_gui_common.h"
+#include "core/common.h"
+#include "stconfig.h"
 
 lv_indev_t *enc_dev;
 
@@ -40,17 +42,17 @@ static void back_button_handler(lv_event_t *e)
 }
 static void set_main_loop_data(lv_obj_t *label)
 {
-    lv_label_set_text_fmt(label, "%04d Hz", 4000);
+    lv_label_set_text_fmt(label, "%d Hz", (uint16_t)CommonLoopGetFreq(&MainLoop));
 }
 
 static void set_adc_loop_data(lv_obj_t *label)
 {
-    lv_label_set_text_fmt(label, "%04d Hz", 4000);
+    lv_label_set_text_fmt(label, "%d Hz", (uint16_t)CommonLoopGetFreq(&ADCloop));
 }
 
 static void set_rc_loop_data(lv_obj_t *label)
 {
-    lv_label_set_text_fmt(label, "%04d Hz", 4000);
+    lv_label_set_text_fmt(label, "%d Hz", (uint16_t)CommonLoopGetFreq(&RCchLoop));
 }
 
 static void dfu_aply_handler(lv_event_t *e)
@@ -84,9 +86,9 @@ lv_obj_t *lv_gui_info(void)
     lv_obj_t *sw_version = lv_info_label(screen, "SW version");
     lv_obj_t *date = lv_info_label(screen, "Date");
 
-    lv_obj_t *hw_version_value = lv_info_label(screen, "0.0.0");
-    lv_obj_t *sw_version_value = lv_info_label(screen, "1.3.1");
-    lv_obj_t *date_value = lv_info_label(screen, "Dec 22 2022");
+    lv_obj_t *hw_version_value = lv_info_label(screen, HW_VERSION);
+    lv_obj_t *sw_version_value = lv_info_label(screen, SW_VERSION);
+    lv_obj_t *date_value = lv_info_label(screen, SW_DATE);
 
     lv_obj_t *main_loop = lv_info_label(screen, "Main loop");
     lv_obj_t *adc_loop = lv_info_label(screen, "ADC loop");
