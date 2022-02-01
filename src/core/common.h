@@ -35,18 +35,18 @@ typedef struct
  */
 
 // ADC
-__IO extern uint32_t ADCloopFreq;
-__IO extern uint32_t ADCloopDuration;
+extern uint32_t ADCloopFreq;
+extern uint32_t ADCloopDuration;
 extern LoopFreqHandlerTypedef ADCloop;
 
 // RC Channel
-__IO extern uint32_t RCchLoopFreq;
-__IO extern uint32_t RCchLoopDuration;
+extern uint32_t RCchLoopFreq;
+extern uint32_t RCchLoopDuration;
 extern LoopFreqHandlerTypedef RCchLoop;
 
 // Main
-__IO extern uint32_t MainLoopFreq;
-__IO extern uint32_t MainLoopDuration;
+extern uint32_t MainLoopFreq;
+extern uint32_t MainLoopDuration;
 extern LoopFreqHandlerTypedef MainLoop;
 
 extern char dMessage[DEBUG_MESSAGE_MAX];

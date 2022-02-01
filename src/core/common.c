@@ -43,18 +43,18 @@
  */
 
 // ADC
-__IO uint32_t ADCloopFreq = {0};
-__IO uint32_t ADCloopDuration = {0};
+uint32_t ADCloopFreq = {0};
+uint32_t ADCloopDuration = {0};
 LoopFreqHandlerTypedef ADCloop = {0};
 
 // RC Channel
-__IO uint32_t RCchLoopFreq = {0};
-__IO uint32_t RCchLoopDuration = {0};
+uint32_t RCchLoopFreq = {0};
+uint32_t RCchLoopDuration = {0};
 LoopFreqHandlerTypedef RCchLoop = {0};
 
 // Main
-__IO uint32_t MainLoopFreq = {0};
-__IO uint32_t MainLoopDuration = {0};
+uint32_t MainLoopFreq = {0};
+uint32_t MainLoopDuration = {0};
 LoopFreqHandlerTypedef MainLoop = {0};
 
 #if DEBUG_UART_MESSAGE == 1
