@@ -3,26 +3,24 @@
 #include "lv_gui_servoview.h"
 #include "lv_gui_main_screen.h"
 #include "lv_gui_styles.h"
-
-extern lv_obj_t *chBar;
-extern int32_t value = 0;
+#include "lv_port_disp.h"
 
 char *CHLabelShort[] = {"Ail",
-						  "Ele",
-						  "Thr",
-						  "Rud",
-						  "CH5",
-						  "CH6",
-						  "CH7",
-						  "CH8",
-						  "CH9",
-						  "CH10",
-						  "CH11",
-						  "CH12",
-						  "CH13",
-						  "CH14",
-						  "CH15",
-						  "CH16"};
+						"Ele",
+						"Thr",
+						"Rud",
+						"CH5",
+						"CH6",
+						"CH7",
+						"CH8",
+						"CH9",
+						"CH10",
+						"CH11",
+						"CH12",
+						"CH13",
+						"CH14",
+						"CH15",
+						"CH16"};
 
 void lv_screen_change(lv_obj_t *screen)
 {
@@ -36,7 +34,6 @@ void lv_styles_create(void)
 
 void lv_gui_create(void)
 {
-
 	lv_init();
 	lv_port_disp_init();
 
