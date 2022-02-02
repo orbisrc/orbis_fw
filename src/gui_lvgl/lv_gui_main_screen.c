@@ -1,6 +1,7 @@
 #include "lv_gui_main_screen.h"
 #include "lv_gui_styles.h"
 #include "lv_gui_servoview.h"
+#include "lv_gui_ai.h"
 #include "lv_gui_info.h"
 #include "lv_gui.h"
 #include "lv_gui_common.h"
@@ -106,7 +107,7 @@ static lv_obj_t *lv_menu_system(lv_obj_t *parent, const char *title)
         "INFO"};
 
     lv_obj_t *(*lv_menu_buttons_callback[])(void) = {lv_gui_main_screen,
-                                                 lv_gui_main_screen,
+                                                 lv_gui_ai,
                                                  lv_gui_main_screen,
                                                  lv_gui_main_screen,
                                                  lv_gui_info,

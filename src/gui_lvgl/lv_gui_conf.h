@@ -18,5 +18,6 @@
 #define GUI_TRIM_MAX 100
 
 #define GUI_DATA_UPDATE_PERIOD 500 //ms
+#define GUI_DATA_UPDATE_PERIOD_FAST 20
 
 #endif
