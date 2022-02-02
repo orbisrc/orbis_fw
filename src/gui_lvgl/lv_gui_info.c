@@ -4,12 +4,20 @@
 #include "lv_gui_styles.h"
 #include "lv_gui_main_screen.h"
 #include "lv_gui_common.h"
+#include "core/iosettings.h"
 #include "core/common.h"
-#include "stconfig.h"
 
 lv_indev_t *enc_dev;
 
-static lv_obj_t *lv_msgbox_info(lv_obj_t *parent);
+static void ack_dfu_handler()
+{
+    rebootToBootloader();
+}
+
+static void ack_reset_handler()
+{
+    AllReset();
+}
 
 static void dfu_button_handler(lv_event_t *e)
 {
@@ -17,7 +25,7 @@ static void dfu_button_handler(lv_event_t *e)
 
     if (code == LV_EVENT_CLICKED)
     {
-        LV_LOG_USER("Clicked");
+        lv_ack_box(e->current_target->parent, ack_dfu_handler, "Load to DFU?");
     }
 }
 
@@ -27,7 +35,7 @@ static void reset_button_handler(lv_event_t *e)
 
     if (code == LV_EVENT_CLICKED)
     {
-        LV_LOG_USER("Clicked");
+        lv_ack_box(e->current_target->parent, ack_reset_handler, "Reset all settings and model profiles?!");
     }
 }
 
@@ -55,13 +63,6 @@ static void set_rc_loop_data(lv_obj_t *label)
     lv_label_set_text_fmt(label, "%d Hz", (uint16_t)CommonLoopGetFreq(&RCchLoop));
 }
 
-static void dfu_aply_handler(lv_event_t *e)
-{
-    lv_obj_t *obj = lv_event_get_current_target(e);
-
-    LV_LOG_USER("Button %s clicked", lv_msgbox_get_active_btn_text(obj));
-}
-
 static lv_obj_t *lv_info_label(lv_obj_t *parent, const char *ini)
 {
     lv_obj_t *label = lv_label(parent, LV_TEXT_ALIGN_LEFT, NULL, ini);
@@ -70,7 +71,7 @@ static lv_obj_t *lv_info_label(lv_obj_t *parent, const char *ini)
     return label;
 }
 
-static lv_obj_t *lv_info_label_dynamic(lv_obj_t *parent, void *event_cb(lv_obj_t *label), const char *ini)
+static lv_obj_t *lv_info_label_dynamic(lv_obj_t *parent, void (*event_cb)(lv_obj_t *label), const char *ini)
 {
     lv_obj_t *label = lv_dynamic_label(parent, LV_TEXT_ALIGN_LEFT, event_cb, ini);
     lv_obj_set_width(label, 100);

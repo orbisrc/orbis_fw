@@ -5,12 +5,11 @@
 #include "lv_gui.h"
 #include "lv_gui_common.h"
 #include "core/auxiliary.h"
+#include "core/iosettings.h"
 
 static lv_obj_t *lv_menu_model(lv_obj_t *parent, const char *title);
 
 static lv_obj_t *lv_menu_system(lv_obj_t *parent, const char *title);
-
-static lv_obj_t *lv_winow(lv_obj_t *parent);
 
 static void servoview_button_handler(lv_event_t *e)
 {
@@ -50,12 +49,12 @@ static void settings_button_handler(lv_event_t *e)
 
 static void set_timer2_data(lv_obj_t *label)
 {
-    lv_label_set_text_fmt(label, "%02d:%02d", RCStimerGetMinute(&RCTimer2), RCStimerGetSecond(&RCTimer2));
+    lv_label_set_text_fmt(label, "%02dm:%02ds", RCStimerGetMinute(&RCTimer2), RCStimerGetSecond(&RCTimer2));
 }
 
 static void set_timer1_data(lv_obj_t *label)
 {
-    lv_label_set_text_fmt(label, "%02d:%02d", RCStimerGetMinute(&RCTimer1), RCStimerGetSecond(&RCTimer1));
+    lv_label_set_text_fmt(label, "%02dm:%02ds", RCStimerGetMinute(&RCTimer1), RCStimerGetSecond(&RCTimer1));
 }
 
 static lv_obj_t *lv_model_name(lv_obj_t *parent)
@@ -64,7 +63,7 @@ static lv_obj_t *lv_model_name(lv_obj_t *parent)
     lv_obj_set_width(label, 100);
     lv_label_set_long_mode(label, LV_LABEL_LONG_DOT);
     lv_obj_set_style_text_align(label, LV_TEXT_ALIGN_LEFT, 0);
-    lv_label_set_text(label, "Model");
+    lv_label_set_text(label, ModelSettings[STgetCurrentModelID()].Name);
 
     lv_obj_remove_style_all(label); /*Remove the styles coming from the theme*/
     lv_obj_add_style(label, &model_name_style, LV_PART_MAIN);
@@ -72,7 +71,7 @@ static lv_obj_t *lv_model_name(lv_obj_t *parent)
     return label;
 };
 
-static lv_obj_t *lv_timer(lv_obj_t *parent, lv_event_cb_t event_cb)
+static lv_obj_t *lv_timer(lv_obj_t *parent, void (*event_cb)(lv_obj_t *obj))
 {
     lv_obj_t *label = lv_dynamic_label(parent, LV_TEXT_ALIGN_LEFT, event_cb, "00:00");
     lv_obj_set_width(label, 160);
@@ -106,13 +105,13 @@ static lv_obj_t *lv_menu_system(lv_obj_t *parent, const char *title)
         "BASIC SETTINGS",
         "INFO"};
 
-    void *lv_menu_buttons_callback[] = {lv_gui_main_screen,
-                                        lv_gui_main_screen,
-                                        lv_gui_main_screen,
-                                        lv_gui_main_screen,
-                                        lv_gui_info,
-                                        NULL,
-                                        NULL};
+    lv_obj_t *(*lv_menu_buttons_callback[])(void) = {lv_gui_main_screen,
+                                                 lv_gui_main_screen,
+                                                 lv_gui_main_screen,
+                                                 lv_gui_main_screen,
+                                                 lv_gui_info,
+                                                 NULL,
+                                                 NULL};
 
     lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback);
 
@@ -129,13 +128,13 @@ static lv_obj_t *lv_menu_model(lv_obj_t *parent, const char *title)
                                            "CH INVERT",
                                            "\n"};
 
-    void *lv_menu_buttons_callback[] = {lv_gui_main_screen,
-                                        lv_gui_main_screen,
-                                        lv_gui_main_screen,
-                                        lv_gui_main_screen,
-                                        lv_gui_main_screen,
-                                        lv_gui_main_screen,
-                                        NULL};
+    lv_obj_t *(*lv_menu_buttons_callback[])(void) = {lv_gui_main_screen,
+                                                 lv_gui_main_screen,
+                                                 lv_gui_main_screen,
+                                                 lv_gui_main_screen,
+                                                 lv_gui_main_screen,
+                                                 lv_gui_main_screen,
+                                                 NULL};
 
     lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback);
 

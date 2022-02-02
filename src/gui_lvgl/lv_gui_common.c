@@ -1,5 +1,6 @@
 #include "lv_gui_common.h"
 #include "lv_gui_conf.h"
+#include "lv_gui.h"
 
 lv_obj_t *lv_button_back(lv_obj_t *parent, lv_event_cb_t event_cb)
 {
@@ -64,7 +65,8 @@ lv_obj_t *lv_screen(const char *title, lv_event_cb_t event_cb)
     lv_obj_t *header_title = lv_title(screen, title);
     lv_obj_t *back_button = lv_button_back(screen, event_cb);
 
-    lv_obj_align(back_button, LV_ALIGN_TOP_LEFT, 4, 4);
+    lv_obj_align(header_title, LV_ALIGN_TOP_MID, 0, GUI_MARGIN);
+    lv_obj_align(back_button, LV_ALIGN_TOP_LEFT, GUI_MARGIN, GUI_MARGIN);
 
     return screen;
 };
@@ -77,7 +79,7 @@ static void lv_label_timer_cb(lv_timer_t *timer)
 {
     lv_obj_t *label = timer->user_data;
 
-    lv_event_cb_t event_cb = lv_obj_get_user_data(label);
+    void (*event_cb)(lv_obj_t *label) = lv_obj_get_user_data(label);
 
     event_cb(label);
 };
@@ -89,7 +91,7 @@ static void lv_delete_timer_cb(lv_event_t *e)
     lv_timer_del(timer);
 };
 
-lv_obj_t *lv_dynamic_label(lv_obj_t *parent, lv_text_align_t value, void *event_cb(lv_obj_t *label), const char *ini)
+lv_obj_t *lv_dynamic_label(lv_obj_t *parent, lv_text_align_t value, const void (*event_cb)(lv_obj_t *label), const char *ini)
 {
     lv_obj_t *label = lv_label_create(parent);
     lv_label_set_text(label, ini);
@@ -131,13 +133,13 @@ static void menu_button_handle(lv_event_t *e)
     {
         LV_LOG_USER("Clicked %d", e->current_target->user_data);
 
-        lv_obj_t *(*event_cb)() = lv_obj_get_user_data(e->current_target);
+        lv_obj_t *(*event_cb)(void) = lv_obj_get_user_data(e->current_target);
 
         lv_screen_change(event_cb());
     }
 }
 
-lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], const void *items_callbak[])
+lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], const lv_obj_t *(*items_callbak[])(void))
 {
 
     lv_obj_t *container = lv_obj_create(parent);
@@ -160,6 +162,58 @@ lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], cons
 
     lv_obj_align(header_title, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_align(back_button, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+
+    return container;
+}
+
+/* 
+    Ack box 
+*/
+
+static void lv_ack_box_ok_handler(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        LV_LOG_USER("Clicked ok");
+
+        void (*event_cb)() = lv_obj_get_user_data(e->current_target);
+
+        event_cb();
+    }
+}
+
+static void lv_ack_box_cancel_handler(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        LV_LOG_USER("Clicked cancell");
+
+        lv_obj_del(e->current_target->parent);
+    }
+}
+
+lv_obj_t *lv_ack_box(lv_obj_t *parent, void (*event_cb)(), const char *text)
+{
+    lv_obj_t *container = lv_obj_create(parent);
+
+    lv_obj_set_size(container, 200, 100);
+    lv_obj_align(container, LV_ALIGN_CENTER, 0, 0);
+
+    lv_obj_t *label = lv_label(container, LV_TEXT_ALIGN_CENTER, NULL, text);
+    lv_obj_set_size(label, 160, 40);
+
+    lv_obj_t *cancell_button = lv_button(container, lv_ack_box_cancel_handler, "Cancel");
+    lv_obj_t *ok_button = lv_button(container, lv_ack_box_ok_handler, "Ok");
+
+    lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_align(ok_button, LV_ALIGN_BOTTOM_RIGHT, -GUI_MARGIN, -GUI_MARGIN);
+    lv_obj_align(cancell_button, LV_ALIGN_BOTTOM_LEFT, GUI_MARGIN, -GUI_MARGIN);
+
+    lv_obj_set_user_data(ok_button, event_cb);
 
     return container;
 }

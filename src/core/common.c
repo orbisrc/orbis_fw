@@ -107,7 +107,7 @@ void CommonInit(void)
 	 * Set stick central, after transmitter powerup.
 	 */
 
-	HAL_Delay(1000);
+	// HAL_Delay(1000);
 
 	AIsetADCCenter(AIgetADCValue(&AnalogChannel[0]), &AnalogChannel[AileronADC]);
 	AIsetADCCenter(AIgetADCValue(&AnalogChannel[1]), &AnalogChannel[ElevatorADC]);

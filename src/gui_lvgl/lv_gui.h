@@ -4,8 +4,6 @@
 #include "lvgl/lvgl.h"
 #include "lv_gui_conf.h"
 
-lv_obj_t *chBar;
-int32_t value;
 extern char *CHLabelShort[];
 
 void lv_styles_create(void);
