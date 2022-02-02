@@ -4,9 +4,10 @@
 #include "lv_gui_styles.h"
 #include "lv_gui_main_screen.h"
 #include "lv_gui_common.h"
+#include "core/rcchannel.h"
 
 static lv_obj_t *___lv_ch_bar[NUMBER_OF_CHANNELS];
-static lv_style_t style_line;
+static lv_obj_t *___lv_ch_value[NUMBER_OF_CHANNELS];
 
 static void back_button_handler(lv_event_t *e)
 {
@@ -20,39 +21,20 @@ static void back_button_handler(lv_event_t *e)
     }
 }
 
-
-
-static void lv_ch_list_set_channel_value(lv_event_t *event)
+static void channels_update_handler(lv_timer_t *timer)
 {
-    char buff[32];
-    uint16_t i;
-
-    i = lv_obj_get_user_data(event->target);
-
-    lv_snprintf(buff, 32, "%d", i);
-
-    LV_LOG_USER(buff);
-
-    for (uint16_t i = 0; i < NUMBER_OF_CHANNELS - 1; i++)
+    for (uint16_t i = 0; i < NUMBER_OF_CHANNELS; i++)
     {
-        // if (!___lv_ch_bar[i])
-        //     return;
-        // lv_bar_set_value(___lv_ch_bar[i], value, LV_ANIM_OFF);
+        lv_bar_set_value(___lv_ch_bar[i], RCChanelGetValue(&RCChanel[i]) - 500, LV_ANIM_OFF);
+        lv_label_set_text_fmt(___lv_ch_value[i], "%d", RCChanelGetValue(&RCChanel[i]) - 500);
     }
 }
 
-static void lv_bar_center_line_style_init()
+static void screen_close_handler(lv_event_t *e)
 {
-    /*Create style*/
-    lv_style_init(&style_line);
-    lv_style_set_line_width(&style_line, 4);
-    lv_style_set_line_color(&style_line, lv_palette_main(LV_PALETTE_RED));
-    lv_style_set_line_rounded(&style_line, false);
-}
+    lv_timer_t *timer = e->user_data;
 
-static lv_style_t *get_ch_bar_center_line_style()
-{
-    return &style_line;
+    lv_timer_del(timer);
 }
 
 static void lv_bar_center_line(lv_obj_t *parent)
@@ -61,7 +43,7 @@ static void lv_bar_center_line(lv_obj_t *parent)
 
     lv_obj_t *line = lv_line_create(parent);
     lv_line_set_points(line, line_points, 2); /*Set the points*/
-    lv_obj_add_style(line, get_ch_bar_center_line_style(), 0);
+    lv_obj_add_style(line, &bar_center_line_style, 0);
     lv_obj_center(line);
 }
 
@@ -102,47 +84,27 @@ static lv_obj_t *lv_ch_bar(lv_obj_t *parent, uint32_t ini_value)
     lv_bar_center_line(bar);
     lv_bar_set_value(bar, ini_value, LV_ANIM_ON);
 
-    lv_obj_add_event_cb(bar, lv_ch_list_set_channel_value, LV_EVENT_DRAW_MAIN_END, NULL);
-
     return bar;
-}
-
-static lv_obj_t *lv_ch_bar_w_desc(lv_obj_t *parent, const char *text, lv_coord_t y_ofs)
-{
-    lv_obj_t *bar = lv_ch_bar(parent, 0);
-    lv_obj_t *label = lv_ch_label(parent, text);
-    lv_obj_t *value = lv_ch_value(parent, "-125");
-
-    lv_obj_align_to(bar, parent, LV_ALIGN_TOP_MID, 0, y_ofs + 28);
-    lv_obj_align_to(label, bar, LV_ALIGN_OUT_LEFT_MID, -4, 0);
-    lv_obj_align_to(value, bar, LV_ALIGN_OUT_RIGHT_MID, 4, 0);
-
-    return bar;
-}
-
-static void lv_ch_list(lv_obj_t *parent)
-{
-    static uint16_t chIds[NUMBER_OF_CHANNELS] = {0};
-
-    lv_bar_center_line_style_init();
-
-    for (uint16_t i = 0; i < NUMBER_OF_CHANNELS; i++)
-    {
-        ___lv_ch_bar[i] = lv_ch_bar_w_desc(parent, CHLabelShort[i], i * 18);
-        chIds[i] = i;
-        lv_obj_set_user_data(___lv_ch_bar[i], i);
-    }
 }
 
 lv_obj_t *lv_gui_servoview(void)
 {
-    lv_obj_t *screen = lv_obj_create(NULL);
-    lv_obj_t *title = lv_title(screen, "Servo view");
-    lv_obj_t *back_button = lv_button_back(screen, back_button_handler);
+    lv_obj_t *screen = lv_screen("View", back_button_handler);
 
-    lv_ch_list(screen);
+    for (uint16_t i = 0; i < NUMBER_OF_CHANNELS; i++)
+    {
+        ___lv_ch_bar[i] = lv_ch_bar(screen, 0);
+        lv_obj_t *label = lv_ch_label(screen, CHLabelShort[i]);
+        ___lv_ch_value[i] = lv_ch_value(screen, "-125");
 
-    lv_obj_align(back_button, LV_ALIGN_TOP_LEFT, 4, 4);
+        lv_obj_align_to(___lv_ch_bar[i], screen, LV_ALIGN_TOP_MID, 0, i * (GUI_CH_BAR_HEIGHT + GUI_MARGIN * 1.5) + GUI_SCREEN_START_MARGIN);
+        lv_obj_align_to(label, ___lv_ch_bar[i], LV_ALIGN_OUT_LEFT_MID, -GUI_MARGIN, 0);
+        lv_obj_align_to(___lv_ch_value[i], ___lv_ch_bar[i], LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN, 0);
+    }
+
+    lv_timer_t *timer = lv_timer_create(channels_update_handler, 20, NULL);
+
+    lv_obj_add_event_cb(screen, screen_close_handler, LV_EVENT_DELETE, timer);
 
     return screen;
 }

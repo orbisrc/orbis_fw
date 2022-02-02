@@ -9,6 +9,9 @@ lv_style_t bar_knob;
 lv_style_t timer_style;
 lv_style_t model_name_style;
 
+/* Bar center line*/
+lv_style_t bar_center_line_style;
+
 void lv_styles_init(void)
 {
     /* BAR */
@@ -42,4 +45,10 @@ void lv_styles_init(void)
     lv_style_init(&model_name_style);
     lv_style_set_text_color(&model_name_style, lv_color_darken(lv_palette_main(LV_PALETTE_RED), 50));
     lv_style_set_text_font(&model_name_style, &lv_font_montserrat_18);
+
+    /* Bar center line*/
+    lv_style_init(&bar_center_line_style);
+    lv_style_set_line_width(&bar_center_line_style, 4);
+    lv_style_set_line_color(&bar_center_line_style, lv_palette_main(LV_PALETTE_RED));
+    lv_style_set_line_rounded(&bar_center_line_style, false);
 }

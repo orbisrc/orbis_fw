@@ -11,8 +11,8 @@
 #define GUI_CH_BAR_WIDTH 150
 #define NUMBER_OF_CHANNELS 16
 
-#define GUI_BAR_MIN -125
-#define GUI_BAR_MAX 125
+#define GUI_BAR_MIN -500
+#define GUI_BAR_MAX 500
 
 #define GUI_TRIM_MIN -100
 #define GUI_TRIM_MAX 100

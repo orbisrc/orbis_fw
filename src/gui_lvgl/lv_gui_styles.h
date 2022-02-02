@@ -10,6 +10,8 @@ extern lv_style_t bar_knob;
 extern lv_style_t timer_style;
 extern lv_style_t model_name_style;
 
+extern lv_style_t bar_center_line_style;
+
 void lv_styles_init(void);
 
 #endif
