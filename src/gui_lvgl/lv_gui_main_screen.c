@@ -5,6 +5,7 @@
 #include "lv_gui_info.h"
 #include "lv_gui.h"
 #include "lv_gui_common.h"
+#include "lv_gui_ch_settings.h"
 #include "core/auxiliary.h"
 #include "core/iosettings.h"
 
@@ -130,7 +131,7 @@ static lv_obj_t *lv_menu_model(lv_obj_t *parent, const char *title)
                                            "\n"};
 
     lv_obj_t *(*lv_menu_buttons_callback[])(void) = {lv_gui_main_screen,
-                                                 lv_gui_main_screen,
+                                                 lv_gui_ch_settings,
                                                  lv_gui_main_screen,
                                                  lv_gui_main_screen,
                                                  lv_gui_main_screen,

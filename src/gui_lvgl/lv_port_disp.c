@@ -27,6 +27,10 @@ static void encoder_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
  *  STATIC VARIABLES
  **********************/
 extern lv_disp_drv_t disp_drv;
+
+extern lv_indev_drv_t indev_drv;
+
+extern lv_indev_t *enc_indev;
 /**********************
  *      MACROS
  **********************/
@@ -62,7 +66,6 @@ void lv_port_disp_init(void)
     lv_group_t *g = lv_group_create();
     lv_group_set_default(g);
 
-    static lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_ENCODER;
     indev_drv.read_cb = encoder_read;

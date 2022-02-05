@@ -22,6 +22,10 @@ extern "C" {
  **********************/
 lv_disp_drv_t disp_drv;
 
+lv_indev_drv_t indev_drv;
+
+lv_indev_t *enc_indev;
+
 void lv_port_disp_init(void);
 /**********************
  *      MACROS
