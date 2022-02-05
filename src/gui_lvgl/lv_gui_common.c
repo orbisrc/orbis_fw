@@ -276,7 +276,10 @@ lv_obj_t *lv_trim(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini, con
     lv_obj_align_to(slider_name, slider, LV_ALIGN_OUT_LEFT_MID, -GUI_MARGIN * 2, 0);
     lv_obj_align_to(value, slider, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN * 2, 0);
 
-    lv_obj_add_event_cb(slider, trim_value_changed_cb, LV_EVENT_VALUE_CHANGED, value);
+    lv_obj_add_event_cb(slider, trim_value_changed_cb, LV_EVENT_ALL, value);
+
+    lv_obj_set_user_data(container, slider);
+
     if (event_cb != NULL)
     {
         lv_obj_add_event_cb(slider, trim_call_cb, LV_EVENT_VALUE_CHANGED, event_cb);
@@ -328,7 +331,10 @@ lv_obj_t *lv_trim_vertical(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t
 
     lv_obj_align_to(value, slider, LV_ALIGN_OUT_TOP_MID, 0, 0);
 
-    lv_obj_add_event_cb(slider, trim_vertical_value_changed_cb, LV_EVENT_VALUE_CHANGED, value);
+    lv_obj_add_event_cb(slider, trim_vertical_value_changed_cb, LV_EVENT_ALL, value);
+
+    lv_obj_set_user_data(container, slider);
+
     if (event_cb != NULL)
     {
         lv_obj_add_event_cb(slider, trim_vertical_call_cb, LV_EVENT_VALUE_CHANGED, event_cb);
@@ -412,8 +418,10 @@ lv_obj_t *lv_endpoint(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini_
     lv_obj_align_to(left_value, slider, LV_ALIGN_OUT_LEFT_MID, -GUI_MARGIN * 2, 0);
     lv_obj_align_to(right_value, slider, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN * 2, 0);
 
-    lv_obj_add_event_cb(slider, endpoint_left_value_changed_cb, LV_EVENT_VALUE_CHANGED, left_value);
-    lv_obj_add_event_cb(slider, endpoint_right_value_changed_cb, LV_EVENT_VALUE_CHANGED, right_value);
+    lv_obj_add_event_cb(slider, endpoint_left_value_changed_cb, LV_EVENT_ALL, left_value);
+    lv_obj_add_event_cb(slider, endpoint_right_value_changed_cb, LV_EVENT_ALL, right_value);
+
+    lv_obj_set_user_data(container, slider);
 
     if (event_cb != NULL)
     {

@@ -5,6 +5,13 @@
 
 uint16_t current_channel = {0};
 
+lv_obj_t *map_dd;
+lv_obj_t *trim;
+lv_obj_t *endpoint;
+lv_obj_t *expo_type;
+lv_obj_t *expo_rate;
+lv_obj_t *curve_chart;
+
 static void channel_change_handle(lv_event_t *e)
 {
     uint16_t selected = lv_dropdown_get_selected(e->current_target);
@@ -21,7 +28,19 @@ static void map_change_handle(lv_event_t *e)
 
 static void curve_type_change_handle(lv_event_t *e)
 {
-    uint16_t selected = lv_dropdown_get_selected(e->current_target);
+    lv_obj_t *dd = e->current_target;
+
+    uint16_t selected = lv_dropdown_get_selected(dd);
+
+    if (selected == 0)
+    {
+        lv_obj_add_flag(expo_rate, LV_OBJ_FLAG_HIDDEN);
+    }
+    else
+    {
+        lv_obj_clear_flag(expo_rate, LV_OBJ_FLAG_HIDDEN);
+    }
+
     LV_LOG_USER("Option map: %d", selected);
 }
 
@@ -73,16 +92,44 @@ static lv_obj_t *lv_dropdown(lv_obj_t *parent, lv_event_cb_t event_cb, const cha
 
 static lv_obj_t *lv_chart(lv_obj_t *parent)
 {
+
+    static uint16_t ecg_sample[1000] = {0};
+
+    for (uint16_t i = 0; i < 1000; i++)
+    {
+        ecg_sample[i] = i;
+    }
+
     lv_obj_t *chart = lv_chart_create(parent);
     lv_obj_set_size(chart, 160, 160);
     lv_obj_center(chart);
     lv_chart_set_type(chart, LV_CHART_TYPE_LINE); /*Show lines and points too*/
+    lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 1000);
+    lv_obj_set_style_size(chart, 0, LV_PART_INDICATOR);
+    lv_chart_set_point_count(chart, 1000);
 
-    lv_chart_series_t *ser1 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
+    lv_chart_series_t *ser = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
 
-    // lv_chart_set_ext_y_array(curve_chart, ser1, (lv_coord_t *)ecg_sample);
+    lv_chart_set_ext_y_array(chart, ser, (lv_coord_t *)ecg_sample);
 
     return chart;
+}
+
+static void ch_settnigs_load(uint16_t channel)
+{
+    lv_dropdown_set_selected(map_dd, 1);
+    lv_dropdown_set_selected(expo_type, 1);
+
+    lv_obj_t *rate = lv_obj_get_user_data(expo_rate);
+    lv_obj_t *trim_bar = lv_obj_get_user_data(trim);
+    lv_obj_t *endpoint_bar = lv_obj_get_user_data(endpoint);
+
+    lv_slider_set_value(rate, 20, LV_ANIM_OFF);
+    lv_slider_set_value(trim_bar, 20, LV_ANIM_OFF);
+    lv_slider_set_left_value(endpoint_bar, -50, LV_ANIM_OFF);
+    lv_slider_set_value(endpoint_bar, 50, LV_ANIM_OFF);
+
+    lv_chart_refresh(curve_chart);
 }
 
 lv_obj_t *lv_gui_ch_settings(void)
@@ -140,16 +187,16 @@ lv_obj_t *lv_gui_ch_settings(void)
                                   "CH16";
 
     static const char *curve_types = "Lin \n"
-                                     "Exp\n";
+                                     "Exp";
 
     lv_obj_t *ch_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "CH: ");
     lv_obj_t *ch_dd = lv_dropdown(screen, channel_change_handle, channels);
-    lv_obj_t *map_dd = lv_dropdown(screen, map_change_handle, opts);
-    lv_obj_t *trim = lv_trim(screen, trim_change_handle, 0, "Trim");
-    lv_obj_t *endpoint = lv_endpoint(screen, endpoint_change_handle, -100, 100);
-    lv_obj_t *expo_type = lv_dropdown(screen, curve_type_change_handle, curve_types);
-    lv_obj_t *expo_rate = lv_trim_vertical(screen, expo_rate_change_handle, 0, "Trim");
-    lv_obj_t *curve_chart = lv_chart(screen);
+    map_dd = lv_dropdown(screen, map_change_handle, opts);
+    trim = lv_trim(screen, trim_change_handle, 0, "Trim");
+    endpoint = lv_endpoint(screen, endpoint_change_handle, -100, 100);
+    expo_type = lv_dropdown(screen, curve_type_change_handle, curve_types);
+    expo_rate = lv_trim_vertical(screen, expo_rate_change_handle, 0, "Trim");
+    curve_chart = lv_chart(screen);
 
     lv_dropdown_set_selected(ch_dd, current_channel);
 
@@ -165,6 +212,8 @@ lv_obj_t *lv_gui_ch_settings(void)
     lv_obj_align(curve_chart, LV_ALIGN_BOTTOM_RIGHT, -GUI_MARGIN, -GUI_MARGIN * 5);
     lv_obj_align_to(expo_type, curve_chart, LV_ALIGN_OUT_LEFT_TOP, -GUI_MARGIN, 0);
     lv_obj_align_to(expo_rate, expo_type, LV_ALIGN_OUT_BOTTOM_MID, 0, GUI_MARGIN);
+
+    ch_settnigs_load(current_channel);
 
     return screen;
 }
