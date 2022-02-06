@@ -24,7 +24,7 @@ char *CHLabelShort[] = {"Ail",
 
 void lv_screen_change(lv_obj_t *screen)
 {
-	lv_scr_load_anim(screen, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, true);
+	lv_scr_load_anim(screen, LV_SCR_LOAD_ANIM_NONE, 0, 0, true);
 }
 
 void lv_styles_create(void)
