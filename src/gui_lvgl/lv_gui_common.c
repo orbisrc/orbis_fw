@@ -2,6 +2,7 @@
 #include "lv_gui_conf.h"
 #include "lv_gui.h"
 #include "lv_gui_styles.h"
+#include "lv_port_disp.h"
 
 lv_obj_t *lv_button_back(lv_obj_t *parent, lv_event_cb_t event_cb)
 {
@@ -61,6 +62,9 @@ lv_obj_t *lv_title(lv_obj_t *parent, const char *title)
 
 lv_obj_t *lv_screen(const char *title, lv_event_cb_t event_cb)
 {
+    lv_group_t *group = lv_group_get_default();
+    lv_group_remove_all_objs(group);
+
     lv_obj_t *screen = lv_obj_create(NULL);
 
     lv_obj_t *header_title = lv_title(screen, title);
@@ -150,22 +154,35 @@ static void menu_button_handle(lv_event_t *e)
     }
 }
 
+static void menu_destroy_handle(lv_event_t *e)
+{
+    lv_group_t *group = e->user_data;
+    lv_group_remove_all_objs(group);
+    lv_group_del(group);
+}
+
 lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], lv_obj_t *(*items_callbak[])(void))
 {
+    lv_group_t *group = lv_group_get_default();
+    lv_group_remove_all_objs(group);
 
     lv_obj_t *container = lv_obj_create(parent);
     lv_obj_set_size(container, 180, 290);
     lv_obj_align(container, LV_ALIGN_CENTER, 2, 0);
     lv_obj_t *header_title = lv_title(container, title);
 
+    lv_obj_t *button;
     uint16_t i = 0;
     while (items_callbak[i] != NULL)
     {
-        lv_obj_t *button = lv_button(container, menu_button_handle, items[i]);
+        button = lv_button(container, menu_button_handle, items[i]);
         lv_obj_set_user_data(button, items_callbak[i]);
         lv_obj_align(button, LV_ALIGN_TOP_MID, 0, 30 + i * (GUI_BUTTON_MENU_HEIGHT + GUI_MARGIN * 2));
         lv_obj_set_width(button, GUI_BUTTON_MENU_WIDTH);
         lv_obj_set_height(button, GUI_BUTTON_MENU_HEIGHT);
+
+        lv_group_add_obj(group, button);
+
         i++;
     }
 

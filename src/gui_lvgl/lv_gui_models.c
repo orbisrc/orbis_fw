@@ -7,7 +7,7 @@
 #include "stconfig.h"
 
 #define GUI_MODELS_NUMBER MODEL_MEMORY_NUM
-#define GUI_MODELS_ITEM_MENU_HEIGHT 112
+#define GUI_MODELS_ITEM_MENU_HEIGHT 118
 #define GUI_MODELS_ITEM_MENU_WIDTH 120
 #define GUI_MODELS_SCREEN_HEIGHT 320
 
@@ -31,7 +31,7 @@ static void close_menu_button_handler(lv_event_t *e)
 
     if (code == LV_EVENT_CLICKED)
     {
-        lv_obj_del(e->current_target->parent);
+        lv_screen_change(lv_gui_models());
     }
 }
 
@@ -45,7 +45,7 @@ static void load_profile_button_handler(lv_event_t *e)
         CommonSettings.CurrentModelID = profile->ID;
         STloadProfile(&ModelSettings[CommonSettings.CurrentModelID]);
 
-        lv_screen_change(lv_gui_models());
+        lv_screen_change(lv_gui_main_screen());
     }
 }
 
@@ -100,11 +100,14 @@ static void keyboard_close_handler(lv_event_t *e)
 {
     LV_LOG_USER("Keyboard Close!");
 
-    lv_obj_del(e->current_target->parent);
+    lv_screen_change(lv_gui_models());
 }
 
 static lv_obj_t *lv_keyboard_(lv_obj_t *parent)
 {
+    lv_group_t *group = lv_group_get_default();
+    lv_group_remove_all_objs(group);
+
     lv_obj_t *container = lv_obj_create(parent);
     lv_obj_set_size(container, 240, 156);
     lv_obj_center(container);
@@ -118,6 +121,9 @@ static lv_obj_t *lv_keyboard_(lv_obj_t *parent)
     lv_obj_set_height(keyboard, 100);
     lv_obj_add_event_cb(keyboard, keyboard_accept_handler, LV_EVENT_READY, NULL);
     lv_obj_add_event_cb(keyboard, keyboard_close_handler, LV_EVENT_CANCEL, NULL);
+
+    // lv_group_focus_obj(keyboard);
+
 
     lv_obj_t *text = lv_textarea_create(container);
     lv_obj_align(text, LV_ALIGN_TOP_MID, 0, 0);
@@ -134,6 +140,9 @@ static lv_obj_t *lv_keyboard_(lv_obj_t *parent)
 
 static lv_obj_t *lv_model_menu(lv_obj_t *parent)
 {
+    lv_group_t *group = lv_group_get_default();
+    lv_group_remove_all_objs(group);
+
     lv_obj_t *list = lv_list_create(parent);
     lv_obj_set_size(list, GUI_MODELS_ITEM_MENU_WIDTH, GUI_MODELS_ITEM_MENU_HEIGHT);
     lv_obj_set_style_border_color(list, lv_palette_darken(LV_PALETTE_BLUE, 2), LV_PART_MAIN | LV_STATE_DEFAULT);

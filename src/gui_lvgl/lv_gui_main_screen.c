@@ -109,12 +109,12 @@ static lv_obj_t *lv_menu_system(lv_obj_t *parent, const char *title)
         "INFO"};
 
     lv_obj_t *(*lv_menu_buttons_callback[])(void) = {lv_gui_main_screen,
-                                                 lv_gui_ai,
-                                                 lv_gui_main_screen,
-                                                 lv_gui_main_screen,
-                                                 lv_gui_info,
-                                                 NULL,
-                                                 NULL};
+                                                     lv_gui_ai,
+                                                     lv_gui_main_screen,
+                                                     lv_gui_main_screen,
+                                                     lv_gui_info,
+                                                     NULL,
+                                                     NULL};
 
     lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback);
 
@@ -132,12 +132,12 @@ static lv_obj_t *lv_menu_model(lv_obj_t *parent, const char *title)
                                            "\n"};
 
     lv_obj_t *(*lv_menu_buttons_callback[])(void) = {lv_gui_models,
-                                                 lv_gui_ch_settings,
-                                                 lv_gui_main_screen,
-                                                 lv_gui_main_screen,
-                                                 lv_gui_main_screen,
-                                                 lv_gui_main_screen,
-                                                 NULL};
+                                                     lv_gui_ch_settings,
+                                                     lv_gui_main_screen,
+                                                     lv_gui_main_screen,
+                                                     lv_gui_main_screen,
+                                                     lv_gui_main_screen,
+                                                     NULL};
 
     lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback);
 
@@ -146,6 +146,9 @@ static lv_obj_t *lv_menu_model(lv_obj_t *parent, const char *title)
 
 lv_obj_t *lv_gui_main_screen(void)
 {
+    lv_group_t *group = lv_group_get_default();
+    lv_group_remove_all_objs(group);
+
     lv_obj_t *screen = lv_obj_create(NULL);
 
     lv_obj_t *rssi_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "RS");

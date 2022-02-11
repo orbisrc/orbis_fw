@@ -20,11 +20,11 @@ extern "C" {
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
-lv_disp_drv_t disp_drv;
+extern lv_disp_drv_t disp_drv;
 
-lv_indev_drv_t indev_drv;
+extern lv_indev_drv_t indev_drv;
 
-lv_indev_t *enc_indev;
+extern lv_indev_t *enc_indev;
 
 void lv_port_disp_init(void);
 /**********************
