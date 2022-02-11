@@ -26,11 +26,13 @@ static void encoder_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
 /**********************
  *  STATIC VARIABLES
  **********************/
-extern lv_disp_drv_t disp_drv;
+lv_disp_drv_t disp_drv;
 
-extern lv_indev_drv_t indev_drv;
+lv_indev_drv_t indev_drv;
 
-extern lv_indev_t *enc_indev;
+lv_indev_t *enc_indev;
+
+lv_group_t *default_group;
 /**********************
  *      MACROS
  **********************/
@@ -46,10 +48,10 @@ void lv_port_disp_init(void)
      * -----------------------*/
     disp_init();
 
-    static lv_color_t disp_buf1[LV_HOR_RES * 40];
-    static lv_color_t disp_buf2[LV_HOR_RES * 40];
+    static lv_color_t disp_buf1[LV_HOR_RES * 20];
+    static lv_color_t disp_buf2[LV_HOR_RES * 20];
     static lv_disp_draw_buf_t buf;
-    lv_disp_draw_buf_init(&buf, disp_buf1, disp_buf2, LV_HOR_RES * 40);
+    lv_disp_draw_buf_init(&buf, disp_buf1, disp_buf2, LV_HOR_RES * 20);
 
     lv_disp_drv_init(&disp_drv);
 
@@ -63,15 +65,15 @@ void lv_port_disp_init(void)
 
     lv_disp_set_theme(disp, th);
 
-    lv_group_t *g = lv_group_create();
-    lv_group_set_default(g);
+    default_group = lv_group_create();
+    lv_group_set_default(default_group);
 
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_ENCODER;
     indev_drv.read_cb = encoder_read;
 
     lv_indev_t *enc_indev = lv_indev_drv_register(&indev_drv);
-    lv_indev_set_group(enc_indev, g);
+    lv_indev_set_group(enc_indev, default_group);
 }
 
 /**********************
