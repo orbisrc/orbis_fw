@@ -9,7 +9,11 @@ lv_obj_t *lv_button_back(lv_obj_t *parent, lv_event_cb_t event_cb)
     lv_obj_t *btn = lv_btn_create(parent);
     lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 4, -4);
     lv_obj_set_size(btn, 40, 20);
-    lv_obj_add_event_cb(btn, event_cb, LV_EVENT_ALL, NULL);
+
+    if (event_cb != NULL)
+    {
+        lv_obj_add_event_cb(btn, event_cb, LV_EVENT_ALL, NULL);
+    }
 
     lv_obj_t *label = lv_label_create(btn);
     lv_label_set_text(label, LV_SYMBOL_LEFT);
@@ -160,7 +164,7 @@ static void menu_destroy_handle(lv_event_t *e)
     lv_group_del(group);
 }
 
-lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], lv_obj_t *(*items_callbak[])(void))
+lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], lv_obj_t *(*items_callbak[])(void), void *back_cb(lv_event_t *e))
 {
     lv_group_t *group = lv_group_get_default();
     lv_group_remove_all_objs(group);
@@ -185,7 +189,15 @@ lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], lv_o
         i++;
     }
 
-    lv_obj_t *back_button = lv_button_back(container, menu_close_handle);
+    lv_obj_t *back_button;
+    if (back_cb != NULL)
+    {
+        back_button = lv_button_back(container, back_cb);
+    }
+    else
+    {
+        back_button = lv_button_back(container, menu_close_handle);
+    }
 
     lv_obj_align(header_title, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_align(back_button, LV_ALIGN_BOTTOM_LEFT, 0, 0);

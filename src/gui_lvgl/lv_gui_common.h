@@ -17,7 +17,7 @@ lv_obj_t *lv_title(lv_obj_t *parent, const char *title);
 
 lv_obj_t *lv_screen(const char *title, lv_event_cb_t event_cb);
 
-lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], lv_obj_t *(*items_callbak[])(void));
+lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], lv_obj_t *(*items_callbak[])(void), void *back_cb(lv_event_t *e));
 
 lv_obj_t *lv_ack_box(lv_obj_t *parent, void (*event_cb)(), const char *text);
 

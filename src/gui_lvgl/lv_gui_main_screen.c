@@ -38,6 +38,18 @@ static void model_button_handler(lv_event_t *e)
     }
 }
 
+static void menu_back_button_handler(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        LV_LOG_USER("Clicked");
+
+        lv_screen_change(lv_gui_main_screen());
+    }
+}
+
 static void settings_button_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
@@ -116,7 +128,7 @@ static lv_obj_t *lv_menu_system(lv_obj_t *parent, const char *title)
                                                      NULL,
                                                      NULL};
 
-    lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback);
+    lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback, menu_back_button_handler);
 
     return container;
 }
@@ -139,7 +151,7 @@ static lv_obj_t *lv_menu_model(lv_obj_t *parent, const char *title)
                                                      lv_gui_main_screen,
                                                      NULL};
 
-    lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback);
+    lv_obj_t *container = lv_menu(parent, title, lv_menu_buttons_label, lv_menu_buttons_callback, menu_back_button_handler);
 
     return container;
 }
