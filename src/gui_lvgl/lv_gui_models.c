@@ -13,7 +13,7 @@
 
 static lv_obj_t *lv_model_menu(lv_obj_t *parent);
 
-static lv_obj_t *lv_keyboard_(lv_obj_t *parent);
+static lv_obj_t *lv_keyboard_(lv_obj_t *parent, void *user_data);
 
 static void back_button_handler(lv_event_t *e)
 {
@@ -57,7 +57,7 @@ static void edit_profile_button_handler(lv_event_t *e)
 
     if (code == LV_EVENT_CLICKED)
     {
-        lv_keyboard_(obj->parent->parent);
+        lv_keyboard_(obj->parent->parent, profile);
 
         lv_obj_del(obj->parent);
     }
@@ -89,7 +89,7 @@ static void keyboard_accept_handler(lv_event_t *e)
 
     lv_obj_t *text = lv_keyboard_get_textarea(e->current_target);
 
-    ModelSettingsTypeDef *profile = e->target->parent->user_data;
+    ModelSettingsTypeDef *profile = e->user_data;
 
     strncpy(profile->Name, lv_textarea_get_text(text), MAX_RC_NAME);
 
@@ -103,10 +103,10 @@ static void keyboard_close_handler(lv_event_t *e)
     lv_screen_change(lv_gui_models());
 }
 
-static lv_obj_t *lv_keyboard_(lv_obj_t *parent)
+static lv_obj_t *lv_keyboard_(lv_obj_t *parent, void *user_data)
 {
-    lv_group_t *group = lv_group_get_default();
-    lv_group_remove_all_objs(group);
+    // lv_group_t *group = lv_group_get_default();
+    // lv_group_remove_all_objs(group);
 
     lv_obj_t *container = lv_obj_create(parent);
     lv_obj_set_size(container, 240, 156);
@@ -119,11 +119,10 @@ static lv_obj_t *lv_keyboard_(lv_obj_t *parent)
     lv_obj_t *keyboard = lv_keyboard_create(container);
     lv_obj_set_width(keyboard, 232);
     lv_obj_set_height(keyboard, 100);
-    lv_obj_add_event_cb(keyboard, keyboard_accept_handler, LV_EVENT_READY, NULL);
+    lv_obj_add_event_cb(keyboard, keyboard_accept_handler, LV_EVENT_READY, user_data);
     lv_obj_add_event_cb(keyboard, keyboard_close_handler, LV_EVENT_CANCEL, NULL);
 
     // lv_group_focus_obj(keyboard);
-
 
     lv_obj_t *text = lv_textarea_create(container);
     lv_obj_align(text, LV_ALIGN_TOP_MID, 0, 0);
@@ -134,6 +133,9 @@ static lv_obj_t *lv_keyboard_(lv_obj_t *parent)
     lv_group_remove_obj(text);
 
     lv_keyboard_set_textarea(keyboard, text);
+
+    lv_obj_add_flag(text, LV_STATE_DISABLED);
+    lv_obj_add_flag(keyboard, LV_STATE_FOCUS_KEY);
 
     return container;
 }
