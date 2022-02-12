@@ -26,6 +26,8 @@ extern lv_indev_drv_t indev_drv;
 
 extern lv_indev_t *enc_indev;
 
+extern lv_group_t *default_group;
+
 void lv_port_disp_init(void);
 /**********************
  *      MACROS

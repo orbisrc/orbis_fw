@@ -97,13 +97,28 @@ void lv_draw_sw_letter(lv_draw_ctx_t * draw_ctx, const lv_draw_label_dsc_t * dsc
 {
     lv_font_glyph_dsc_t g;
     bool g_ret = lv_font_get_glyph_dsc(dsc->font, &g, letter, '\0');
-    if(g_ret == false)  {
+    if(g_ret == false) {
         /*Add warning if the dsc is not found
          *but do not print warning for non printable ASCII chars (e.g. '\n')*/
         if(letter >= 0x20 &&
            letter != 0xf8ff && /*LV_SYMBOL_DUMMY*/
            letter != 0x200c) { /*ZERO WIDTH NON-JOINER*/
-            LV_LOG_WARN("lv_draw_letter: glyph dsc. not found for U+%X", (unsigned int)letter);
+            LV_LOG_WARN("lv_draw_letter: glyph dsc. not found for U+%" PRIX32, letter);
+
+            /* draw placeholder */
+            lv_area_t glyph_coords;
+            lv_draw_rect_dsc_t glyph_dsc;
+            lv_coord_t begin_x = pos_p->x + g.ofs_x;
+            lv_coord_t begin_y = pos_p->y + g.ofs_y;
+            lv_area_set(&glyph_coords, begin_x, begin_y, begin_x + g.box_w, begin_y + g.box_h);
+            lv_draw_rect_dsc_init(&glyph_dsc);
+            glyph_dsc.bg_opa = LV_OPA_MIN;
+            glyph_dsc.outline_opa = LV_OPA_MIN;
+            glyph_dsc.shadow_opa = LV_OPA_MIN;
+            glyph_dsc.bg_img_opa = LV_OPA_MIN;
+            glyph_dsc.border_color = dsc->color;
+            glyph_dsc.border_width = 1;
+            draw_ctx->draw_rect(draw_ctx, &glyph_dsc, &glyph_coords);
         }
         return;
     }
@@ -226,7 +241,7 @@ LV_ATTRIBUTE_FAST_MEM static void draw_letter_normal(lv_draw_ctx_t * draw_ctx, c
     lv_coord_t hor_res = lv_disp_get_hor_res(_lv_refr_get_disp_refreshing());
     uint32_t mask_buf_size = box_w * box_h > hor_res ? hor_res : box_w * box_h;
     lv_opa_t * mask_buf = lv_mem_buf_get(mask_buf_size);
-    blend_dsc.mask = mask_buf;
+    blend_dsc.mask_buf = mask_buf;
     int32_t mask_p = 0;
 
     lv_area_t fill_area;
@@ -412,7 +427,7 @@ static void draw_letter_subpx(lv_draw_ctx_t * draw_ctx, const lv_draw_label_dsc_
     blend_dsc.blend_area = &map_area;
     blend_dsc.mask_area = &map_area;
     blend_dsc.src_buf = color_buf;
-    blend_dsc.mask = mask_buf;
+    blend_dsc.mask_buf = mask_buf;
     blend_dsc.opa = opa;
     blend_dsc.blend_mode = dsc->blend_mode;
 
@@ -470,7 +485,7 @@ static void draw_letter_subpx(lv_draw_ctx_t * draw_ctx, const lv_draw_label_dsc_
 #endif
 
 #if LV_COLOR_DEPTH == 32
-                res_color.ch.alpha =  0xff;
+                res_color.ch.alpha = 0xff;
 #endif
 
                 if(font_rgb[0] == 0 && font_rgb[1] == 0 && font_rgb[2] == 0) mask_buf[mask_p] = LV_OPA_TRANSP;
