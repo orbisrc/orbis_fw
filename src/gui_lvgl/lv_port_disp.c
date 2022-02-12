@@ -41,6 +41,22 @@ lv_group_t *default_group;
  *   GLOBAL FUNCTIONS
  **********************/
 
+void lv_indev_encoder_group_create()
+{
+
+    lv_group_t *group = lv_group_get_default();
+
+    if (group != NULL)
+    {
+        lv_group_del(group);
+    }
+
+    group = lv_group_create();
+
+    lv_group_set_default(group);
+    lv_indev_set_group(enc_indev, group);
+}
+
 void lv_port_disp_init(void)
 {
     /*-------------------------
