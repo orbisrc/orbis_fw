@@ -28,6 +28,8 @@ extern lv_indev_t *enc_indev;
 
 extern lv_group_t *default_group;
 
+void lv_indev_encoder_group_create();
+
 void lv_port_disp_init(void);
 /**********************
  *      MACROS

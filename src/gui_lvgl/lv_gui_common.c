@@ -62,8 +62,7 @@ lv_obj_t *lv_title(lv_obj_t *parent, const char *title)
 
 lv_obj_t *lv_screen(const char *title, lv_event_cb_t event_cb)
 {
-    lv_group_t *group = lv_group_get_default();
-    lv_group_remove_all_objs(group);
+    lv_indev_encoder_group_create();
 
     lv_obj_t *screen = lv_obj_create(NULL);
 
