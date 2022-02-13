@@ -458,3 +458,23 @@ lv_obj_t *lv_endpoint(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini_
 
     return container;
 }
+
+/*
+    Dropdawn
+*/
+
+lv_obj_t *lv_gui_dropdown(lv_obj_t *parent, lv_event_cb_t event_cb, const char *items)
+{
+    lv_obj_t *dd = lv_dropdown_create(parent);
+    lv_obj_set_size(dd, 96, 32);
+    lv_dropdown_set_options_static(dd, items);
+    lv_dropdown_set_dir(dd, LV_DIR_BOTTOM);
+    lv_dropdown_set_symbol(dd, LV_SYMBOL_DOWN);
+
+    if (event_cb != NULL)
+    {
+        lv_obj_add_event_cb(dd, event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+    }
+
+    return dd;
+}

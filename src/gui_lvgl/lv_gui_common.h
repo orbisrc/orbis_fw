@@ -27,4 +27,6 @@ lv_obj_t *lv_trim_vertical(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t
 
 lv_obj_t *lv_endpoint(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini_left, int32_t ini_right);
 
+lv_obj_t *lv_gui_dropdown(lv_obj_t *parent, lv_event_cb_t event_cb, const char *items);
+
 #endif

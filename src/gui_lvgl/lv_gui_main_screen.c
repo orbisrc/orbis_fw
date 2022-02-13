@@ -8,6 +8,7 @@
 #include "lv_gui_ch_settings.h"
 #include "lv_gui_models.h"
 #include "lv_gui_calibrate.h"
+#include "lv_gui_basic.h"
 #include "core/auxiliary.h"
 #include "core/iosettings.h"
 
@@ -117,14 +118,12 @@ static lv_obj_t *lv_menu_system(lv_obj_t *parent, const char *title)
     const char *lv_menu_buttons_label[] = {
         "CALIBRATE",
         "ANALOG INPUT",
-        "DISCRETE INPUT",
         "BASIC SETTINGS",
         "INFO"};
 
     lv_obj_t *(*lv_menu_buttons_callback[])(void) = {lv_gui_calibrate,
                                                      lv_gui_ai,
-                                                     lv_gui_main_screen,
-                                                     lv_gui_main_screen,
+                                                     lv_gui_basic,
                                                      lv_gui_info,
                                                      NULL,
                                                      NULL};
