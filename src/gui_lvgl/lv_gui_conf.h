@@ -16,8 +16,8 @@
 #define GUI_ENDPOINT_MIN -100
 #define GUI_ENDPOINT_MAX 100
 
-#define GUI_BAR_MIN -125
-#define GUI_BAR_MAX 125
+#define GUI_BAR_MIN 0
+#define GUI_BAR_MAX 1000
 
 #define GUI_TRIM_MIN -100
 #define GUI_TRIM_MAX 100
