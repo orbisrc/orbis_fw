@@ -25,7 +25,7 @@ static void channels_update_handler(lv_timer_t *timer)
 {
     for (uint16_t i = 0; i < NUMBER_OF_CHANNELS; i++)
     {
-        lv_bar_set_value(___lv_ch_bar[i], RCChanelGetValue(&RCChanel[i]), LV_ANIM_OFF);
+        lv_bar_set_value(___lv_ch_bar[i], RCChanelGetValue(&RCChanel[i]) - 500, LV_ANIM_OFF);
         lv_label_set_text_fmt(___lv_ch_value[i], "%d", RCChanelGetValue(&RCChanel[i]) - 500);
     }
 }
