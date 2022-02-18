@@ -91,7 +91,7 @@ static void keyboard_accept_handler(lv_event_t *e)
 
     ModelSettingsTypeDef *profile = e->user_data;
 
-    strncpy(profile->Name, lv_textarea_get_text(text), MAX_RC_NAME);
+    strlcpy(profile->Name, lv_textarea_get_text(text), MAX_RC_NAME);
 
     lv_screen_change(lv_gui_models());
 }

@@ -157,14 +157,7 @@ static void menu_button_handle(lv_event_t *e)
     }
 }
 
-static void menu_destroy_handle(lv_event_t *e)
-{
-    lv_group_t *group = e->user_data;
-    lv_group_remove_all_objs(group);
-    lv_group_del(group);
-}
-
-lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], lv_obj_t *(*items_callbak[])(void), void *back_cb(lv_event_t *e))
+lv_obj_t *lv_menu(lv_obj_t *parent, const char *title, const char *items[], lv_obj_t *(*items_callbak[])(void), lv_event_cb_t back_cb)
 {
     lv_group_t *group = lv_group_get_default();
     lv_group_remove_all_objs(group);
