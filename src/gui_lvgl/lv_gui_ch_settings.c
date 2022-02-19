@@ -2,6 +2,10 @@
 #include "lv_gui_common.h"
 #include "lv_gui.h"
 #include "lv_gui_main_screen.h"
+#include "core/iosettings.h"
+#include "core/rcchannel.h"
+#include "core/buffer.h"
+#include "core/rccurve.h"
 
 uint16_t current_channel = {0};
 
@@ -11,19 +15,21 @@ lv_obj_t *endpoint;
 lv_obj_t *expo_type;
 lv_obj_t *expo_rate;
 lv_obj_t *curve_chart;
+lv_chart_series_t *chart_line;
+
+static void ch_settnigs_load(uint16_t channel);
 
 static void channel_change_handle(lv_event_t *e)
 {
     uint16_t selected = lv_dropdown_get_selected(e->current_target);
-
     current_channel = selected;
-    LV_LOG_USER("Option channel: %d", selected);
+    ch_settnigs_load(current_channel);
 }
 
 static void map_change_handle(lv_event_t *e)
 {
     uint16_t selected = lv_dropdown_get_selected(e->current_target);
-    LV_LOG_USER("Option map: %d", selected);
+    RCChanelBufferSetItem(selected, &RCChanel[current_channel]);
 }
 
 static void curve_type_change_handle(lv_event_t *e)
@@ -41,27 +47,32 @@ static void curve_type_change_handle(lv_event_t *e)
         lv_obj_clear_flag(expo_rate, LV_OBJ_FLAG_HIDDEN);
     }
 
-    LV_LOG_USER("Option map: %d", selected);
+    RCChanelSetCurveType(selected, &RCChanel[current_channel]);
+    STcurveFill(current_channel);
+    lv_chart_refresh(curve_chart);
 }
 
 static void trim_change_handle(lv_obj_t *obj)
 {
-    uint32_t value = lv_slider_get_value(obj);
-    LV_LOG_USER("Slider value: %d", value);
+    int32_t value = lv_slider_get_value(obj);
+    RCChanelSetTrim(value, &RCChanel[current_channel]);
 }
 
 static void endpoint_change_handle(lv_obj_t *obj)
 {
     uint32_t value_left = lv_slider_get_left_value(obj);
     uint32_t value_right = lv_slider_get_value(obj);
-    LV_LOG_USER("Slider value left: %d", value_left);
-    LV_LOG_USER("Slider value right: %d", value_right);
+
+    RCChanelSetHightRate((uint16_t)value_right, &RCChanel[current_channel]);
+    RCChanelSetLowRate((uint16_t) ~(value_left) + 1, &RCChanel[current_channel]);
 }
 
 static void expo_rate_change_handle(lv_obj_t *obj)
 {
     uint32_t value = lv_slider_get_value(obj);
-    LV_LOG_USER("Slider value: %d", value);
+    RCChanelSetExpoX((uint16_t)value, &RCChanel[current_channel]);
+    STcurveFill(current_channel);
+    lv_chart_refresh(curve_chart);
 }
 
 static void back_button_handler(lv_event_t *e)
@@ -92,25 +103,17 @@ static lv_obj_t *lv_dropdown(lv_obj_t *parent, lv_event_cb_t event_cb, const cha
 
 static lv_obj_t *lv_chart(lv_obj_t *parent)
 {
-
-    static uint16_t ecg_sample[1000] = {0};
-
-    for (uint16_t i = 0; i < 1000; i++)
-    {
-        ecg_sample[i] = i;
-    }
-
     lv_obj_t *chart = lv_chart_create(parent);
-    lv_obj_set_size(chart, 160, 160);
+    lv_obj_set_size(chart, 150, 150);
     lv_obj_center(chart);
     lv_chart_set_type(chart, LV_CHART_TYPE_LINE); /*Show lines and points too*/
     lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 1000);
     lv_obj_set_style_size(chart, 0, LV_PART_INDICATOR);
     lv_chart_set_point_count(chart, 1000);
+    lv_chart_set_div_line_count(chart, 7, 7);
 
-    lv_chart_series_t *ser = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
-
-    lv_chart_set_ext_y_array(chart, ser, (lv_coord_t *)ecg_sample);
+    chart_line = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
+    lv_chart_set_ext_y_array(chart, chart_line, (lv_coord_t *)&___Curve[current_channel]);
 
     return chart;
 }
@@ -124,10 +127,16 @@ static void ch_settnigs_load(uint16_t channel)
     lv_obj_t *trim_bar = lv_obj_get_user_data(trim);
     lv_obj_t *endpoint_bar = lv_obj_get_user_data(endpoint);
 
-    lv_slider_set_value(rate, 20, LV_ANIM_OFF);
-    lv_slider_set_value(trim_bar, 20, LV_ANIM_OFF);
-    lv_slider_set_left_value(endpoint_bar, -50, LV_ANIM_OFF);
-    lv_slider_set_value(endpoint_bar, 50, LV_ANIM_OFF);
+    lv_slider_set_value(rate, (int32_t)RCChanelGetExpoX(&RCChanel[current_channel]), LV_ANIM_OFF);
+    lv_slider_set_value(trim_bar, (int32_t)RCChanelGetTrim(&RCChanel[current_channel]), LV_ANIM_OFF);
+    lv_slider_set_left_value(endpoint_bar, (int32_t)~(RCChanelGetLowRate(&RCChanel[current_channel])) + 1, LV_ANIM_OFF);
+    lv_slider_set_value(endpoint_bar, (int32_t)RCChanelGetHighRate(&RCChanel[current_channel]), LV_ANIM_OFF);
+    lv_dropdown_set_selected(map_dd, RCChanelBufferGetItem(&RCChanel[current_channel]));
+    lv_dropdown_set_selected(expo_type, RCChanelGetCurveType(&RCChanel[current_channel]));
+
+    lv_chart_remove_series(curve_chart, chart_line);
+    chart_line = lv_chart_add_series(curve_chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
+    lv_chart_set_ext_y_array(curve_chart, chart_line, (lv_coord_t *)&___Curve[current_channel]);
 
     lv_chart_refresh(curve_chart);
 }
@@ -191,15 +200,16 @@ lv_obj_t *lv_gui_ch_settings(void)
 
     lv_obj_t *ch_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "CH: ");
     lv_obj_t *ch_dd = lv_dropdown(screen, channel_change_handle, channels);
+
     map_dd = lv_dropdown(screen, map_change_handle, opts);
-    trim = lv_trim(screen, trim_change_handle, 0, "Trim");
-    endpoint = lv_endpoint(screen, endpoint_change_handle, -100, 100);
+    lv_dropdown_set_selected(map_dd, RCChanelGetExpoX(&RCChanel[current_channel]));
+    trim = lv_trim(screen, trim_change_handle, RCChanelBufferGetItem(&RCChanel[current_channel]), "Trim");
+    endpoint = lv_endpoint(screen, endpoint_change_handle, ~(RCChanelGetLowRate(&RCChanel[current_channel])) + 1, RCChanelGetHighRate(&RCChanel[current_channel]));
     expo_type = lv_dropdown(screen, curve_type_change_handle, curve_types);
-    expo_rate = lv_trim_vertical(screen, expo_rate_change_handle, 0, "Trim");
+    expo_rate = lv_trim_vertical(screen, expo_rate_change_handle, RCChanelGetTrim(&RCChanel[current_channel]), "Trim");
     curve_chart = lv_chart(screen);
 
     lv_dropdown_set_selected(ch_dd, current_channel);
-
     lv_obj_set_width(expo_type, 68);
 
     lv_obj_align_to(ch_label, screen, LV_ALIGN_TOP_LEFT, GUI_MARGIN * 2, GUI_SCREEN_START_MARGIN + GUI_MARGIN);
