@@ -6,6 +6,8 @@
 
 extern char *CHLabelShort[];
 
+void settings_changed(void);
+
 void lv_styles_create(void);
 
 void lv_screen_change(lv_obj_t *screen);

@@ -4,6 +4,7 @@
 #include "lv_gui_main_screen.h"
 #include "lv_gui_styles.h"
 #include "lv_port_disp.h"
+#include "core/iosettings.h"
 
 char *CHLabelShort[] = {"Ail",
 						"Ele",
@@ -21,6 +22,26 @@ char *CHLabelShort[] = {"Ail",
 						"CH14",
 						"CH15",
 						"CH16"};
+
+uint16_t change_settings_counter;
+
+static void settings_update_handler(lv_timer_t *timer)
+{
+	static uint16_t prev_change_settings_counter = 0;
+
+	if (change_settings_counter == prev_change_settings_counter && prev_change_settings_counter != 0)
+	{
+		STsaveSettingsToFlash();
+		prev_change_settings_counter = 0;
+	}
+
+	prev_change_settings_counter = change_settings_counter;
+}
+
+void settings_changed(void)
+{
+	change_settings_counter++;
+}
 
 void lv_screen_change(lv_obj_t *screen)
 {
@@ -40,6 +61,8 @@ void lv_gui_create(void)
 	lv_styles_create();
 
 	lv_scr_load(lv_gui_main_screen());
+
+	lv_timer_create(settings_update_handler, 5000, NULL);
 }
 
 void lv_gui()
