@@ -10,19 +10,17 @@
 static uint16_t calibrate_step = {0};
 static uint16_t Amin[GUI_CALIBRATE_CH_NUM] = {0};
 static uint16_t Amax[GUI_CALIBRATE_CH_NUM] = {0};
-static uint16_t Acentral[GUI_CALIBRATE_CH_NUM] = {0};
 
 static lv_obj_t *ADC_current_label[GUI_CALIBRATE_CH_NUM] = {0};
 static lv_obj_t *ADC_min_label[GUI_CALIBRATE_CH_NUM] = {0};
 static lv_obj_t *ADC_max_label[GUI_CALIBRATE_CH_NUM] = {0};
-static lv_obj_t *ADC_center_label[GUI_CALIBRATE_CH_NUM] = {0};
 
-static enum calibrate_stem_enum {
+static enum calibrate_stem_enum_typedef {
     START_STEP,
     MIN_MAX_SET,
     CENTER_SET,
     CALIBRATE_DONE,
-    RETURN_TO_MAIN
+    RETURN_TO_MAIN,
 };
 
 static void back_button_handler(lv_event_t *e)
