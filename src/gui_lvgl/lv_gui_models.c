@@ -45,6 +45,8 @@ static void load_profile_button_handler(lv_event_t *e)
         CommonSettings.CurrentModelID = profile->ID;
         STloadProfile(&ModelSettings[CommonSettings.CurrentModelID]);
 
+        settings_changed();
+
         lv_screen_change(lv_gui_main_screen());
     }
 }
@@ -93,6 +95,8 @@ static void keyboard_accept_handler(lv_event_t *e)
 
     strlcpy(profile->Name, lv_textarea_get_text(text), MAX_RC_NAME);
 
+    settings_changed();
+
     lv_screen_change(lv_gui_models());
 }
 
@@ -105,9 +109,6 @@ static void keyboard_close_handler(lv_event_t *e)
 
 static lv_obj_t *lv_keyboard_(lv_obj_t *parent, void *user_data)
 {
-    // lv_group_t *group = lv_group_get_default();
-    // lv_group_remove_all_objs(group);
-
     lv_obj_t *container = lv_obj_create(parent);
     lv_obj_set_size(container, 240, 156);
     lv_obj_center(container);
@@ -122,12 +123,10 @@ static lv_obj_t *lv_keyboard_(lv_obj_t *parent, void *user_data)
     lv_obj_add_event_cb(keyboard, keyboard_accept_handler, LV_EVENT_READY, user_data);
     lv_obj_add_event_cb(keyboard, keyboard_close_handler, LV_EVENT_CANCEL, NULL);
 
-    // lv_group_focus_obj(keyboard);
 
     lv_obj_t *text = lv_textarea_create(container);
     lv_obj_align(text, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_align(keyboard, LV_ALIGN_TOP_MID, 0, GUI_MARGIN * 11);
-    // lv_obj_add_event_cb(ta, ta_event_cb, LV_EVENT_ALL, kb);
     lv_textarea_set_placeholder_text(text, "Enter profile name");
     lv_obj_set_size(text, 232, 40);
     lv_group_remove_obj(text);
