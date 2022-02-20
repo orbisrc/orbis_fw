@@ -16,6 +16,7 @@ lv_obj_t *expo_type;
 lv_obj_t *expo_rate;
 lv_obj_t *curve_chart;
 lv_chart_series_t *chart_line;
+lv_obj_t *invert_switch;
 
 static void ch_settnigs_load(uint16_t channel);
 
@@ -50,6 +51,17 @@ static void curve_type_change_handle(lv_event_t *e)
     RCChanelSetCurveType(selected, &RCChanel[current_channel]);
     STcurveFill(current_channel);
     lv_chart_refresh(curve_chart);
+}
+
+static void invert_switch_handler(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t *obj = lv_event_get_target(e);
+
+    if (code == LV_EVENT_VALUE_CHANGED)
+    {
+        RCChanelSetInvertState(lv_obj_has_state(obj, LV_STATE_CHECKED) ? 1 : 0, &RCChanel[current_channel]);
+    }
 }
 
 static void trim_change_handle(lv_obj_t *obj)
@@ -129,10 +141,13 @@ static void ch_settnigs_load(uint16_t channel)
 
     lv_slider_set_value(rate, (int32_t)RCChanelGetExpoX(&RCChanel[current_channel]), LV_ANIM_OFF);
     lv_slider_set_value(trim_bar, (int32_t)RCChanelGetTrim(&RCChanel[current_channel]), LV_ANIM_OFF);
-    lv_slider_set_left_value(endpoint_bar, (int32_t)~(RCChanelGetLowRate(&RCChanel[current_channel])) + 1, LV_ANIM_OFF);
+    lv_slider_set_left_value(endpoint_bar, (int32_t) ~(RCChanelGetLowRate(&RCChanel[current_channel])) + 1, LV_ANIM_OFF);
     lv_slider_set_value(endpoint_bar, (int32_t)RCChanelGetHighRate(&RCChanel[current_channel]), LV_ANIM_OFF);
     lv_dropdown_set_selected(map_dd, RCChanelBufferGetItem(&RCChanel[current_channel]));
     lv_dropdown_set_selected(expo_type, RCChanelGetCurveType(&RCChanel[current_channel]));
+    lv_obj_add_state(invert_switch, RCChanelGetInvertState(&RCChanel[current_channel]));
+
+    RCChanelGetInvertState(&RCChanel[current_channel]) != 0 ? lv_obj_add_state(invert_switch, LV_STATE_CHECKED) : lv_obj_clear_state(invert_switch, LV_STATE_CHECKED);
 
     lv_chart_remove_series(curve_chart, chart_line);
     chart_line = lv_chart_add_series(curve_chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
@@ -205,10 +220,15 @@ lv_obj_t *lv_gui_ch_settings(void)
     lv_dropdown_set_selected(map_dd, RCChanelGetExpoX(&RCChanel[current_channel]));
     trim = lv_trim(screen, trim_change_handle, RCChanelBufferGetItem(&RCChanel[current_channel]), "Trim");
     endpoint = lv_endpoint(screen, endpoint_change_handle, ~(RCChanelGetLowRate(&RCChanel[current_channel])) + 1, RCChanelGetHighRate(&RCChanel[current_channel]));
+
+    lv_obj_t *invert_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "Invert");
+    lv_obj_set_size(invert_label, 60, 22);
+    invert_switch = lv_gui_switch(screen, invert_switch_handler);
+    lv_obj_add_state(invert_switch, RCChanelGetInvertState(&RCChanel[current_channel]));
+
     expo_type = lv_dropdown(screen, curve_type_change_handle, curve_types);
     expo_rate = lv_trim_vertical(screen, expo_rate_change_handle, RCChanelGetTrim(&RCChanel[current_channel]), "Trim");
     curve_chart = lv_chart(screen);
-
     lv_dropdown_set_selected(ch_dd, current_channel);
     lv_obj_set_width(expo_type, 68);
 
@@ -216,8 +236,10 @@ lv_obj_t *lv_gui_ch_settings(void)
     lv_obj_align_to(ch_dd, ch_label, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN, 0);
     lv_obj_align_to(map_dd, ch_dd, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN, 0);
 
-    lv_obj_align_to(trim, screen, LV_ALIGN_TOP_MID, 0, GUI_MARGIN * 16);
+    lv_obj_align_to(trim, screen, LV_ALIGN_TOP_MID, 0, GUI_MARGIN * 17);
     lv_obj_align_to(endpoint, trim, LV_ALIGN_OUT_BOTTOM_MID, 0, GUI_MARGIN);
+    lv_obj_align_to(invert_label, endpoint, LV_ALIGN_OUT_BOTTOM_LEFT, -GUI_MARGIN, GUI_MARGIN);
+    lv_obj_align_to(invert_switch, invert_label, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN, 0);
 
     lv_obj_align(curve_chart, LV_ALIGN_BOTTOM_RIGHT, -GUI_MARGIN, -GUI_MARGIN * 5);
     lv_obj_align_to(expo_type, curve_chart, LV_ALIGN_OUT_LEFT_TOP, -GUI_MARGIN, 0);

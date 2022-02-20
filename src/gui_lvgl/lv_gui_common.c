@@ -40,7 +40,7 @@ lv_obj_t *lv_label(lv_obj_t *parent, lv_text_align_t value, lv_event_cb_t event_
 {
     lv_obj_t *label = lv_label_create(parent);
     lv_label_set_text(label, ini);
-    lv_obj_set_size(label, 32, 18);
+    lv_obj_set_size(label, 36, 18);
     lv_label_set_text(label, ini);
     lv_obj_set_style_text_align(label, value, 0);
 
@@ -273,7 +273,7 @@ lv_obj_t *lv_trim(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini, con
 
     lv_obj_t *container = lv_obj_create(parent);
 
-    lv_obj_set_size(container, 220, GUI_SLIDER_CONTAINER_HEIGHT);
+    lv_obj_set_size(container, 235, GUI_SLIDER_CONTAINER_HEIGHT);
     lv_obj_set_scrollbar_mode(container, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_style_bg_opa(container, 0, LV_OPA_0);
     lv_obj_set_style_border_opa(container, 0, LV_OPA_0);
@@ -331,7 +331,7 @@ lv_obj_t *lv_trim_vertical(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t
 
     lv_obj_t *container = lv_obj_create(parent);
 
-    lv_obj_set_size(container, GUI_SLIDER_CONTAINER_HEIGHT, 130);
+    lv_obj_set_size(container, GUI_SLIDER_CONTAINER_HEIGHT, 120);
     lv_obj_set_scrollbar_mode(container, LV_SCROLLBAR_MODE_OFF);
     lv_obj_set_style_bg_opa(container, 0, LV_OPA_0);
     lv_obj_set_style_border_opa(container, 0, LV_OPA_0);
@@ -470,4 +470,21 @@ lv_obj_t *lv_gui_dropdown(lv_obj_t *parent, lv_event_cb_t event_cb, const char *
     }
 
     return dd;
+}
+
+/*
+    Switch
+*/
+
+lv_obj_t *lv_gui_switch(lv_obj_t *parrent, void *event_cb)
+{
+    lv_obj_t *sw = lv_switch_create(parrent);
+    lv_obj_set_size(sw, 40, 22);
+
+    if (event_cb != NULL)
+    {
+        lv_obj_add_event_cb(sw, event_cb, LV_EVENT_ALL, NULL);
+    }
+
+    return sw;
 }
