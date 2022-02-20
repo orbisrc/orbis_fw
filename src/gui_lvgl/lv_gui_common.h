@@ -29,4 +29,6 @@ lv_obj_t *lv_endpoint(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini_
 
 lv_obj_t *lv_gui_dropdown(lv_obj_t *parent, lv_event_cb_t event_cb, const char *items);
 
+lv_obj_t *lv_gui_switch(lv_obj_t *parrent, void *event_cb);
+
 #endif

@@ -43,19 +43,6 @@ static lv_obj_t *lv_gui_label(lv_obj_t *parrent, const char *text)
     return label;
 }
 
-static lv_obj_t *lv_gui_switch(lv_obj_t *parrent, void *event_cb)
-{
-    lv_obj_t *sw = lv_switch_create(parrent);
-    lv_obj_set_size(sw, 40, 22);
-
-    if (event_cb != NULL)
-    {
-        lv_obj_add_event_cb(sw, event_cb, LV_EVENT_ALL, NULL);
-    }
-
-    return sw;
-}
-
 void usb_mode_dd_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
