@@ -74,14 +74,6 @@ void CommonInit(void)
 	ProfileStorageInit();
 	RCtimerInitHandler();
 
-	STreadSettingsFromFlash();
-
-	// GUI_Init();
-	//	HAL_Delay(1000);
-	PPMhandlerInit();
-
-	lv_gui_create();
-
 	/*
 	 * Start loop
 	 */
@@ -103,11 +95,15 @@ void CommonInit(void)
 	ShortVibro();
 	ShortBeep();
 
+	STreadSettingsFromFlash();
+
+	PPMhandlerInit();
+
+	lv_gui_create();
+
 	/*
 	 * Set stick central, after transmitter powerup.
 	 */
-
-	// HAL_Delay(1000);
 
 	AIsetADCCenter(AIgetADCValue(&AnalogChannel[0]), &AnalogChannel[AileronADC]);
 	AIsetADCCenter(AIgetADCValue(&AnalogChannel[1]), &AnalogChannel[ElevatorADC]);
