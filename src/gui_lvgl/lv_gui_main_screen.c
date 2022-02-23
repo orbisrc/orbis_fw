@@ -13,8 +13,22 @@
 #include "core/iosettings.h"
 #include "core/auxiliary.h"
 #include "core/rcchannel.h"
+#include "core/analog.h"
 
 static lv_obj_t *lv_main_menu(lv_obj_t *parent, const char *title);
+
+static void screen_delete_cb(lv_event_t *e)
+{
+    lv_timer_t *timer = e->user_data;
+
+    lv_timer_del(timer);
+};
+
+static void battery_update_handler(lv_timer_t *timer)
+{
+    lv_obj_t *label = timer->user_data;
+    lv_label_set_text_fmt(label, "%.1fV", (float)AIgetValue(&AnalogChannel[BatteryADC]) / 100);
+}
 
 static void st_trim_change_handle(lv_obj_t *obj)
 {
@@ -133,6 +147,7 @@ lv_obj_t *lv_gui_main_screen(void)
     lv_obj_t *rssi_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "RSSI: ---");
     lv_obj_set_width(rssi_label, 100);
     lv_obj_t *battery_label = lv_label(screen, LV_TEXT_ALIGN_RIGHT, NULL, "0.0v");
+    lv_label_set_text_fmt(battery_label, "%.1fV", (float)AIgetValue(&AnalogChannel[BatteryADC]) / 100);
     lv_obj_t *battery_icon = lv_label(screen, LV_TEXT_ALIGN_RIGHT, NULL, LV_SYMBOL_BATTERY_2);
     lv_obj_t *model_name = lv_model_name(screen);
     lv_obj_t *timer1 = lv_timer(screen, set_timer1_data);
@@ -163,6 +178,9 @@ lv_obj_t *lv_gui_main_screen(void)
 
     lv_obj_align(servoview_button, LV_ALIGN_BOTTOM_RIGHT, -GUI_MARGIN, -GUI_MARGIN);
     lv_obj_align(settings_button, LV_ALIGN_BOTTOM_LEFT, GUI_MARGIN, -GUI_MARGIN);
+
+    lv_timer_t *timer = lv_timer_create(battery_update_handler, 5000, battery_label);
+    lv_obj_add_event_cb(screen, screen_delete_cb, LV_EVENT_DELETE, timer);
 
     return screen;
 }
