@@ -371,3 +371,25 @@ void ILI9341_Delay(uint32_t ms)
 {
 	HAL_Delay(ms);
 }
+
+void ILI9341_Draw_Area_DMA(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, uint16_t *buff)
+{
+	ILI9341_WrireCommand(0x2A);
+	ILI9341_WriteData(X1 >> 8);
+	ILI9341_WriteData(X1);
+	ILI9341_WriteData((X2) >> 8);
+	ILI9341_WriteData((X2));
+
+	ILI9341_WrireCommand(0x2B);
+	ILI9341_WriteData(Y1 >> 8);
+	ILI9341_WriteData(Y1);
+	ILI9341_WriteData((Y2) >> 8);
+	ILI9341_WriteData((Y2));
+
+	ILI9341_WrireCommand(0x2C);
+
+	ILI9341_uDC();
+	ILI9341_CS();
+
+	HAL_SPI_Transmit_DMA(&ILI9341_SPI, (uint8_t *)buff, (X2 - X1 + 1) * (Y2 - Y1 + 1) * 2);
+}

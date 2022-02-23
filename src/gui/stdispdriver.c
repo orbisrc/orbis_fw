@@ -13,7 +13,6 @@
 
 void STLCDinit(void)
 {
-
 	STLCDsetBrightnessInit();
 
 #if LCD_BOARD == 1
@@ -26,7 +25,11 @@ void STLCDinit(void)
 
 #endif
 
-	STFillScreen(0x42EE);
+	STFillScreen(0x7CF6);
+
+	HAL_Delay(10);
+
+	STLCDsetBrightness(1000);
 }
 
 void STDrawPixel(uint16_t X, uint16_t Y, uint16_t Color)
@@ -249,22 +252,13 @@ void STLCDsetBrightnessInit(void)
 
 void lv_draw_area(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, lv_color_t *buff)
 {
-	ILI9341_WrireCommand(0x2A);
-	ILI9341_WriteData(X1 >> 8);
-	ILI9341_WriteData(X1);
-	ILI9341_WriteData((X2) >> 8);
-	ILI9341_WriteData((X2));
+#if LCD_BOARD == 1
 
-	ILI9341_WrireCommand(0x2B);
-	ILI9341_WriteData(Y1 >> 8);
-	ILI9341_WriteData(Y1);
-	ILI9341_WriteData((Y2) >> 8);
-	ILI9341_WriteData((Y2));
+	ILI9341_Draw_Area_DMA(X1, Y1, X2, Y2, (uint16_t *)buff);
 
-	ILI9341_WrireCommand(0x2C);
+#elif LCD_BOARD == 2
 
-	ILI9341_uDC();
-	ILI9341_CS();
+	S6D0154X_Draw_Area_DMA(X1, Y1, X2, Y2, (uint16_t *)buff);
 
-	HAL_SPI_Transmit_DMA(&ILI9341_SPI, (uint8_t *)buff, (X2 - X1 + 1) * (Y2 - Y1 + 1) * 2);
+#endif
 }

@@ -61,4 +61,6 @@ void S6D0154X_uCS();
 
 void S6D0154X_Delay(uint32_t ms);
 
+void S6D0154X_Draw_Area_DMA(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, uint16_t *buff);
+
 #endif /* INC_STGUI_DISPDRIVER_S6D0154X_H_ */

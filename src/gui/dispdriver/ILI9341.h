@@ -74,4 +74,6 @@ void ILI9341_uDC();
 
 void ILI9341_Delay(uint32_t ms);
 
+void ILI9341_Draw_Area_DMA(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, uint16_t *buff);
+
 #endif /* INC_STGUI_DISPDRIVER_ILI9341_H_ */
