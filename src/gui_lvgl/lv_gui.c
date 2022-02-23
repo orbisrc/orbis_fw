@@ -42,25 +42,75 @@ const char *CHLabelShort[] = {"Ail",
 							  "CH15",
 							  "CH16"};
 
+const char *channelsDD = "Aileron \n"
+						 "Elevon\n"
+						 "Throttle\n"
+						 "Rudder\n"
+						 "CH5\n"
+						 "CH6\n"
+						 "CH7\n"
+						 "CH8\n"
+						 "CH9\n"
+						 "CH10\n"
+						 "CH11\n"
+						 "CH12\n"
+						 "CH13\n"
+						 "CH14\n"
+						 "CH15\n"
+						 "CH16";
+
+const char *optionsDD = "A\n"
+						"E\n"
+						"T\n"
+						"R\n"
+						"PT1\n"
+						"PT2\n"
+						"PT3\n"
+						"PT4\n"
+						"SWA\n"
+						"SWB\n"
+						"SWC\n"
+						"SWD\n"
+						"SWE\n"
+						"SWF\n"
+						"SWG\n"
+						"SWH\n"
+						"SWI\n"
+						"SWJ\n"
+						"S1\n"
+						"S2\n"
+						"S3\n"
+						"S4\n"
+						"S5\n"
+						"S6\n"
+						"S7\n"
+						"S8\n"
+						"S9\n"
+						"S10\n"
+						"S11\n"
+						"S12\n"
+						"S13\n"
+						"S14";
+
 #endif
 
 #ifdef __ORBIS_SURFACE__
 const char *CHLabel[] = {"ST",
-						   "TH",
-						   "CH3",
-						   "CH4",
-						   "CH5",
-						   "CH6",
-						   "CH7",
-						   "CH8",
-						   "CH9",
-						   "CH10",
-						   "CH11",
-						   "CH12",
-						   "CH13",
-						   "CH14",
-						   "CH15",
-						   "CH16"};
+						 "TH",
+						 "CH3",
+						 "CH4",
+						 "CH5",
+						 "CH6",
+						 "CH7",
+						 "CH8",
+						 "CH9",
+						 "CH10",
+						 "CH11",
+						 "CH12",
+						 "CH13",
+						 "CH14",
+						 "CH15",
+						 "CH16"};
 
 const char *CHLabelShort[] = {"ST",
 							  "TH",
@@ -78,6 +128,56 @@ const char *CHLabelShort[] = {"ST",
 							  "CH14",
 							  "CH15",
 							  "CH16"};
+
+const char *channelsDD = "ST \n"
+						 "TH\n"
+						 "INA3\n"
+						 "INA4\n"
+						 "CH5\n"
+						 "CH6\n"
+						 "CH7\n"
+						 "CH8\n"
+						 "CH9\n"
+						 "CH10\n"
+						 "CH11\n"
+						 "CH12\n"
+						 "CH13\n"
+						 "CH14\n"
+						 "CH15\n"
+						 "CH16";
+
+const char *optionsDD = "ST\n"
+						"TH\n"
+						"INA3\n"
+						"INA4\n"
+						"PT1\n"
+						"PT2\n"
+						"PT3\n"
+						"PT4\n"
+						"SWA\n"
+						"SWB\n"
+						"SWC\n"
+						"SWD\n"
+						"SWE\n"
+						"SWF\n"
+						"SWG\n"
+						"SWH\n"
+						"SWI\n"
+						"SWJ\n"
+						"S1\n"
+						"S2\n"
+						"S3\n"
+						"S4\n"
+						"S5\n"
+						"S6\n"
+						"S7\n"
+						"S8\n"
+						"S9\n"
+						"S10\n"
+						"S11\n"
+						"S12\n"
+						"S13\n"
+						"S14";
 #endif
 
 uint16_t change_settings_counter;
@@ -89,7 +189,7 @@ static void settings_update_handler(lv_timer_t *timer)
 	if (change_settings_counter == prev_change_settings_counter && prev_change_settings_counter != 0)
 	{
 		STsaveSettingsToFlash();
-		prev_change_settings_counter = 0;
+		change_settings_counter = 0;
 	}
 
 	prev_change_settings_counter = change_settings_counter;

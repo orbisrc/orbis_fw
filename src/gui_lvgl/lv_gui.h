@@ -6,6 +6,8 @@
 
 extern const char *CHLabelShort[];
 extern const char *CHLabel[];
+extern const char *channelsDD;
+extern const char *optionsDD;
 
 void settings_changed(void);
 

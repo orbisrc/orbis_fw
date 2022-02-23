@@ -47,7 +47,7 @@ static void lv_bar_center_line(lv_obj_t *parent)
     lv_obj_center(line);
 }
 
-static lv_obj_t *lv_ch_label(lv_obj_t *parent, char *text)
+static lv_obj_t *lv_ch_label(lv_obj_t *parent, const char *text)
 {
     lv_obj_t *label = lv_label_create(parent);
     lv_obj_set_width(label, 35);

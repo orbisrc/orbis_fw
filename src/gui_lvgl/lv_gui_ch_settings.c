@@ -166,63 +166,13 @@ lv_obj_t *lv_gui_ch_settings(void)
 {
     lv_obj_t *screen = lv_screen("Ch settings", back_button_handler);
 
-    static const char *opts = "A\n"
-                              "E\n"
-                              "T\n"
-                              "R\n"
-                              "PT1\n"
-                              "PT2\n"
-                              "PT3\n"
-                              "PT4\n"
-                              "SWA\n"
-                              "SWB\n"
-                              "SWC\n"
-                              "SWD\n"
-                              "SWE\n"
-                              "SWF\n"
-                              "SWG\n"
-                              "SWH\n"
-                              "SWI\n"
-                              "SWJ\n"
-                              "S1\n"
-                              "S2\n"
-                              "S3\n"
-                              "S4\n"
-                              "S5\n"
-                              "S6\n"
-                              "S7\n"
-                              "S8\n"
-                              "S9\n"
-                              "S10\n"
-                              "S11\n"
-                              "S12\n"
-                              "S13\n"
-                              "S14";
-
-    static const char *channels = "Aileron \n"
-                                  "Elevon\n"
-                                  "Throttle\n"
-                                  "Rudder\n"
-                                  "CH5\n"
-                                  "CH6\n"
-                                  "CH7\n"
-                                  "CH8\n"
-                                  "CH9\n"
-                                  "CH10\n"
-                                  "CH11\n"
-                                  "CH12\n"
-                                  "CH13\n"
-                                  "CH14\n"
-                                  "CH15\n"
-                                  "CH16";
-
     static const char *curve_types = "Lin \n"
                                      "Exp";
 
     lv_obj_t *ch_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "CH: ");
-    lv_obj_t *ch_dd = lv_dropdown(screen, channel_change_handle, channels);
+    lv_obj_t *ch_dd = lv_dropdown(screen, channel_change_handle, channelsDD);
 
-    map_dd = lv_dropdown(screen, map_change_handle, opts);
+    map_dd = lv_dropdown(screen, map_change_handle, optionsDD);
     lv_dropdown_set_selected(map_dd, RCChanelGetExpoX(&RCChanel[current_channel]));
     trim = lv_trim(screen, trim_change_handle, RCChanelBufferGetItem(&RCChanel[current_channel]), "Trim");
     endpoint = lv_endpoint(screen, endpoint_change_handle, ~(RCChanelGetLowRate(&RCChanel[current_channel])) + 1, RCChanelGetHighRate(&RCChanel[current_channel]));
