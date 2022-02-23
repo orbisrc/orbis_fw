@@ -34,6 +34,7 @@
 #include "usbd_desc.h"
 #include "core/buffer.h"
 #include "usbd_cdc_if.h"
+#include "gui_lvgl/lv_gui.h"
 
 #define RC_LOOP_DIVIDER 80
 
@@ -42,18 +43,18 @@
  */
 
 // ADC
-__IO uint32_t ADCloopFreq = {0};
-__IO uint32_t ADCloopDuration = {0};
+uint32_t ADCloopFreq = {0};
+uint32_t ADCloopDuration = {0};
 LoopFreqHandlerTypedef ADCloop = {0};
 
 // RC Channel
-__IO uint32_t RCchLoopFreq = {0};
-__IO uint32_t RCchLoopDuration = {0};
+uint32_t RCchLoopFreq = {0};
+uint32_t RCchLoopDuration = {0};
 LoopFreqHandlerTypedef RCchLoop = {0};
 
 // Main
-__IO uint32_t MainLoopFreq = {0};
-__IO uint32_t MainLoopDuration = {0};
+uint32_t MainLoopFreq = {0};
+uint32_t MainLoopDuration = {0};
 LoopFreqHandlerTypedef MainLoop = {0};
 
 #if DEBUG_UART_MESSAGE == 1
@@ -72,12 +73,6 @@ void CommonInit(void)
 	RCChanelHandlerInit();
 	ProfileStorageInit();
 	RCtimerInitHandler();
-
-	STreadSettingsFromFlash();
-
-	GUI_Init();
-	//	HAL_Delay(1000);
-	PPMhandlerInit();
 
 	/*
 	 * Start loop
@@ -100,11 +95,15 @@ void CommonInit(void)
 	ShortVibro();
 	ShortBeep();
 
+	STreadSettingsFromFlash();
+
+	PPMhandlerInit();
+
+	lv_gui_create();
+
 	/*
 	 * Set stick central, after transmitter powerup.
 	 */
-
-	HAL_Delay(1000);
 
 	AIsetADCCenter(AIgetADCValue(&AnalogChannel[0]), &AnalogChannel[AileronADC]);
 	AIsetADCCenter(AIgetADCValue(&AnalogChannel[1]), &AnalogChannel[ElevatorADC]);
@@ -118,12 +117,13 @@ void CommonRun(void)
 
 	StartTimePoint = HAL_GetTick();
 
-	GUI();
+	// GUI();
 	DiscreteInputMain();
 	DiscretBufferHandler();
 	AlarmWarningHandler();
 	BeeperHandler(&MainBeeper);
 	RCtimerMain();
+	lv_gui();
 
 	/*
 	 * Подсчет частоты вызова основного потока выполнения

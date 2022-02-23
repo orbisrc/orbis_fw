@@ -9,28 +9,31 @@
 #include "periphery/spi.h"
 #include "tim.h"
 #include "target.h"
-
+#include "lvgl.h"
 
 void STLCDinit(void)
 {
-
 	STLCDsetBrightnessInit();
 
 #if LCD_BOARD == 1
 
-	ILI9341_Init();							// Display init
+	ILI9341_Init(); // Display init
 
-#elif 	LCD_BOARD == 2
+#elif LCD_BOARD == 2
 
 	S6D0154X_Init();
 
 #endif
 
-	STFillScreen(0x42EE);
+	STFillScreen(0x7CF6);
 
+	HAL_Delay(10);
+
+	STLCDsetBrightness(1000);
 }
 
-void STDrawPixel(uint16_t X, uint16_t Y, uint16_t Color) {
+void STDrawPixel(uint16_t X, uint16_t Y, uint16_t Color)
+{
 	/*
 	 * ��������� ������� ���������� ����� � �������� �����������
 	 */
@@ -39,14 +42,15 @@ void STDrawPixel(uint16_t X, uint16_t Y, uint16_t Color) {
 
 	ILI9341_DrawPixel(X, Y, Color);
 
-#elif 	LCD_BOARD == 2
+#elif LCD_BOARD == 2
 
-	 S6D0154X_DrawPixel(X, Y, Color);
+	S6D0154X_DrawPixel(X, Y, Color);
 
 #endif
 }
 void STDrawHorizontalLine(uint16_t X, uint16_t Y, uint16_t Length,
-		uint16_t Color) {
+						  uint16_t Color)
+{
 	/*
 	 * ������������ ����� ������ Length �� �������� �����������, ���������� �����.
 	 * �������� ������ ������ ���������. �������� ����� �������.
@@ -55,15 +59,15 @@ void STDrawHorizontalLine(uint16_t X, uint16_t Y, uint16_t Length,
 
 	ILI9341_DrawHorizontalLine(X, Y, Length, Color);
 
-#elif 	LCD_BOARD == 2
+#elif LCD_BOARD == 2
 
 	S6D0154X_DrawHorizontalLine(X, Y, Length, Color);
 
 #endif
-
 }
 
-void STDrawVerticalLine(uint16_t X, uint16_t Y, uint16_t Length, uint16_t Color) {
+void STDrawVerticalLine(uint16_t X, uint16_t Y, uint16_t Length, uint16_t Color)
+{
 	/*
 	 * ������������ ����� ������ Length �� �������� �����������, ���������� �����.
 	 * �������� ������ ������ ���������. �������� ������ ����.
@@ -72,7 +76,7 @@ void STDrawVerticalLine(uint16_t X, uint16_t Y, uint16_t Length, uint16_t Color)
 
 	ILI9341_DrawVerticalLine(X, Y, Length, Color);
 
-#elif 	LCD_BOARD == 2
+#elif LCD_BOARD == 2
 
 	S6D0154X_DrawVerticalLine(X, Y, Length, Color);
 
@@ -93,7 +97,7 @@ void STDrawFilledRectangle(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Heig
 
 	ILI9341_DrawRectangle(X, Y, Width, Height, FillColor);
 
-#elif 	LCD_BOARD == 2
+#elif LCD_BOARD == 2
 
 	S6D0154X_DrawRectangle(X, Y, Width, Height, FillColor);
 
@@ -107,34 +111,40 @@ void STPutChar(const char Char, const FONT_INFO *Font, uint16_t X, uint16_t Y, u
 	uint16_t Char_offset;
 
 	Char_Info = Font->FontTable;
-	Char_offset = (uint16_t) Char - 32;
+	Char_offset = (uint16_t)Char - 32;
 	Char_Info = Char_Info + Char_offset;
 
-	for (j = 0; j < Char_Info->width; j++) {
-		for (i = 0; i < 8; i++) {
-			for (k = 0; k < Font->Height; k++) {
-				if (*(Font->FontBitmaps + Char_Info->start + j
-						+ Char_Info->width * k) & (1 << i)) {
+	for (j = 0; j < Char_Info->width; j++)
+	{
+		for (i = 0; i < 8; i++)
+		{
+			for (k = 0; k < Font->Height; k++)
+			{
+				if (*(Font->FontBitmaps + Char_Info->start + j + Char_Info->width * k) & (1 << i))
+				{
 					STDrawPixel(X + j, Y + i + 8 * k, Color);
 				}
 			}
-
 		}
 	}
-
 }
 
-void STPutText(const char* String, const FONT_INFO *Font, uint16_t X,
-		uint16_t Y, uint16_t Color, uint16_t BackgroundColor) {
+void STPutText(const char *String, const FONT_INFO *Font, uint16_t X,
+			   uint16_t Y, uint16_t Color, uint16_t BackgroundColor)
+{
 	const FONT_CHAR_INFO *Char_Info;
 	uint16_t Char_offset;
 
-	while (*String >= Font->FirstChar && *String <= Font->LastChar) {
+	while (*String >= Font->FirstChar && *String <= Font->LastChar)
+	{
 		Char_Info = Font->FontTable;
-		if (*String <= ' ') {
+		if (*String <= ' ')
+		{
 			Char_offset = 0;
-		} else {
-			Char_offset = (uint16_t) *String - 32;
+		}
+		else
+		{
+			Char_offset = (uint16_t)*String - 32;
 		}
 		Char_Info = Char_Info + Char_offset;
 		STPutChar(*String, Font, X, Y, Color);
@@ -149,19 +159,19 @@ void STFillScreen(uint16_t Color)
 
 	ILI9341_FillScreen(Color);
 
-#elif 	LCD_BOARD == 2
+#elif LCD_BOARD == 2
 
 	S6D0154X_FillScreen(Color);
 
 #endif
-
 }
 
-void STFrame(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height,uint16_t Thickness, uint16_t Color)
+void STFrame(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, uint16_t Thickness, uint16_t Color)
 {
 	uint8_t i;
 
-	for (i = 0; i < Thickness; i++) {
+	for (i = 0; i < Thickness; i++)
+	{
 		STDrawRectangle(X + i, Y + i, Width - 2 * i, Height - 2 * i, Color);
 	}
 }
@@ -171,14 +181,12 @@ void STRectangle(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, uint16
 	if (BorderThickness != 0)
 	{
 		STFrame(X, Y, Width, Height, BorderThickness, BorderColor);
-		STDrawFilledRectangle(X + BorderThickness, Y + BorderThickness,	Width - 2 * BorderThickness, Height - 2 * BorderThickness,	Color);
-
+		STDrawFilledRectangle(X + BorderThickness, Y + BorderThickness, Width - 2 * BorderThickness, Height - 2 * BorderThickness, Color);
 	}
 	else
 	{
 		STDrawFilledRectangle(X, Y, Width, Height, Color);
 	}
-
 }
 
 /*
@@ -187,7 +195,6 @@ void STRectangle(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, uint16
  *
  */
 
-
 void STDrawPicture(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, const unsigned char *Picture)
 {
 #if LCD_BOARD == 1
@@ -195,10 +202,10 @@ void STDrawPicture(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, cons
 	ILI9341_SetArea(X, Y, Width - 1, Height - 1);
 	ILI9341_uDC();
 	ILI9341_CS();
-	HAL_SPI_Transmit(&ILI9341_SPI, (unsigned char*) Picture, 2*Width * Height, 1000);
+	HAL_SPI_Transmit(&ILI9341_SPI, (unsigned char *)Picture, 2 * Width * Height, 1000);
 	ILI9341_uCS();
 
-#elif 	LCD_BOARD == 2
+#elif LCD_BOARD == 2
 
 	unsigned char TxBuffer[2] = {0};
 
@@ -211,15 +218,14 @@ void STDrawPicture(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, cons
 
 	HAL_SPI_Transmit(&S6D0154X_SPI, TxBuffer, 2, 100);
 
-	uint32_t i=0;
+	uint32_t i = 0;
 
-	for (i=0; i < Width * Height ;i++)
+	for (i = 0; i < Width * Height; i++)
 	{
-		TxBuffer[1] = *(Picture + i*2);
-		TxBuffer[0] = *(Picture + i*2 + 1);
+		TxBuffer[1] = *(Picture + i * 2);
+		TxBuffer[0] = *(Picture + i * 2 + 1);
 
 		HAL_SPI_Transmit(&S6D0154X_SPI, TxBuffer, 2, 100);
-
 	}
 
 	S6D0154X_uCS();
@@ -229,7 +235,7 @@ void STDrawPicture(uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, cons
 
 void STLCDsetBrightness(uint16_t Value)
 {
-	TIM3->CCR4=Value;
+	TIM3->CCR4 = Value;
 }
 
 uint16_t STLCDgetBrightness(void)
@@ -237,10 +243,22 @@ uint16_t STLCDgetBrightness(void)
 	return TIM3->CCR4;
 }
 
-
 void STLCDsetBrightnessInit(void)
 {
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
 
 	STLCDsetBrightness(0);
+}
+
+void lv_draw_area(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2, lv_color_t *buff)
+{
+#if LCD_BOARD == 1
+
+	ILI9341_Draw_Area_DMA(X1, Y1, X2, Y2, (uint16_t *)buff);
+
+#elif LCD_BOARD == 2
+
+	S6D0154X_Draw_Area_DMA(X1, Y1, X2, Y2, (uint16_t *)buff);
+
+#endif
 }

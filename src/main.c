@@ -32,6 +32,9 @@
 #include "periphery/gpio.h"
 #include "core/common.h"
 #include "core/iosettings.h"
+#include "gui_lvgl/lv_port_disp.h"
+#include "gui/stdispdriver.h"
+#include "lvgl.h"
 
 void SystemClock_Config(void);
 
@@ -49,7 +52,7 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART1_UART_Init();
-  MX_RTC_Init();
+  //MX_RTC_Init();
   MX_SPI1_Init();
   MX_SPI2_Init();
   MX_ADC1_Init();
@@ -64,34 +67,21 @@ int main(void)
 
   CommonInit();
 
-  MX_DAC_Init();
-  /*
-   * Wait before sd card init. 250ms min
-   */
-  HAL_Delay(1000);
-  MX_SDIO_SD_Init();
-  MX_USB_DEVICE_Init();
+  // MX_DAC_Init();
+  // /*
+  //  * Wait before sd card init. 250ms min
+  //  */
+  // HAL_Delay(1000);
+  // MX_SDIO_SD_Init();
+  // MX_USB_DEVICE_Init();
+  
 
-#if DEBUG_UART_MESSAGE == 1
-
-  HAL_Delay(2000);
-
-  common_printf("MCU init - Succeeded \r\n");
-
-#endif
-
-  MX_FATFS_Init();
-
-  if (SDcardConnectCheck() == HAL_OK)
-  {
-
-    //	  STsaveSettingsToSDcard();
-  }
 
   while (1)
   {
     CommonRun();
-
+    lv_task_handler();
+  
   }
 }
 

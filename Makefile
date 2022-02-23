@@ -114,6 +114,8 @@ C_INCLUDES =  \
 -Isrc/target/${CI_TARGET} \
 -Ilib \
 -Isrc \
+-Ilib/lvgl \
+-Ilib/lvgl/src \
 -Ilib/NimaLTD/Inc \
 -Ilib/ST/STM32_USB_Device_Library/Core/Inc \
 -Ilib/ST/STM32_USB_Device_Library/Class/Inc \
