@@ -4,7 +4,8 @@
 #include "lvgl/lvgl.h"
 #include "lv_gui_conf.h"
 
-extern char *CHLabelShort[];
+extern const char *CHLabelShort[];
+extern const char *CHLabel[];
 
 void settings_changed(void);
 

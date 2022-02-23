@@ -130,7 +130,8 @@ lv_obj_t *lv_gui_main_screen(void)
 
     lv_obj_t *screen = lv_obj_create(NULL);
 
-    lv_obj_t *rssi_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "RS");
+    lv_obj_t *rssi_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "RSSI: ---");
+    lv_obj_set_width(rssi_label, 100);
     lv_obj_t *battery_label = lv_label(screen, LV_TEXT_ALIGN_RIGHT, NULL, "0.0v");
     lv_obj_t *battery_icon = lv_label(screen, LV_TEXT_ALIGN_RIGHT, NULL, LV_SYMBOL_BATTERY_2);
     lv_obj_t *model_name = lv_model_name(screen);

@@ -5,23 +5,80 @@
 #include "lv_gui_styles.h"
 #include "lv_port_disp.h"
 #include "core/iosettings.h"
+#include "stconfig.h"
 
-char *CHLabelShort[] = {"Ail",
-						"Ele",
-						"Thr",
-						"Rud",
-						"CH5",
-						"CH6",
-						"CH7",
-						"CH8",
-						"CH9",
-						"CH10",
-						"CH11",
-						"CH12",
-						"CH13",
-						"CH14",
-						"CH15",
-						"CH16"};
+#ifdef __ORBIS_AIR__
+const char *CHLabel[] = {"Aileron",
+						 "Elevator",
+						 "Throttle",
+						 "Rudder",
+						 "CH5",
+						 "CH6",
+						 "CH7",
+						 "CH8",
+						 "CH9",
+						 "CH10",
+						 "CH11",
+						 "CH12",
+						 "CH13",
+						 "CH14",
+						 "CH15",
+						 "CH16"};
+
+const char *CHLabelShort[] = {"Ail",
+							  "Ele",
+							  "Thr",
+							  "Rud",
+							  "CH5",
+							  "CH6",
+							  "CH7",
+							  "CH8",
+							  "CH9",
+							  "CH10",
+							  "CH11",
+							  "CH12",
+							  "CH13",
+							  "CH14",
+							  "CH15",
+							  "CH16"};
+
+#endif
+
+#ifdef __ORBIS_SURFACE__
+const char *CHLabel[] = {"ST",
+						   "TH",
+						   "CH3",
+						   "CH4",
+						   "CH5",
+						   "CH6",
+						   "CH7",
+						   "CH8",
+						   "CH9",
+						   "CH10",
+						   "CH11",
+						   "CH12",
+						   "CH13",
+						   "CH14",
+						   "CH15",
+						   "CH16"};
+
+const char *CHLabelShort[] = {"ST",
+							  "TH",
+							  "CH3",
+							  "CH4",
+							  "CH5",
+							  "CH6",
+							  "CH7",
+							  "CH8",
+							  "CH9",
+							  "CH10",
+							  "CH11",
+							  "CH12",
+							  "CH13",
+							  "CH14",
+							  "CH15",
+							  "CH16"};
+#endif
 
 uint16_t change_settings_counter;
 
