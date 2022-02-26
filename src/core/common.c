@@ -35,6 +35,7 @@
 #include "core/buffer.h"
 #include "usbd_cdc_if.h"
 #include "gui_lvgl/lv_gui.h"
+#include "multiprotocol.h"
 
 #define RC_LOOP_DIVIDER 80
 
@@ -89,6 +90,8 @@ void CommonInit(void)
 								  * Buffer mapping
 								  *
 								  */
+	HAL_TIM_Base_Start_IT(&htim10); 
+
 	HAL_TIM_Base_Start_IT(&htim13); /* Beeper */
 	HAL_TIM_Base_Start_IT(&htim14); /* Vibro */
 
@@ -97,7 +100,8 @@ void CommonInit(void)
 
 	STreadSettingsFromFlash();
 
-	PPMhandlerInit();
+	//PPMhandlerInit();
+	multiprotocolInit();
 
 	lv_gui_create();
 
@@ -173,7 +177,7 @@ void RCloop(void)
 	AnalogInputMain();
 	ChannelBufferHandler();
 	RCChanelMain();
-
+	multiprotocolAssignmentValues();
 	PPMassignmentValues();
 
 	RCchLoopDuration = HAL_GetTick() - RCchLoopDuration;

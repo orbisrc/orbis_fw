@@ -21,6 +21,7 @@
 #include "tim.h"
 
 /* USER CODE BEGIN 0 */
+#include "main.h"
 #include "periphery/adc.h"
 #include "core/analog.h"
 #include "core/rcchannel.h"
@@ -28,6 +29,8 @@
 #include "usb/usbdatatransfer.h"
 #include "core/ppm.h"
 #include "core/common.h"
+#include "core/multiprotocol.h"
+#include "usart.h"
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim2;
@@ -201,9 +204,9 @@ void MX_TIM10_Init(void)
 {
 
   htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 168;
+  htim10.Init.Prescaler = 167;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 9999;
+  htim10.Init.Period = 4999;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
@@ -556,7 +559,9 @@ void HAL_TIM_PeriodElapsedCallback  (TIM_HandleTypeDef *  htim )
 
 	if (htim->Instance == TIM10)
 	{
-		PPMhandler(&PPMSignal);
+		// PPMhandler(&PPMSignal);
+    makeOutputStream(&sbus);
+    HAL_UART_Transmit_IT(&huart1, sbus.outStream, MULTIPROTOCOL_FRAME_SIZE);
 	}
 
 
