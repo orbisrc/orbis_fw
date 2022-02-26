@@ -343,13 +343,13 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
   Stream[4] to [25] = Channels or failsafe depending on Steam[0]
    16 Channels on 11 bits (0..2047)
 	0		-125%
-    204		-100%
+	204		-100%
 	1024	   0%
 	1843	+100%
 	2047	+125%
    Values are concatenated to fit in 22 bytes like in SBUS protocol.
    Failsafe values have exactly the same range/values than normal channels except the extremes where
-      0=no pulse, 2047=hold. If failsafe is not set or RX then failsafe packets should not be sent.
+	  0=no pulse, 2047=hold. If failsafe is not set or RX then failsafe packets should not be sent.
   Stream[26]   = sub_protocol bits 6 & 7|RxNum bits 4 & 5|Telemetry_Invert 3|Future_Use 2|Disable_Telemetry 1|Disable_CH_Mapping 0
    sub_protocol is 0..255 (bits 0..5 + bits 6..7)
    RxNum value is 0..63 (bits 0..3 + bits 4..5)
@@ -358,9 +358,9 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
    Disable_Telemetry	=> 0x02	0=enable, 1=disable
    Disable_CH_Mapping	=> 0x01	0=enable, 1=disable
   Stream[27.. 35] = between 0 and 9 bytes for additional protocol data
-    Protocol specific use:
-      FrSkyX and FrSkyX2: Stream[27] during bind Telem on=0x00,off=0x01 | CH1-8=0x00,CH9-16=0x02
-      FrSkyX and FrSkyX2: Stream[27..34] during normal operation unstuffed SPort data to be sent
+	Protocol specific use:
+	  FrSkyX and FrSkyX2: Stream[27] during bind Telem on=0x00,off=0x01 | CH1-8=0x00,CH9-16=0x02
+	  FrSkyX and FrSkyX2: Stream[27..34] during normal operation unstuffed SPort data to be sent
 	  HoTT: Stream[27] 1 byte for telemetry type
 	  DSM: Stream[27..33] Forward Programming
 */
@@ -821,6 +821,14 @@ extern SBUS_HandlerTypedef sbus;
 void multiprotocolInit();
 
 void multiprotocolHandler(SBUS_HandlerTypedef *sbus);
+
+void multiprotocolSetProtocol(uint16_t protocol, SBUS_HandlerTypedef *sbus);
+
+void multiprotocolSetSubProtocol(uint16_t subProtocol, SBUS_HandlerTypedef *sbus);
+
+uint16_t multiprotocolGetProtocol(SBUS_HandlerTypedef *sbus);
+
+uint16_t multiprotocolGetSubProtocol(SBUS_HandlerTypedef *sbus);
 
 void multiprotocolAssignmentValues();
 

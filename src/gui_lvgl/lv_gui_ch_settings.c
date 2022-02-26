@@ -103,22 +103,6 @@ static void back_button_handler(lv_event_t *e)
     }
 }
 
-static lv_obj_t *lv_dropdown(lv_obj_t *parent, lv_event_cb_t event_cb, const char *items)
-{
-    lv_obj_t *dd = lv_dropdown_create(parent);
-    lv_obj_set_width(dd, 90);
-    lv_dropdown_set_options_static(dd, items);
-    lv_dropdown_set_dir(dd, LV_DIR_BOTTOM);
-    lv_dropdown_set_symbol(dd, LV_SYMBOL_DOWN);
-
-    if (event_cb != NULL)
-    {
-        lv_obj_add_event_cb(dd, event_cb, LV_EVENT_VALUE_CHANGED, NULL);
-    }
-
-    return dd;
-}
-
 static lv_obj_t *lv_chart(lv_obj_t *parent)
 {
     lv_obj_t *chart = lv_chart_create(parent);
@@ -170,9 +154,9 @@ lv_obj_t *lv_gui_ch_settings(void)
                                      "Exp";
 
     lv_obj_t *ch_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "CH: ");
-    lv_obj_t *ch_dd = lv_dropdown(screen, channel_change_handle, channelsDD);
+    lv_obj_t *ch_dd = lv_gui_dropdown(screen, channel_change_handle, channelsDD);
 
-    map_dd = lv_dropdown(screen, map_change_handle, optionsDD);
+    map_dd = lv_gui_dropdown(screen, map_change_handle, optionsDD);
     lv_dropdown_set_selected(map_dd, RCChanelGetExpoX(&RCChanel[current_channel]));
     trim = lv_trim(screen, trim_change_handle, RCChanelBufferGetItem(&RCChanel[current_channel]), "Trim");
     endpoint = lv_endpoint(screen, endpoint_change_handle, ~(RCChanelGetLowRate(&RCChanel[current_channel])) + 1, RCChanelGetHighRate(&RCChanel[current_channel]));
@@ -182,7 +166,7 @@ lv_obj_t *lv_gui_ch_settings(void)
     invert_switch = lv_gui_switch(screen, invert_switch_handler);
     lv_obj_add_state(invert_switch, RCChanelGetInvertState(&RCChanel[current_channel]));
 
-    expo_type = lv_dropdown(screen, curve_type_change_handle, curve_types);
+    expo_type = lv_gui_dropdown(screen, curve_type_change_handle, curve_types);
     expo_rate = lv_trim_vertical(screen, expo_rate_change_handle, RCChanelGetTrim(&RCChanel[current_channel]), "Trim");
     curve_chart = lv_chart(screen);
     lv_dropdown_set_selected(ch_dd, current_channel);
