@@ -23,12 +23,21 @@ SBUS_HandlerTypedef sbus = {0};
 
 void multiprotocolInit()
 {
-    sbus.protocol = PROTO_FLYSKY;
-    sbus.subProtocol = Flysky;
+    sbus.protocol = PROTO_AFHDS2A;
+    sbus.subProtocol = PWM_SBUS;
+    // sbus.autoBindBit = 1;
 }
 
-<<<<<<< HEAD
-=======
+void multiprotocolBindEnable(SBUS_HandlerTypedef *sbus)
+{
+    sbus->bind = 1;
+}
+
+void multiprotocolBindDisable(SBUS_HandlerTypedef *sbus)
+{
+    sbus->bind = 0;
+}
+
 void multiprotocolSetProtocol(uint16_t protocol, SBUS_HandlerTypedef *sbus)
 {
     sbus->protocol = protocol;
@@ -39,15 +48,16 @@ void multiprotocolSetSubProtocol(uint16_t subProtocol, SBUS_HandlerTypedef *sbus
     sbus->subProtocol = subProtocol;
 }
 
-uint16_t multiprotocolGetProtocol(SBUS_HandlerTypedef *sbus){
+uint16_t multiprotocolGetProtocol(SBUS_HandlerTypedef *sbus)
+{
     return sbus->protocol;
 }
 
-uint16_t multiprotocolGetSubProtocol(SBUS_HandlerTypedef *sbus){
+uint16_t multiprotocolGetSubProtocol(SBUS_HandlerTypedef *sbus)
+{
     return sbus->subProtocol;
 }
 
->>>>>>> f117680183f63411b13b689cd8245238ee7a2868
 void multiprotocolAssignmentValues()
 {
     static uint16_t ruler = 0;
@@ -55,11 +65,7 @@ void multiprotocolAssignmentValues()
 
     for (i = 0; i < MAX_RC_CHANNEL - 1; i++)
     {
-<<<<<<< HEAD
-        multiprotocolSetChannel(&sbus, i, (RCChanelGetValue(&RCChanel[i]) << 1)); // 
-=======
-        multiprotocolSetChannel(&sbus, i, (RCChanelGetValue(&RCChanel[i]) << 1)); //
->>>>>>> f117680183f63411b13b689cd8245238ee7a2868
+        multiprotocolSetChannel(&sbus, i, (RCChanelGetValue(&RCChanel[i]) << 1)); 
     }
 
     if (ruler >= 0x7FF)
@@ -76,7 +82,7 @@ void multiprotocolSetChannel(SBUS_HandlerTypedef *sbus, uint16_t channelNumber, 
 void makeOutputStream(SBUS_HandlerTypedef *sbus)
 {
     sbus->outStream[0] = MULTIPROTOCOL_HEADER;
-    sbus->outStream[1] = (uint8_t)((sbus->protocol & 0x001F) | (sbus->rangeCheckBit << 5) | (sbus->autoBindBit << 6) | (sbus->bind << 6));
+    sbus->outStream[1] = (uint8_t)((sbus->protocol & 0x001F) | (sbus->rangeCheckBit << 5) | (sbus->autoBindBit << 6) | (sbus->bind << 7));
     sbus->outStream[2] = (uint8_t)((sbus->rxNum & 0x000F) | (sbus->subProtocol << 4) | (sbus->lowPower << 7));
     sbus->outStream[3] = 0;
     sbus->outStream[4] = (uint8_t)((sbus->outputBuffer[0] & 0x07FF));

@@ -251,6 +251,46 @@ lv_obj_t *lv_ack_box(lv_obj_t *parent, void (*event_cb)(), const char *text)
 }
 
 /*
+    Info box
+*/
+
+
+static void lv_info_box_button_handler(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        LV_LOG_USER("Clicked cancell");
+        void (*event_cb)() = lv_obj_get_user_data(e->current_target);
+        event_cb();
+        lv_obj_del(e->current_target->parent);
+    }
+}
+
+lv_obj_t *lv_info_box(lv_obj_t *parent, void (*event_cb)(), const char *text)
+{
+    lv_obj_t *container = lv_obj_create(parent);
+
+    lv_obj_set_size(container, 200, 100);
+    lv_obj_align(container, LV_ALIGN_CENTER, 0, 0);
+
+    lv_obj_t *label = lv_label(container, LV_TEXT_ALIGN_CENTER, NULL, text);
+    lv_obj_set_size(label, 160, 40);
+
+    lv_obj_t *button = lv_button(container, lv_info_box_button_handler, "Ok");
+
+
+    lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_align(button, LV_ALIGN_BOTTOM_MID, 0, -GUI_MARGIN);
+
+
+    lv_obj_set_user_data(button, event_cb);
+
+    return container;
+}
+
+/*
     Trim bar
 */
 

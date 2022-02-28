@@ -90,12 +90,8 @@ void CommonInit(void)
 								  * Buffer mapping
 								  *
 								  */
-<<<<<<< HEAD
-	HAL_TIM_Base_Start_IT(&htim10); /* Beeper */
-=======
-	HAL_TIM_Base_Start_IT(&htim10); 
->>>>>>> f117680183f63411b13b689cd8245238ee7a2868
 
+	HAL_TIM_Base_Start_IT(&htim10); /* Transmitter*/
 	HAL_TIM_Base_Start_IT(&htim13); /* Beeper */
 	HAL_TIM_Base_Start_IT(&htim14); /* Vibro */
 
