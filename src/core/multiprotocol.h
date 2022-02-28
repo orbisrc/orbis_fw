@@ -822,6 +822,10 @@ void multiprotocolInit();
 
 void multiprotocolHandler(SBUS_HandlerTypedef *sbus);
 
+void multiprotocolBindEnable(SBUS_HandlerTypedef *sbus);
+
+void multiprotocolBindDisable(SBUS_HandlerTypedef *sbus);
+
 void multiprotocolSetProtocol(uint16_t protocol, SBUS_HandlerTypedef *sbus);
 
 void multiprotocolSetSubProtocol(uint16_t subProtocol, SBUS_HandlerTypedef *sbus);

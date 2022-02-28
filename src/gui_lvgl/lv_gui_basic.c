@@ -15,7 +15,7 @@ static void back_button_handler(lv_event_t *e)
     }
 }
 
-void beeper_switch_handler(lv_event_t *e)
+static void beeper_switch_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t *obj = lv_event_get_target(e);
@@ -26,7 +26,7 @@ void beeper_switch_handler(lv_event_t *e)
     }
 }
 
-void trim_beeper_switch_handler(lv_event_t *e)
+static void trim_beeper_switch_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t *obj = lv_event_get_target(e);
@@ -37,7 +37,7 @@ void trim_beeper_switch_handler(lv_event_t *e)
     }
 }
 
-void usb_mode_dd_handler(lv_event_t *e)
+static void usb_mode_dd_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t *obj = lv_event_get_target(e);
@@ -48,7 +48,7 @@ void usb_mode_dd_handler(lv_event_t *e)
     }
 }
 
-void protocol_mode_dd_handler(lv_event_t *e)
+static void protocol_mode_dd_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
 
@@ -61,7 +61,7 @@ void protocol_mode_dd_handler(lv_event_t *e)
     }
 }
 
-void multi_protocol_mode_dd_handler(lv_event_t *e)
+static void multi_protocol_mode_dd_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
 
@@ -85,7 +85,7 @@ void multi_protocol_mode_dd_handler(lv_event_t *e)
     }
 }
 
-void multi_sub_protocol_mode_dd_handler(lv_event_t *e)
+static void multi_sub_protocol_mode_dd_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
 
@@ -97,10 +97,26 @@ void multi_sub_protocol_mode_dd_handler(lv_event_t *e)
     }
 }
 
+static void finish_bind_handler(lv_obj_t *obj)
+{
+    multiprotocolBindDisable(&sbus);
+}
+
+static void bind_button_handler(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_CLICKED)
+    {
+        multiprotocolBindEnable(&sbus);
+        lv_info_box(e->current_target->parent, finish_bind_handler, "Binding......");
+    }
+}
+
 static lv_obj_t *lv_current_dropdawn(lv_obj_t *parent, lv_event_cb_t event_cb, const char *items)
 {
     lv_obj_t *dd = lv_gui_dropdown(parent, event_cb, items);
-    lv_obj_set_size(dd, 120, 32);
+    lv_obj_set_size(dd, 124, 32);
 
     return dd;
 }
@@ -108,7 +124,7 @@ static lv_obj_t *lv_current_dropdawn(lv_obj_t *parent, lv_event_cb_t event_cb, c
 static lv_obj_t *lv_current_label(lv_obj_t *parrent, const char *text)
 {
     lv_obj_t *label = lv_label(parrent, LV_TEXT_ALIGN_LEFT, NULL, text);
-    lv_obj_set_size(label, 84, 22);
+    lv_obj_set_size(label, 98, 22);
 
     return label;
 }
@@ -135,6 +151,7 @@ lv_obj_t *lv_gui_basic(void)
     lv_obj_t *usb_mode_label = lv_current_label(screen, "USB mode");
     lv_obj_t *usb_mode_dd = lv_current_dropdawn(screen, usb_mode_dd_handler, usb_mode_opts);
     lv_obj_t *protocol_label = lv_current_label(screen, "TX");
+    lv_obj_t *bind_button = lv_button(screen, bind_button_handler, "Bind");
     lv_obj_t *protocols = lv_current_dropdawn(screen, protocol_mode_dd_handler, tx_protocol_opts);
     lv_dropdown_set_selected(protocols, 1);
     lv_obj_t *multi_protocols = lv_current_dropdawn(screen, multi_protocol_mode_dd_handler, multi_protocols_opts);
@@ -158,6 +175,7 @@ lv_obj_t *lv_gui_basic(void)
 
     lv_obj_align_to(protocol_label, usb_mode_label, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, GUI_MARGIN * 3);
     lv_obj_align_to(protocols, protocol_label, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN, 0);
+    lv_obj_align_to(bind_button, protocols, LV_ALIGN_OUT_LEFT_MID, -GUI_MARGIN, 0);
     lv_obj_align_to(multi_protocols, protocols, LV_ALIGN_OUT_BOTTOM_MID, 0, GUI_MARGIN);
     lv_obj_align_to(multi_sub_protocols, multi_protocols, LV_ALIGN_OUT_BOTTOM_MID, 0, GUI_MARGIN);
 
