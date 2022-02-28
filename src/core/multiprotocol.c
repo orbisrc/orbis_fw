@@ -27,6 +27,27 @@ void multiprotocolInit()
     sbus.subProtocol = Flysky;
 }
 
+<<<<<<< HEAD
+=======
+void multiprotocolSetProtocol(uint16_t protocol, SBUS_HandlerTypedef *sbus)
+{
+    sbus->protocol = protocol;
+}
+
+void multiprotocolSetSubProtocol(uint16_t subProtocol, SBUS_HandlerTypedef *sbus)
+{
+    sbus->subProtocol = subProtocol;
+}
+
+uint16_t multiprotocolGetProtocol(SBUS_HandlerTypedef *sbus){
+    return sbus->protocol;
+}
+
+uint16_t multiprotocolGetSubProtocol(SBUS_HandlerTypedef *sbus){
+    return sbus->subProtocol;
+}
+
+>>>>>>> f117680183f63411b13b689cd8245238ee7a2868
 void multiprotocolAssignmentValues()
 {
     static uint16_t ruler = 0;
@@ -34,7 +55,11 @@ void multiprotocolAssignmentValues()
 
     for (i = 0; i < MAX_RC_CHANNEL - 1; i++)
     {
+<<<<<<< HEAD
         multiprotocolSetChannel(&sbus, i, (RCChanelGetValue(&RCChanel[i]) << 1)); // 
+=======
+        multiprotocolSetChannel(&sbus, i, (RCChanelGetValue(&RCChanel[i]) << 1)); //
+>>>>>>> f117680183f63411b13b689cd8245238ee7a2868
     }
 
     if (ruler >= 0x7FF)
