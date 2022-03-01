@@ -16,17 +16,17 @@
  *	limitations under the License.
  */
 
-#include <core/analog.h>
-#include <core/ppm.h>
-#include <core/rcchannel.h>
-#include <core/rccurve.h>
+#include "core/analog.h"
+#include "core/ppm.h"
+#include "core/rcchannel.h"
+#include "core/rccurve.h"
 #include "stdlib.h"
 #include "periphery/adc.h"
 #include "core/filter.h"
 #include "core/analog.h"
 #include "core/buffer.h"
 
-RCChanelTypeDef  RCChanel[MAX_RC_CHANNEL] = {0};
+RCChanelTypeDef RCChanel[MAX_RC_CHANNEL] = {0};
 
 void RCChanelHandler(RCChanelTypeDef *Chanel)
 {
@@ -59,39 +59,31 @@ void RCChanelHandler(RCChanelTypeDef *Chanel)
 	{
 		Chanel->Value = Chanel->BaseScaleMax - Chanel->Value;
 	}
-
-	/*
-	 *
-	 */
-//	RCChanelPPMscale(Chanel);
 }
-
 
 /*
  *
  */
 void RCChanelBaseScale(RCChanelTypeDef *Chanel)
 {
-	if(Chanel->ADCvalueScale < Chanel->ADCCentral)
+	if (Chanel->ADCvalueScale < Chanel->ADCCentral)
 	{
-		Chanel->BaseValue = (uint16_t) ((Chanel->ADCvalueScale - Chanel->ADCInputMin) * (Chanel->BaseCentral - Chanel->BaseScaleMin)
-										/ (Chanel->ADCCentral - Chanel->ADCInputMin) + Chanel->BaseScaleMin);
+		Chanel->BaseValue = (uint16_t)((Chanel->ADCvalueScale - Chanel->ADCInputMin) * (Chanel->BaseCentral - Chanel->BaseScaleMin) / (Chanel->ADCCentral - Chanel->ADCInputMin) + Chanel->BaseScaleMin);
 	}
 	else
 	{
-		Chanel->BaseValue = (uint16_t) ((Chanel->ADCvalueScale - Chanel->ADCCentral) * (Chanel->BaseScaleMax - Chanel->BaseCentral )
-										/ (Chanel->ADCInputMax - Chanel->ADCCentral) + Chanel->BaseCentral);
+		Chanel->BaseValue = (uint16_t)((Chanel->ADCvalueScale - Chanel->ADCCentral) * (Chanel->BaseScaleMax - Chanel->BaseCentral) / (Chanel->ADCInputMax - Chanel->ADCCentral) + Chanel->BaseCentral);
 	}
 }
-
 
 void RCChanelSetInput(uint32_t Value, RCChanelTypeDef *Chanel)
 {
 
-	if(Value > Chanel->ADCInputMax)
+	if (Value > Chanel->ADCInputMax)
 	{
 		Chanel->ADCInputValue = Chanel->ADCInputMax;
-	} else if (Value < Chanel->ADCInputMin)
+	}
+	else if (Value < Chanel->ADCInputMin)
 	{
 		Chanel->ADCInputValue = Chanel->ADCInputMin;
 	}
@@ -101,183 +93,134 @@ void RCChanelSetInput(uint32_t Value, RCChanelTypeDef *Chanel)
 	}
 
 	RCChanelHandler(Chanel);
-
 }
 
-
-void RCChanelADCminCalibrate (RCChanelTypeDef *Chanel)
+void RCChanelADCminCalibrate(RCChanelTypeDef *Chanel)
 {
 	Chanel->ADCInputMin = Chanel->ADCvalue;
 }
 
-
-void RCChanelADCmaxCalibrate (RCChanelTypeDef *Chanel)
+void RCChanelADCmaxCalibrate(RCChanelTypeDef *Chanel)
 {
 	Chanel->ADCInputMax = Chanel->ADCvalue;
 }
 
-
-void RCChanelADCcentreCalibrate (RCChanelTypeDef *Chanel)
+void RCChanelADCcentreCalibrate(RCChanelTypeDef *Chanel)
 {
 	Chanel->ADCCentral = Chanel->ADCvalue;
 }
 
-/*
- * ���������� �������� � ����� � ������ ������� ����� �������.
- */
 void RCChanelRateReScale(RCChanelTypeDef *Chanel)
 {
-	if (Chanel->BaseValue < Chanel->BaseCentral) {
-		Chanel->Value = (uint16_t) ((Chanel->BaseValue - Chanel->BaseScaleMin)
-									* (Chanel->BaseCentral - Chanel->ScaleMin)
-									/ (Chanel->BaseCentral - Chanel->BaseScaleMin)
-									+ Chanel->ScaleMin);
-	} else {
-		Chanel->Value = (uint16_t) ((Chanel->BaseValue - Chanel->BaseCentral)
-									* (Chanel->ScaleMax - Chanel->BaseCentral)
-									/ (Chanel->BaseScaleMax - Chanel->BaseCentral)
-									+ Chanel->BaseCentral);
+	if (Chanel->BaseValue < Chanel->BaseCentral)
+	{
+		Chanel->Value = (uint16_t)((Chanel->BaseValue - Chanel->BaseScaleMin) * (Chanel->BaseCentral - Chanel->ScaleMin) / (Chanel->BaseCentral - Chanel->BaseScaleMin) + Chanel->ScaleMin);
+	}
+	else
+	{
+		Chanel->Value = (uint16_t)((Chanel->BaseValue - Chanel->BaseCentral) * (Chanel->ScaleMax - Chanel->BaseCentral) / (Chanel->BaseScaleMax - Chanel->BaseCentral) + Chanel->BaseCentral);
 	}
 }
-
 
 void RCChanelSetLowRate(uint16_t Value, RCChanelTypeDef *Chanel)
 {
 	Chanel->LowRate = Value;
-	Chanel->ScaleMin = (Chanel->BaseCentral	- (uint16_t) ((Chanel->BaseCentral - Chanel->BaseScaleMin) * Chanel->LowRate / BASE_RATE));
+	Chanel->ScaleMin = (Chanel->BaseCentral - (uint16_t)((Chanel->BaseCentral - Chanel->BaseScaleMin) * Chanel->LowRate / BASE_RATE));
 }
-
 
 void RCChanelSetHightRate(uint16_t Value, RCChanelTypeDef *Chanel)
 {
 	Chanel->HighRate = Value;
-	Chanel->ScaleMax = (Chanel->BaseCentral
-			+ (uint16_t) ((Chanel->BaseScaleMax - Chanel->BaseCentral)
-					* Chanel->HighRate / BASE_RATE));
+	Chanel->ScaleMax = (Chanel->BaseCentral + (uint16_t)((Chanel->BaseScaleMax - Chanel->BaseCentral) * Chanel->HighRate / BASE_RATE));
 }
 
-/*
- *
- */
 uint16_t RCChanelGetBaseValue(RCChanelTypeDef *Chanel)
 {
-	return (uint16_t) Chanel->BaseValue;
+	return (uint16_t)Chanel->BaseValue;
 }
-
 
 uint16_t RCChanelGetValue(RCChanelTypeDef *Chanel)
 {
-	return (uint16_t) Chanel->Value;
+	return (uint16_t)Chanel->Value;
 }
-
 
 uint16_t RCChanelGetLowRate(RCChanelTypeDef *Chanel)
 {
 	return Chanel->LowRate;
 }
 
-
 uint16_t RCChanelGetHighRate(RCChanelTypeDef *Chanel)
 {
 	return Chanel->HighRate;
 }
-
 
 uint16_t RCChanelGetInvertState(RCChanelTypeDef *Chanel)
 {
 	return Chanel->Invert;
 }
 
-
 void RCChanelSetInvertState(uint16_t Value, RCChanelTypeDef *Chanel)
 {
-	if (Value >= 1) {
+	if (Value >= 1)
+	{
 		Chanel->Invert = 1;
 	}
 
-	if (Value < 1) {
+	if (Value < 1)
+	{
 		Chanel->Invert = 0;
 	}
-
 }
-
 
 int16_t RCChanelGetTrim(RCChanelTypeDef *Chanel)
 {
 	return Chanel->Trim;
 }
 
-
 void RCChanelSetTrim(int32_t Value, RCChanelTypeDef *Chanel)
 {
 	Chanel->Trim = Value;
 }
-
 
 void RCChanelSetADCCentr(uint32_t Value, RCChanelTypeDef *Chanel)
 {
 	Chanel->ADCCentral = Value;
 }
 
-
 void RCChanelSetADCMin(uint32_t Value, RCChanelTypeDef *Chanel)
 {
 	Chanel->ADCInputMin = Value;
 }
-
 
 void RCChanelSetADCMax(uint32_t Value, RCChanelTypeDef *Chanel)
 {
 	Chanel->ADCInputMax = Value;
 }
 
-
 uint16_t RCChanelGetADCMin(RCChanelTypeDef *Chanel)
 {
 	return Chanel->ADCInputMin;
 }
-
 
 uint16_t RCChanelGetADCMax(RCChanelTypeDef *Chanel)
 {
 	return Chanel->ADCInputMax;
 }
 
-
 uint16_t RCChanelGetADCCentr(RCChanelTypeDef *Chanel)
 {
 	return Chanel->ADCCentral;
 }
-
-
-void RCChanelPPMscale(RCChanelTypeDef *Chanel)
-{
-//	uint16_t value = 0;
-//
-//	value = (uint16_t)((Chanel->Value - Chanel->BaseScaleMin)*(Chanel->PPMmax - Chanel->PPMmin)/(Chanel->BaseScaleMax - Chanel->BaseScaleMin) + Chanel->PPMmin);
-//
-//	value += Chanel->Trim;
-
-//	if (!Chanel->Invert) {
-//		Chanel->PPMvalue = value;
-//	} else {
-//		Chanel->PPMvalue = Chanel->PPMmax - value + Chanel->PPMmin;// ����� ������� ��� ��� ��������. ���� ���, � ���������� �������� =)
-//	}
-
-}
-
 
 uint16_t RCChanelGetPPMvalue(RCChanelTypeDef *Chanel)
 {
 	return 0;
 }
 
-
 void RCChanelSetDeadZone(uint16_t Value, RCChanelTypeDef *Chanel)
 {
 	Chanel->CentralDeadZone = Value;
 }
-
 
 uint16_t RCChanelGetDeadZone(RCChanelTypeDef *Chanel)
 {
@@ -332,10 +275,6 @@ void RCChanelSetExpoX(uint16_t Value, RCChanelTypeDef *Chanel)
 	Chanel->ExpCurveX = Value;
 }
 
-
-/*
- * Buffer
- */
 void RCChanelBufferSetItem(uint16_t Value, RCChanelTypeDef *Chanel)
 {
 	if (Value <= CHANNEL_BUFFER_LENGTH)
@@ -349,23 +288,25 @@ uint16_t RCChanelBufferGetItem(RCChanelTypeDef *Chanel)
 	return Chanel->ChannelBufferItem;
 }
 
-
 void RCChanelMain()
 {
 	uint16_t i = 0;
 
-	for(i=0;i<MAX_RC_CHANNEL;i++) //
+	for (i = 0; i < MAX_RC_CHANNEL; i++) //
 	{
 		RCChanelSetInput((uint32_t)ChannelBuffer[RCChanelBufferGetItem(&RCChanel[i])], &RCChanel[i]); //
 	}
 }
 
-void RCChanelInit(RCChanelTypeDef *Chanel) {
-	if (Chanel->ADCInputMin > Chanel->ADCInputMax) {
+void RCChanelInit(RCChanelTypeDef *Chanel)
+{
+	if (Chanel->ADCInputMin > Chanel->ADCInputMax)
+	{
 		Chanel->ADCInputMin = Chanel->ADCInputMax;
 	}
 
-	if (Chanel->ScaleMin > Chanel->ScaleMax) {
+	if (Chanel->ScaleMin > Chanel->ScaleMax)
+	{
 		Chanel->ScaleMin = Chanel->ScaleMax;
 	}
 
@@ -379,7 +320,7 @@ void RCChanelHandlerInit()
 {
 	uint16_t i = 0;
 
-	for(i=0;i<MAX_RC_CHANNEL;i++)
+	for (i = 0; i < MAX_RC_CHANNEL; i++)
 	{
 		RCChanel[i].BaseScaleMin = (uint16_t)BASE_CH_MIN;
 		RCChanel[i].BaseScaleMax = (uint16_t)BASE_CH_MAX;
@@ -395,7 +336,7 @@ void RCChanelHandlerInit()
 		RCChanel[i].Curve = ___Curve[i];
 	}
 
-	for(i=0;i<MAX_RC_CHANNEL;i++)
+	for (i = 0; i < MAX_RC_CHANNEL; i++)
 	{
 		RCChanelInit(&RCChanel[i]);
 	}

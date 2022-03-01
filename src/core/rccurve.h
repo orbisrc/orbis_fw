@@ -23,43 +23,29 @@
 #include "stconfig.h"
 
 /*
- * ������ ���������� �������� ����������. ������, ������ ����� ������� �������
- *
  * https://en.wikipedia.org/wiki/B%C3%A9zier_curve
  */
 
-typedef struct {
-	uint16_t Px0; /* ���������� ������ �����*/
+typedef struct
+{
+	uint16_t Px0;
 	uint16_t Py0;
-	uint16_t Px1; /* ���������� ������ �����*/
+	uint16_t Px1;
 	uint16_t Py1;
-	uint16_t Px2; /* ���������� ������� �����*/
+	uint16_t Px2;
 	uint16_t Py2;
 } STbezierCurveTypeDef;
 
 extern STbezierCurveTypeDef STcurveBezierConf;
 extern STbezierCurveTypeDef THcurveBezierConf;
-
-//extern uint16_t ___Acurve[CURVE_SIZE];
-//extern uint16_t ___Ecurve[CURVE_SIZE];
-//extern uint16_t ___Tcurve[CURVE_SIZE];
-//extern uint16_t ___Rcurve[CURVE_SIZE];
-
 extern uint16_t ___Curve[MAX_RC_CHANNEL][CURVE_SIZE];
 
-
-/*
- * �����
- */
 void LinearBuffFill(uint16_t *__Buff);
 
 void THcurveFill(void);
 
 void STcurveFill(uint16_t Channel);
 
-/*
- * ����������
- */
 void CurvesInit(void);
 
 void STBezierCurveInit(STbezierCurveTypeDef *STbezierCurve);
@@ -81,9 +67,5 @@ void STcurveBezierFill(uint16_t Channel);
 void STthCurveBezierFill(void);
 
 void STthPointCurveFill(void);
-
-/*
- * ������ �� ������
- */
 
 #endif /* ST_RCCURVE_H_ */

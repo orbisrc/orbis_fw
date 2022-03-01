@@ -23,163 +23,154 @@
 #include "stm32f4xx_hal.h"
 #include "stconfig.h"
 
-typedef enum {
-	ADCNonCplt, ADCCplt
+typedef enum _RCCganelEnumTypedef
+{
+	ADCNonCplt,
+	ADCCplt
 } RCCganelEnumTypedef;
-
-/*
- * ���� ������ ����������
- */
-typedef enum {
-	Linear, QuickExponential, Exponential, Curve, VTR
+typedef enum _RCCurveTypedef
+{
+	Linear,
+	QuickExponential,
+	Exponential,
+	Curve,
+	VTR
 } RCCurveTypedef;
 
-typedef enum {
-	rcch_No, rccsh_Yes
+typedef enum _RCchTypedef
+{
+	rcch_No,
+	rccsh_Yes
 } RCchTypedef;
-
-/*
- * PPM ������
- */
-typedef enum {
-	PPM_Ch0, PPM_Ch1, PPM_Ch2, PPM_Ch3, PPM_Ch4, PPM_Ch5, PPM_Ch6, PPM_Ch7
+typedef enum _PPM_CHNameTypeDef
+{
+	PPM_Ch0,
+	PPM_Ch1,
+	PPM_Ch2,
+	PPM_Ch3,
+	PPM_Ch4,
+	PPM_Ch5,
+	PPM_Ch6,
+	PPM_Ch7
 } PPM_CHNameTypeDef;
 
-/*
- * ��������� ������ ����������
- */
-typedef struct {
-	uint16_t Value; 				/* Process value*/
+typedef struct _RCChanelTypeDef
+{
+	uint16_t Value; /* Process value*/
 
 	/* ADC */
-	uint32_t ADCInputValue; 		/* Input from ADC*/
-	uint16_t ADCInputMin; 			/* Min ADC value*/
-	uint16_t ADCInputMax; 			/* Max ADC value*/
-	uint16_t ADCCentral; 			/* ADC central value*/
-	uint16_t ADCvalue; 				/* ADC value after smoothing */
-	uint16_t ADCvalueScale;			/* ADC value after smoothing and scaling*/
-	uint16_t ADCinvert;				/* ADC data invert*/
+	uint32_t ADCInputValue; /* Input from ADC*/
+	uint16_t ADCInputMin;	/* Min ADC value*/
+	uint16_t ADCInputMax;	/* Max ADC value*/
+	uint16_t ADCCentral;	/* ADC central value*/
+	uint16_t ADCvalue;		/* ADC value after smoothing */
+	uint16_t ADCvalueScale; /* ADC value after smoothing and scaling*/
+	uint16_t ADCinvert;		/* ADC data invert*/
 
 	/* Base scale */
-	uint16_t BaseScaleMin; 			/* Min value*/
-	uint16_t BaseScaleMax; 			/* Max value */
-	uint16_t BaseCentral; 			/* Max value */
-	uint16_t BaseValue; 			/* Base value for channel generate */
-	uint16_t CentralValue; 			/* Channel center*/
-	uint16_t ScaleMin; 				/* Min value after rate*/
-	uint16_t ScaleMax; 				/* Max value after rate*/
-	uint16_t CentralDeadZone; 		/* Dead zone*/
-	uint16_t LowRate; 				/* Throttle or Steering rates 0 - 100% ( 0 - 1000 ) */
-	uint16_t HighRate; 				/* Throttle or Steering rates 0 - 100% ( 0 - 1000 ) */
-	int16_t Trim; 					/* Channel trimmer -100...0...100 */
+	uint16_t BaseScaleMin;	  /* Min value*/
+	uint16_t BaseScaleMax;	  /* Max value */
+	uint16_t BaseCentral;	  /* Max value */
+	uint16_t BaseValue;		  /* Base value for channel generate */
+	uint16_t CentralValue;	  /* Channel center*/
+	uint16_t ScaleMin;		  /* Min value after rate*/
+	uint16_t ScaleMax;		  /* Max value after rate*/
+	uint16_t CentralDeadZone; /* Dead zone*/
+	uint16_t LowRate;		  /* Throttle or Steering rates 0 - 100% ( 0 - 1000 ) */
+	uint16_t HighRate;		  /* Throttle or Steering rates 0 - 100% ( 0 - 1000 ) */
+	int16_t Trim;			  /* Channel trimmer -100...0...100 */
 	uint16_t Invert;
-
-//	/* PPM */
-//	uint16_t PPMvalue; 				/* �������� ��� ���������� PPM. 500...1500 ���*/
-//	uint16_t PPMmin; 				/* */
-//	uint16_t PPMmax; 				/* */
-
 
 	/* Curves  */
 	uint16_t CurveType;
 	int16_t ExpCurveX;
 	int16_t ExpCurveY;
-	uint16_t *Curve; 			/* Curve Array */
+	uint16_t *Curve; /* Curve Array */
 
 	/* Buffer */
 	uint16_t ChannelBufferItem;
 
 } RCChanelTypeDef;
 
-extern RCChanelTypeDef  RCChanel[MAX_RC_CHANNEL];
-
-
-/*
- * � ���� ����� ������������ ����� ������ ���������� ������. ���������� � ����������.
- * � ��������� ������ ���������� ���� ������� ������� ������, �� �������� ������� �������� ��� �����������
- */
+extern RCChanelTypeDef RCChanel[MAX_RC_CHANNEL];
 
 void RCChanelPutADCData(RCChanelTypeDef *Chanel);
 
-void RCChanelHandler(RCChanelTypeDef *Chanel);	// ���������� ������� ����������
+void RCChanelHandler(RCChanelTypeDef *Chanel);
 
-void RCChanelInit(RCChanelTypeDef *Chanel);				// ������������� ������
+void RCChanelInit(RCChanelTypeDef *Chanel);
 
 void RCChanelHandlerInit(void);
 
 void RCChanelMain(void);
 
-void RCChanelADCminCalibrate (RCChanelTypeDef *Chanel);
+void RCChanelADCminCalibrate(RCChanelTypeDef *Chanel);
 
-void RCChanelADCmaxCalibrate (RCChanelTypeDef *Chanel);
+void RCChanelADCmaxCalibrate(RCChanelTypeDef *Chanel);
 
-void RCChanelADCcentreCalibrate (RCChanelTypeDef *Chanel);
+void RCChanelADCcentreCalibrate(RCChanelTypeDef *Chanel);
 
-void RCChanelSetInput(uint32_t Value, RCChanelTypeDef *Chanel);	// �������� ������ � ADC � ����������
+void RCChanelSetInput(uint32_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetADCMin(uint32_t Value, RCChanelTypeDef *Chanel);// ��������� �������� ����� �� ����� � ADC
+void RCChanelSetADCMin(uint32_t Value, RCChanelTypeDef *Chanel);
 
 void RCChanelSetADCMax(uint32_t Value, RCChanelTypeDef *Chanel);
 
 void RCChanelSetADCCentr(uint32_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetCenter(uint32_t Value, RCChanelTypeDef *Chanel); // ��������� ������� ��������������� ������������ ��������� ������
+void RCChanelSetCenter(uint32_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetTrim(int32_t Value, RCChanelTypeDef *Chanel);// ���������� �������� �������� -100.....100
+void RCChanelSetTrim(int32_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetLowRate(uint16_t Value, RCChanelTypeDef *Chanel);// ��������� �������� ������ ������� ����� 0...100%
+void RCChanelSetLowRate(uint16_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetHightRate(uint16_t Value, RCChanelTypeDef *Chanel);	// ��������� �������� ������� ������� ����� 0...100%
+void RCChanelSetHightRate(uint16_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetInvertState(uint16_t Value, RCChanelTypeDef *Chanel);// ������������� �����
+void RCChanelSetInvertState(uint16_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelRateReScale(RCChanelTypeDef *Chanel);// ���������� �������� �������� � ������ ������� �����
+void RCChanelRateReScale(RCChanelTypeDef *Chanel);
 
-void RCChanelBaseScale(RCChanelTypeDef *Chanel);// �������������� ��� ������ �����
+void RCChanelBaseScale(RCChanelTypeDef *Chanel);
 
-void RCChanelPPMscale(RCChanelTypeDef *Chanel);	// ���������� �������� ��� PPM ����������
+void RCChanelPPMscale(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetPPMvalue(RCChanelTypeDef *Chanel);// ������� ���������� �������� PMM
+uint16_t RCChanelGetPPMvalue(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetLowRate(RCChanelTypeDef *Chanel);// ������� ��������� �������� ������ ������� �����
+uint16_t RCChanelGetLowRate(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetHighRate(RCChanelTypeDef *Chanel);// ������� ��������� �������� ������� ������� �����
+uint16_t RCChanelGetHighRate(RCChanelTypeDef *Chanel);
 
-int16_t RCChanelGetTrim(RCChanelTypeDef *Chanel);// ������� ���������� �������� �������� ������
+int16_t RCChanelGetTrim(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetValue(RCChanelTypeDef *Chanel);	// ������� ���������� ���������� �������� ������
+uint16_t RCChanelGetValue(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetBaseValue(RCChanelTypeDef *Chanel);	// ������� ���������� ���������� �������� ��� ����� ������� �����
+uint16_t RCChanelGetBaseValue(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetInvertState(RCChanelTypeDef *Chanel);// ������� ���������� ��������� �������������� 1 - ������������, 0 - �� �����������
+uint16_t RCChanelGetInvertState(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetADCMin(RCChanelTypeDef *Chanel);// ����������� �������� � ADC
+uint16_t RCChanelGetADCMin(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetADCMax(RCChanelTypeDef *Chanel);// ������������ �������� � ADC
+uint16_t RCChanelGetADCMax(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetADCCentr(RCChanelTypeDef *Chanel);// ������������ �������� � ADC
+uint16_t RCChanelGetADCCentr(RCChanelTypeDef *Chanel);
 
-void RCChanelSetDeadZone(uint16_t Value, RCChanelTypeDef *Chanel);// ���������� �������� ������� ����
+void RCChanelSetDeadZone(uint16_t Value, RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetDeadZone(RCChanelTypeDef *Chanel);// ������� �������� ������� ����
+uint16_t RCChanelGetDeadZone(RCChanelTypeDef *Chanel);
 
-/*
- * ������ ����������
- */
+uint16_t RCChanelGetCurveType(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetCurveType(RCChanelTypeDef *Chanel);	// ��� ������ ����������
+void RCChanelSetCurveType(uint16_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetCurveType(uint16_t Value, RCChanelTypeDef *Chanel);	// ���������� ��� ������ ����������
+uint16_t RCChanelGetExpoX(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetExpoX(RCChanelTypeDef *Chanel);	// ���������� P1 ������ �����
+void RCChanelSetExpoX(uint16_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetExpoX(uint16_t Value, RCChanelTypeDef *Chanel);	// ���������� ���������� P1 ������ �����
+uint16_t RCChanelGetExpoY(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelGetExpoY(RCChanelTypeDef *Chanel);	// ���������� P1 ������ �����
+void RCChanelSetExpoY(uint16_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetExpoY(uint16_t Value, RCChanelTypeDef *Chanel);	// ���������� ���������� P1 ������ �����
-
-void RCChanelSetInvertState(uint16_t Value, RCChanelTypeDef *Chanel);// ������������� �����. 1 - ����������� 0 - �� �������������
+void RCChanelSetInvertState(uint16_t Value, RCChanelTypeDef *Chanel);
 
 void RCChanelAddCurvePoint(RCChanelTypeDef *Chanel);
 
@@ -197,27 +188,19 @@ uint16_t RCChanelGetPointRatio(uint16_t Point, RCChanelTypeDef *Chanel);
 
 uint16_t RCChanelPointNumChange(RCChanelTypeDef *Chanel);
 
-/*
- * ���������� �������
- */
-uint32_t RCChanelFilterHandler(uint32_t Value, RCChanelTypeDef *Chanel);// ���������� ������� ������
+uint32_t RCChanelFilterHandler(uint32_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelFilterOn(RCChanelTypeDef *Chanel);	// �������� ���������� �������
+void RCChanelFilterOn(RCChanelTypeDef *Chanel);
 
-void RCChanelFilterOff(RCChanelTypeDef *Chanel);// ��������� ���������� �������
+void RCChanelFilterOff(RCChanelTypeDef *Chanel);
 
-void RCChanelFilterSetN(uint16_t Value, RCChanelTypeDef *Chanel);// ���������� �������� ���� ���������� �������
+void RCChanelFilterSetN(uint16_t Value, RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelFilterGetN(RCChanelTypeDef *Chanel);// ��������� ������� �������� ���� ���������� �������
+uint16_t RCChanelFilterGetN(RCChanelTypeDef *Chanel);
 
-uint16_t RCChanelFilterGetState(RCChanelTypeDef *Chanel);// 1 - �������, 0 - ��������
+uint16_t RCChanelFilterGetState(RCChanelTypeDef *Chanel);
 
-void RCChanelFilterSetState(uint16_t Value, RCChanelTypeDef *Chanel);// 1 - �������, 0 - ��������
-
-
-/*
- *  Buffer
- */
+void RCChanelFilterSetState(uint16_t Value, RCChanelTypeDef *Chanel);
 
 void RCChanelBufferSetItem(uint16_t Value, RCChanelTypeDef *Chanel);
 
