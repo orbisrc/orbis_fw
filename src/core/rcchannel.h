@@ -23,11 +23,6 @@
 #include "stm32f4xx_hal.h"
 #include "stconfig.h"
 
-typedef enum _RCCganelEnumTypedef
-{
-	ADCNonCplt,
-	ADCCplt
-} RCCganelEnumTypedef;
 typedef enum _RCCurveTypedef
 {
 	Linear,
@@ -37,26 +32,10 @@ typedef enum _RCCurveTypedef
 	VTR
 } RCCurveTypedef;
 
-typedef enum _RCchTypedef
-{
-	rcch_No,
-	rccsh_Yes
-} RCchTypedef;
-typedef enum _PPM_CHNameTypeDef
-{
-	PPM_Ch0,
-	PPM_Ch1,
-	PPM_Ch2,
-	PPM_Ch3,
-	PPM_Ch4,
-	PPM_Ch5,
-	PPM_Ch6,
-	PPM_Ch7
-} PPM_CHNameTypeDef;
-
 typedef struct _RCChanelTypeDef
 {
-	uint16_t Value; /* Process value*/
+	uint16_t Value;	  /* Process value*/
+	int16_t guiValue; /* Value for GUI*/
 
 	/* ADC */
 	uint32_t ADCInputValue; /* Input from ADC*/
@@ -70,7 +49,10 @@ typedef struct _RCChanelTypeDef
 	/* Base scale */
 	uint16_t BaseScaleMin;	  /* Min value*/
 	uint16_t BaseScaleMax;	  /* Max value */
-	uint16_t BaseCentral;	  /* Max value */
+	uint16_t BaseCentral;	  /* Central  value */
+	int16_t guiScaleMin;	  /* Min value*/
+	int16_t guiScaleMax;	  /* Max value */
+	int16_t guiCentral;		  /* Central  value */
 	uint16_t BaseValue;		  /* Base value for channel generate */
 	uint16_t CentralValue;	  /* Channel center*/
 	uint16_t ScaleMin;		  /* Min value after rate*/
@@ -132,6 +114,8 @@ void RCChanelRateReScale(RCChanelTypeDef *Chanel);
 
 void RCChanelBaseScale(RCChanelTypeDef *Chanel);
 
+void RCChanelGUIScale(RCChanelTypeDef *Chanel);
+
 void RCChanelPPMscale(RCChanelTypeDef *Chanel);
 
 uint16_t RCChanelGetPPMvalue(RCChanelTypeDef *Chanel);
@@ -141,6 +125,8 @@ uint16_t RCChanelGetLowRate(RCChanelTypeDef *Chanel);
 uint16_t RCChanelGetHighRate(RCChanelTypeDef *Chanel);
 
 int16_t RCChanelGetTrim(RCChanelTypeDef *Chanel);
+
+int16_t RCChanelGetGUIValue(RCChanelTypeDef *Chanel);
 
 uint16_t RCChanelGetValue(RCChanelTypeDef *Chanel);
 

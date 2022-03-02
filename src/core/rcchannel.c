@@ -59,6 +59,8 @@ void RCChanelHandler(RCChanelTypeDef *Chanel)
 	{
 		Chanel->Value = Chanel->BaseScaleMax - Chanel->Value;
 	}
+
+	RCChanelGUIScale(Chanel);
 }
 
 /*
@@ -122,6 +124,18 @@ void RCChanelRateReScale(RCChanelTypeDef *Chanel)
 	}
 }
 
+void RCChanelGUIScale(RCChanelTypeDef *Chanel)
+{
+	if (Chanel->BaseValue < Chanel->BaseCentral)
+	{
+		Chanel->guiValue = (uint16_t)((Chanel->Value - Chanel->BaseScaleMin) * (Chanel->guiCentral - Chanel->guiScaleMin) / (Chanel->BaseCentral - Chanel->BaseScaleMin) + Chanel->guiScaleMin);
+	}
+	else
+	{
+		Chanel->guiValue = (uint16_t)((Chanel->Value - Chanel->BaseCentral) * (Chanel->guiScaleMax - Chanel->guiCentral) / (Chanel->BaseScaleMax - Chanel->BaseCentral) + Chanel->guiCentral);
+	}
+}
+
 void RCChanelSetLowRate(uint16_t Value, RCChanelTypeDef *Chanel)
 {
 	Chanel->LowRate = Value;
@@ -142,6 +156,11 @@ uint16_t RCChanelGetBaseValue(RCChanelTypeDef *Chanel)
 uint16_t RCChanelGetValue(RCChanelTypeDef *Chanel)
 {
 	return (uint16_t)Chanel->Value;
+}
+
+int16_t RCChanelGetGUIValue(RCChanelTypeDef *Chanel)
+{
+	return Chanel->guiValue;
 }
 
 uint16_t RCChanelGetLowRate(RCChanelTypeDef *Chanel)
@@ -330,6 +349,9 @@ void RCChanelHandlerInit()
 		RCChanel[i].ADCCentral = (uint16_t)ADC_CENTRAL;
 		RCChanel[i].HighRate = (uint16_t)BASE_RATE;
 		RCChanel[i].LowRate = (uint16_t)BASE_RATE;
+		RCChanel[i].guiScaleMin = (int16_t)GUI_CH_MIN;
+		RCChanel[i].guiScaleMax = (int16_t)GUI_CH_MAX;
+		RCChanel[i].guiCentral = (int16_t)GUI_CH_CENTRAL;
 		RCChanel[i].CurveType = Linear;
 		RCChanel[i].ExpCurveX = 0;
 		RCChanel[i].ChannelBufferItem = i;
