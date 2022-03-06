@@ -61,6 +61,8 @@ void RCChanelHandler(RCChanelTypeDef *Chanel)
 	}
 
 	RCChanelGUIScale(Chanel);
+
+	RCChanelAddTrimToResultValue(Chanel);
 }
 
 /*
@@ -76,6 +78,11 @@ void RCChanelBaseScale(RCChanelTypeDef *Chanel)
 	{
 		Chanel->BaseValue = (uint16_t)((Chanel->ADCvalueScale - Chanel->ADCCentral) * (Chanel->BaseScaleMax - Chanel->BaseCentral) / (Chanel->ADCInputMax - Chanel->ADCCentral) + Chanel->BaseCentral);
 	}
+}
+
+void RCChanelAddTrimToResultValue(RCChanelTypeDef *Chanel)
+{
+	Chanel->Value = Chanel->Value + Chanel->Trim;
 }
 
 void RCChanelSetInput(uint32_t Value, RCChanelTypeDef *Chanel)

@@ -114,6 +114,8 @@ void RCChanelRateReScale(RCChanelTypeDef *Chanel);
 
 void RCChanelBaseScale(RCChanelTypeDef *Chanel);
 
+void RCChanelAddTrimToResultValue(RCChanelTypeDef *Chanel);
+
 void RCChanelGUIScale(RCChanelTypeDef *Chanel);
 
 void RCChanelPPMscale(RCChanelTypeDef *Chanel);
