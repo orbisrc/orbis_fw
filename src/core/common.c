@@ -73,7 +73,6 @@ void CommonInit(void)
 	DiscreteInputInit();
 	RCChanelHandlerInit();
 	ProfileStorageInit();
-	RCtimerInitHandler();
 
 	/*
 	 * Start loop
@@ -91,19 +90,19 @@ void CommonInit(void)
 								  *
 								  */
 
-	HAL_TIM_Base_Start_IT(&htim10); /* Transmitter*/
+	
 	HAL_TIM_Base_Start_IT(&htim13); /* Beeper */
 	HAL_TIM_Base_Start_IT(&htim14); /* Vibro */
 
 	ShortVibro();
 	ShortBeep();
 
-	STreadSettingsFromFlash();
-
 	//PPMhandlerInit();
 	multiprotocolInit();
-
+	STreadSettingsFromFlash();
 	lv_gui_create();
+	RCtimerInitHandler();
+	HAL_TIM_Base_Start_IT(&htim10); /* Transmitter*/
 
 	/*
 	 * Set stick central, after transmitter powerup.
@@ -121,13 +120,12 @@ void CommonRun(void)
 
 	StartTimePoint = HAL_GetTick();
 
-	// GUI();
+	lv_gui();
 	DiscreteInputMain();
 	DiscretBufferHandler();
 	AlarmWarningHandler();
 	BeeperHandler(&MainBeeper);
 	RCtimerMain();
-	lv_gui();
 
 	/*
 	 * Подсчет частоты вызова основного потока выполнения

@@ -30,11 +30,13 @@
 #include "core/rccurve.h"
 #include "core/common.h"
 #include "fatfs.h"
+#include "multiprotocol.h"
 
-ModelSettingsTypeDef ModelSettings[MODEL_FLASH_NUM] = { 0 };
+ModelSettingsTypeDef ModelSettings[MODEL_FLASH_NUM] = {0};
 CommonSettingsTypedef CommonSettings;
 
-void STmodelProfileInit(void) {
+void STmodelProfileInit(void)
+{
 	uint16_t i = 0;
 	uint16_t j = 0;
 
@@ -65,9 +67,12 @@ void STmodelProfileInit(void) {
 		ModelSettings[i].MinuteSetpointT2 = 10;
 		ModelSettings[i].DiscretBufferItemNumberT1 = 31;
 		ModelSettings[i].DiscretBufferItemNumberT2 = 31;
+		ModelSettings[i].TxMode = 1;
+		ModelSettings[i].TxSubProtocol = 0;
+		ModelSettings[i].TxProtocol = 0;
 	}
 
-	for(i = 0;i < ADC1_CH_NUM;i++)
+	for (i = 0; i < ADC1_CH_NUM; i++)
 	{
 		CommonSettings.ADCcentr[i] = ADC_CENTRAL;
 		CommonSettings.ADCmin[i] = ADC_MIN;
@@ -124,11 +129,14 @@ void STsaveProfile(ModelSettingsTypeDef *ModelSettings)
 	ModelSettings->MinuteSetpointT2 = RCStimerGetMinuteSetpoint(&RCTimer2);
 	ModelSettings->DiscretBufferItemNumberT1 = RCStimerGetBuffItemNumber(&RCTimer1);
 	ModelSettings->DiscretBufferItemNumberT2 = RCStimerGetBuffItemNumber(&RCTimer2);
+	/*
+	 * Transmitter
+	 */
+	ModelSettings->TxMode = 1;
+	ModelSettings->TxSubProtocol = multiprotocolGetSubProtocol(&sbus);
+	ModelSettings->TxProtocol = multiprotocolGetProtocol(&sbus);
 }
 
-/*
- * ������� �������� ������� �� �������� �������
- */
 void STloadProfile(ModelSettingsTypeDef *ModelSettings)
 {
 	uint16_t i = 0;
@@ -136,7 +144,8 @@ void STloadProfile(ModelSettingsTypeDef *ModelSettings)
 	/*
 	 * RC channel settings
 	 */
-	for (i = 0; i < MAX_RC_CHANNEL; i++) {
+	for (i = 0; i < MAX_RC_CHANNEL; i++)
+	{
 		RCChanelSetTrim(ModelSettings->TrimmerValue[i], &RCChanel[i]);
 		RCChanelSetLowRate(ModelSettings->LowRate[i], &RCChanel[i]);
 		RCChanelSetHightRate(ModelSettings->HighRate[i], &RCChanel[i]);
@@ -166,16 +175,19 @@ void STloadProfile(ModelSettingsTypeDef *ModelSettings)
 	RCStimerSetBuffItemNumber(ModelSettings->DiscretBufferItemNumberT1, &RCTimer1);
 	RCStimerSetBuffItemNumber(ModelSettings->DiscretBufferItemNumberT2, &RCTimer2);
 
-	AIsetScaleMax((AIgetScaleMax( &AnalogChannel[BatteryADC]) + CommonSettings.BatteryAdjustment), &AnalogChannel[BatteryADC]);
+	AIsetScaleMax((AIgetScaleMax(&AnalogChannel[BatteryADC]) + CommonSettings.BatteryAdjustment), &AnalogChannel[BatteryADC]);
+	/*
+	 * Transmitter
+	 */
+	multiprotocolSetSubProtocol(ModelSettings->TxSubProtocol, &sbus);
+	multiprotocolSetProtocol(ModelSettings->TxProtocol, &sbus);
 }
 
-void STcopySettings(ModelSettingsTypeDef *Target, ModelSettingsTypeDef *Source) {
+void STcopySettings(ModelSettingsTypeDef *Target, ModelSettingsTypeDef *Source)
+{
 	memcpy(Target, Source, sizeof(ModelSettingsTypeDef));
 }
 
-/*
- * ������ �������� ������� �� �����
- */
 void STreadSettingsFromFlash(void)
 {
 #if MODEL_PROFILE_STORAGE == 0
@@ -183,10 +195,11 @@ void STreadSettingsFromFlash(void)
 	uint32_t FlashPointer = FLASH_SET_PAGE_ADDR;
 	uint32_t *DataStructPointer;
 
-	DataStructPointer = (uint32_t *) &ModelSettings[0];
+	DataStructPointer = (uint32_t *)&ModelSettings[0];
 
-	for (uint16_t i = 0; i < sizeof(ModelSettings) / 4; i++) {
-		*DataStructPointer = *(__IO uint32_t*) FlashPointer;
+	for (uint16_t i = 0; i < sizeof(ModelSettings) / 4; i++)
+	{
+		*DataStructPointer = *(__IO uint32_t *)FlashPointer;
 		FlashPointer += 4;
 		DataStructPointer++;
 	}
@@ -198,14 +211,14 @@ void STreadSettingsFromFlash(void)
 	/*
 	 * Read system settings
 	 */
-	SettingsPointer = (void*)&CommonSettings;
+	SettingsPointer = (void *)&CommonSettings;
 	W25qxx_ReadBytes(SettingsPointer, SYSTEM_SETTINGS_FLASH_START_ADDRESS, sizeof(CommonSettings));
 
 	/*
 	 * Read model profile
 	 */
 
-	SettingsPointer = (void*)&ModelSettings;
+	SettingsPointer = (void *)&ModelSettings;
 	W25qxx_ReadBytes(SettingsPointer, MODEL_PROFILE_FLASH_START_ADDRESS, sizeof(ModelSettings));
 
 	/*
@@ -218,8 +231,8 @@ void STreadSettingsFromFlash(void)
 		STloadCommonSettings(&CommonSettings);
 
 		STloadProfile(&ModelSettings[CommonSettings.CurrentModelID]);
-
-	} else
+	}
+	else
 	{
 		STloadCommonSettings(&CommonSettings);
 
@@ -227,15 +240,10 @@ void STreadSettingsFromFlash(void)
 	}
 
 #endif
-
-
 }
 
-/*
- * ������ �� ���� �������� �������
- */
-void STsaveSettingsToFlash(void) {
-
+void STsaveSettingsToFlash(void)
+{
 
 	STsaveCommonSettings(&CommonSettings);
 
@@ -248,15 +256,15 @@ void STsaveSettingsToFlash(void) {
 	uint32_t *DataStructPointer;
 	uint32_t FlashPointer;
 
-	DataStructPointer = (uint32_t *) &ModelSettings[0];
+	DataStructPointer = (uint32_t *)&ModelSettings[0];
 
 	FlashPointer = FLASH_SET_PAGE_ADDR;
 
-	  /* Fill EraseInit structure*/
+	/* Fill EraseInit structure*/
 	EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
 	EraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_2;
 	EraseInitStruct.Sector = FLASH_SECTOR_6;
-	EraseInitStruct.NbSectors = 1; //NbOfSectors
+	EraseInitStruct.NbSectors = 1; // NbOfSectors
 
 	HAL_FLASH_Unlock();
 
@@ -264,7 +272,7 @@ void STsaveSettingsToFlash(void) {
 
 	for (i = 0; i < sizeof(ModelSettings) / 4; i++)
 	{
-		HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, FlashPointer,	*DataStructPointer);
+		HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, FlashPointer, *DataStructPointer);
 
 		DataStructPointer++;
 		FlashPointer += 4;
@@ -275,13 +283,13 @@ void STsaveSettingsToFlash(void) {
 
 	uint8_t *SettingsPointer;
 
-	SettingsPointer = (void*)&CommonSettings;
+	SettingsPointer = (void *)&CommonSettings;
 
 	W25qxx_EraseSector(SYSTEM_SETTINGS_FLASH_SECTOR);
 
 	W25qxx_WriteSector(SettingsPointer, SYSTEM_SETTINGS_FLASH_SECTOR, 0, sizeof(CommonSettings));
 
-	SettingsPointer = (void*)ModelSettings;
+	SettingsPointer = (void *)ModelSettings;
 
 	W25qxx_EraseSector(MODEL_PROFILE_FLASH_SECTOR);
 
@@ -289,7 +297,6 @@ void STsaveSettingsToFlash(void) {
 
 #endif
 }
-
 
 void ProfileStorageInit(void)
 {
@@ -302,12 +309,11 @@ void ProfileStorageInit(void)
 #endif
 }
 
-
 void STloadCommonSettings(CommonSettingsTypedef *Settings)
 {
 	uint16_t i = 0;
-	
-	for(i = 0;i < ADC1_CH_NUM;i++)
+
+	for (i = 0; i < ADC1_CH_NUM; i++)
 	{
 		AIsetADCMin(Settings->ADCmin[i], &AnalogChannel[i]);
 		AIsetADCMax(Settings->ADCmax[i], &AnalogChannel[i]);
@@ -319,12 +325,11 @@ void STloadCommonSettings(CommonSettingsTypedef *Settings)
 	AIsetL(Settings->BatteryAlarmValue, &AnalogChannel[BatteryADC]);
 }
 
-
 void STsaveCommonSettings(CommonSettingsTypedef *Settings)
 {
 	uint16_t i = 0;
 
-	for(i = 0;i < ADC1_CH_NUM;i++)
+	for (i = 0; i < ADC1_CH_NUM; i++)
 	{
 		Settings->ADCmin[i] = AIgetADCMin(&AnalogChannel[i]);
 		Settings->ADCmax[i] = AIgetADCMax(&AnalogChannel[i]);
@@ -344,8 +349,6 @@ uint16_t STgetCurrentModelID()
 uint8_t STsaveSettingsToSDcard(void)
 {
 
-
-
 	return 0;
 }
 
@@ -356,22 +359,22 @@ uint8_t STreadSettingsFromSDcard(void)
 
 uint32_t startBootloaderCheck(void)
 {
-    RTC_HandleTypeDef rtcHandle = { .Instance = RTC };
+	RTC_HandleTypeDef rtcHandle = {.Instance = RTC};
 
-    uint32_t value = HAL_RTCEx_BKUPRead(&rtcHandle, OBJECT_RESET_REASON);
+	uint32_t value = HAL_RTCEx_BKUPRead(&rtcHandle, OBJECT_RESET_REASON);
 
-    HAL_RTCEx_BKUPWrite(&rtcHandle, OBJECT_RESET_REASON, BOOTLOADER_RESET);
+	HAL_RTCEx_BKUPWrite(&rtcHandle, OBJECT_RESET_REASON, BOOTLOADER_RESET);
 
-    return value;
+	return value;
 }
 
 void rebootToBootloader(void)
 {
-    RTC_HandleTypeDef rtcHandle = { .Instance = RTC };
+	RTC_HandleTypeDef rtcHandle = {.Instance = RTC};
 
-    HAL_RTCEx_BKUPWrite(&rtcHandle, OBJECT_RESET_REASON, BOOTLOADER_REQUEST);
+	HAL_RTCEx_BKUPWrite(&rtcHandle, OBJECT_RESET_REASON, BOOTLOADER_REQUEST);
 
-    __disable_irq();
+	__disable_irq();
 
 	NVIC_SystemReset();
 }
@@ -381,26 +384,26 @@ void rebootToBootloader(void)
  */
 void JumpToBootloader(void)
 {
-	  if(startBootloaderCheck() != BOOTLOADER_REQUEST)
-	  {
-		  return;
-	  }
-		    void (*SysMemBootJump)(void);
-		    volatile uint32_t addr = 0x1FFF0000;
+	if (startBootloaderCheck() != BOOTLOADER_REQUEST)
+	{
+		return;
+	}
+	void (*SysMemBootJump)(void);
+	volatile uint32_t addr = 0x1FFF0000;
 
-		    HAL_RCC_DeInit();
+	HAL_RCC_DeInit();
 
-		    SysTick->CTRL = 0;
-		    SysTick->LOAD = 0;
-		    SysTick->VAL = 0;
+	SysTick->CTRL = 0;
+	SysTick->LOAD = 0;
+	SysTick->VAL = 0;
 
-		    __enable_irq();
+	__enable_irq();
 
-		    SysMemBootJump = (void (*)(void)) (*((uint32_t *)(addr + 4)));
+	SysMemBootJump = (void (*)(void))(*((uint32_t *)(addr + 4)));
 
-		    __set_MSP(*(uint32_t *)addr);
+	__set_MSP(*(uint32_t *)addr);
 
-		    SysMemBootJump();
+	SysMemBootJump();
 }
 
 void AllReset(void)

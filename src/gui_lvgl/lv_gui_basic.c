@@ -72,14 +72,18 @@ static void multi_protocol_mode_dd_handler(lv_event_t *e)
         uint16_t selected = lv_dropdown_get_selected(obj);
 
         multiprotocolSetProtocol(selected, &sbus);
+        multiprotocolSetSubProtocol(0, &sbus);
+        settings_changed();
 
         if (sub_protocols_opts[selected] != NULL)
         {
             lv_obj_clear_flag(multi_sub_protocols, LV_OBJ_FLAG_HIDDEN);
             lv_dropdown_set_options(multi_sub_protocols, sub_protocols_opts[selected]);
+            lv_dropdown_set_selected(multi_sub_protocols, multiprotocolGetSubProtocol(&sbus));
         }
         else
         {
+            lv_dropdown_set_selected(multi_sub_protocols, multiprotocolGetSubProtocol(&sbus));
             lv_obj_add_flag(multi_sub_protocols, LV_OBJ_FLAG_HIDDEN);
         }
     }
@@ -94,6 +98,7 @@ static void multi_sub_protocol_mode_dd_handler(lv_event_t *e)
         lv_obj_t *obj = lv_event_get_target(e);
         uint16_t selected = lv_dropdown_get_selected(obj);
         multiprotocolSetProtocol(selected, &sbus);
+        settings_changed();
     }
 }
 
@@ -155,13 +160,17 @@ lv_obj_t *lv_gui_basic(void)
     lv_obj_t *protocols = lv_current_dropdawn(screen, protocol_mode_dd_handler, tx_protocol_opts);
     lv_dropdown_set_selected(protocols, 1);
     lv_obj_t *multi_protocols = lv_current_dropdawn(screen, multi_protocol_mode_dd_handler, multi_protocols_opts);
-    lv_obj_t *multi_sub_protocols = lv_current_dropdawn(screen, multi_sub_protocol_mode_dd_handler, sub_protocols_opts[PROTO_AFHDS2A]);
-    lv_dropdown_set_selected(multi_sub_protocols, multiprotocolGetSubProtocol(&sbus));
-    lv_obj_set_user_data(multi_protocols, multi_sub_protocols);
+    lv_obj_t *multi_sub_protocols = lv_current_dropdawn(screen, multi_sub_protocol_mode_dd_handler, sub_protocols_opts[1]);
     lv_dropdown_set_selected(multi_protocols, multiprotocolGetProtocol(&sbus));
+    lv_obj_set_user_data(multi_protocols, multi_sub_protocols);
     if (sub_protocols_opts[multiprotocolGetProtocol(&sbus)] == NULL)
     {
         lv_obj_add_flag(multi_sub_protocols, LV_OBJ_FLAG_HIDDEN);
+    }
+    else
+    {
+        lv_dropdown_set_options(multi_sub_protocols, sub_protocols_opts[multiprotocolGetProtocol(&sbus)]);
+        lv_dropdown_set_selected(multi_sub_protocols, multiprotocolGetSubProtocol(&sbus));
     }
 
     lv_obj_align_to(beeper_label, screen, LV_ALIGN_TOP_LEFT, GUI_MARGIN * 2, GUI_SCREEN_START_MARGIN * 1.5);

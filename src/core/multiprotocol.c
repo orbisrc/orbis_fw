@@ -18,13 +18,14 @@
 #include "multiprotocol.h"
 #include "core/rcchannel.h"
 #include "stconfig.h"
+#include "multiprotocol.h"
 
 SBUS_HandlerTypedef sbus = {0};
 
 void multiprotocolInit()
 {
-    sbus.protocol = PROTO_AFHDS2A;
-    sbus.subProtocol = PWM_SBUS;
+    // sbus.protocol = PROTO_AFHDS2A;
+    // sbus.subProtocol = PWM_SBUS;
     // sbus.autoBindBit = 1;
 }
 

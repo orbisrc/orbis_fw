@@ -22,12 +22,6 @@
 #include "main.h"
 #include "stconfig.h"
 
-/*
- *  ���� ���������. ��� ��������� �������� � ����� ��������� ������� uint32_t.
- *  ����� ��������� ������ ��������, ����������� ������� - ����� ������� + 1
- *  � ���� +1 ����� ��������� ��������� ������� �������� ������.
- */
-
 #define BOOTLOADER_REQUEST						0xDEADBEEF
 #define BOOTLOADER_RESET						0x00000000
 #define OBJECT_RESET_REASON						1
@@ -67,6 +61,12 @@ typedef struct{
 	uint16_t 					SecondSetpointT2;
 	uint16_t 					MinuteSetpointT1;
 	uint16_t 					MinuteSetpointT2;
+	/*
+	 * Transmitters
+	 */
+	uint16_t 					TxMode;
+	uint16_t 					TxProtocol;
+	uint16_t 					TxSubProtocol;
 	/*
 	 *
 	 */
