@@ -82,7 +82,20 @@ void RCChanelBaseScale(RCChanelTypeDef *Chanel)
 
 void RCChanelAddTrimToResultValue(RCChanelTypeDef *Chanel)
 {
-	Chanel->Value = Chanel->Value + Chanel->Trim;
+	int16_t newValue = Chanel->Value + Chanel->Trim;
+
+	if (newValue < Chanel->ScaleMin)
+	{
+		Chanel->Value = Chanel->ScaleMin;
+		return;
+	}
+
+	if (newValue > Chanel->ScaleMax)
+	{
+		Chanel->Value = Chanel->ScaleMax;
+		return;
+	}
+	Chanel->Value = newValue;
 }
 
 void RCChanelSetInput(uint32_t Value, RCChanelTypeDef *Chanel)
