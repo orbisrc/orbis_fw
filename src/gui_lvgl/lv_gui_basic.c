@@ -97,7 +97,7 @@ static void multi_sub_protocol_mode_dd_handler(lv_event_t *e)
     {
         lv_obj_t *obj = lv_event_get_target(e);
         uint16_t selected = lv_dropdown_get_selected(obj);
-        multiprotocolSetProtocol(selected, &sbus);
+        multiprotocolSetSubProtocol(selected, &sbus);
         settings_changed();
     }
 }

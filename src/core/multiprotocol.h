@@ -40,6 +40,9 @@
 ***************************
 16 channels serial protocol
 ***************************
+***************************
+16 channels serial protocol
+***************************
 Serial: 100000 Baud 8e2      _ xxxx xxxx p --
   Total of 26 bytes for protocol V1, variable length 27..36 for protocol V2
   Stream[0]   = header
@@ -135,7 +138,6 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
 				E129		83
 				JOYSWAY		84
 				E016H		85
-				XERALL		91
    BindBit=>		0x80	1=Bind/0=No
    AutoBindBit=>	0x40	1=Yes /0=No
    RangeCheck=>		0x20	1=Yes /0=No
@@ -336,36 +338,19 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
 			RLINK_SURFACE	0
 			RLINK_AIR		1
 			RLINK_DUMBORC	2
-
    Power value => 0x80	0=High/1=Low
   Stream[3]   = option_protocol;
    option_protocol value is -128..127
   Stream[4] to [25] = Channels or failsafe depending on Steam[0]
    16 Channels on 11 bits (0..2047)
 	0		-125%
-<<<<<<< HEAD
-<<<<<<< HEAD
-    204		-100%
-=======
 	204		-100%
->>>>>>> f117680183f63411b13b689cd8245238ee7a2868
-=======
-	204		-100%
->>>>>>> epic-added-multiprotocol-tx
 	1024	   0%
 	1843	+100%
 	2047	+125%
    Values are concatenated to fit in 22 bytes like in SBUS protocol.
    Failsafe values have exactly the same range/values than normal channels except the extremes where
-<<<<<<< HEAD
-<<<<<<< HEAD
-      0=no pulse, 2047=hold. If failsafe is not set or RX then failsafe packets should not be sent.
-=======
 	  0=no pulse, 2047=hold. If failsafe is not set or RX then failsafe packets should not be sent.
->>>>>>> f117680183f63411b13b689cd8245238ee7a2868
-=======
-	  0=no pulse, 2047=hold. If failsafe is not set or RX then failsafe packets should not be sent.
->>>>>>> epic-added-multiprotocol-tx
   Stream[26]   = sub_protocol bits 6 & 7|RxNum bits 4 & 5|Telemetry_Invert 3|Future_Use 2|Disable_Telemetry 1|Disable_CH_Mapping 0
    sub_protocol is 0..255 (bits 0..5 + bits 6..7)
    RxNum value is 0..63 (bits 0..3 + bits 4..5)
@@ -374,23 +359,127 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
    Disable_Telemetry	=> 0x02	0=enable, 1=disable
    Disable_CH_Mapping	=> 0x01	0=enable, 1=disable
   Stream[27.. 35] = between 0 and 9 bytes for additional protocol data
-<<<<<<< HEAD
-<<<<<<< HEAD
-    Protocol specific use:
-      FrSkyX and FrSkyX2: Stream[27] during bind Telem on=0x00,off=0x01 | CH1-8=0x00,CH9-16=0x02
-      FrSkyX and FrSkyX2: Stream[27..34] during normal operation unstuffed SPort data to be sent
-=======
 	Protocol specific use:
 	  FrSkyX and FrSkyX2: Stream[27] during bind Telem on=0x00,off=0x01 | CH1-8=0x00,CH9-16=0x02
 	  FrSkyX and FrSkyX2: Stream[27..34] during normal operation unstuffed SPort data to be sent
->>>>>>> f117680183f63411b13b689cd8245238ee7a2868
-=======
-	Protocol specific use:
-	  FrSkyX and FrSkyX2: Stream[27] during bind Telem on=0x00,off=0x01 | CH1-8=0x00,CH9-16=0x02
-	  FrSkyX and FrSkyX2: Stream[27..34] during normal operation unstuffed SPort data to be sent
->>>>>>> epic-added-multiprotocol-tx
 	  HoTT: Stream[27] 1 byte for telemetry type
 	  DSM: Stream[27..33] Forward Programming
+*/
+/*
+  Multiprotocol telemetry/command definition for OpenTX and erskyTX
+  Based on #define MULTI_TELEMETRY enables OpenTX and erskyTX to get the multimodule status and select the correct telemetry type automatically.
+  Serial: 100000 Baud 8e2 (same as input)
+  TLV Protocol (type, length, value), allows a TX to ignore unknown messages
+  Format: header (4 byte) + data (variable)
+   [0] = 'M' (0x4d)
+   [1] = 'P' (0x50)
+   The first byte is deliberatly chosen to be different from other telemetry protocols
+   (e.g. 0xAA for DSM/Multi, 0xAA for FlySky and 0x7e for Frsky) to allow a TX to detect
+   the telemetry format of older versions
+   [2] Type (see below)
+   [3] Length (excluding the 4 header bytes)
+   [4-xx] data
+  Commands from TX to multi cannot be longer than 22 bytes (RXLen -4byte header)
+  Type = 0x01 Multimodule Status:
+   [4] Flags
+   0x01 = Input signal detected
+   0x02 = Serial mode enabled
+   0x04 = Protocol is valid
+   0x08 = Module is in binding mode
+   0x10 = Module waits a bind event to load the protocol
+   0x20 = Current protocol supports failsafe
+   0x40 = Current protocol supports disable channel mapping
+   0x80 = Data buffer is almost full
+   [5] major
+   [6] minor
+   [7] revision
+   [8] patchlevel
+	 version of multi code, should be displayed as major.minor.revision.patchlevel
+   [9] channel order: CH4|CH3|CH2|CH1 with CHx value A=0,E=1,T=2,R=3
+   [10] Next valid protocol number, can be used to skip invalid protocols
+   [11] Prev valid protocol number, can be used to skip invalid protocols
+   [12..18] Protocol name [7], not null terminated if prototcol len == 7
+   [19>>4] Option text to be displayed:
+			OPTION_NONE		0	Hidden field
+			OPTION_OPTION	1	"Option:"		value=-128..0(default)..127
+			OPTION_RFTUNE	2	"RF freq tune:"	value=-128..0(default)..127
+			OPTION_VIDFREQ	3	"Video freq:"	value=-128..0(default)..127
+			OPTION_FIXEDID	4	"ID type:"		value="Auto":0(default), "Fixed":1
+			OPTION_TELEM	5	"Telem:"		value="Off":0(default), "On":1, "Off+Aux":2, "On+Aux":3
+			OPTION_SRVFREQ	6	"Servo freq(Hz):"	value="50":0(default).."400":70 => display=50+5*option with option=0..70
+			OPTION_MAXTHR	7	"Max throw:"	value="Disabled":0, "Enabled":1
+			OPTION_RFCHAN	8	"Select RF chan:"	value=-128..0(default)..127
+			OPTION_RFPOWER	9	"RF power:"		"1.6mW":0(default),"2.0mW":1,"2.5mW":2,"3.2mW":3,"4.0mW":4,"5.0mW":5,"6.3mW":6,"7.9mW":7,"10mW\0":8,"13mW\0":9,"16mW\0":10,"20mW\0":11,"25mW\0":12,"32mW\0":13,"40mW\0":14,"50mW\0":15
+			OPTION_WBUS		10	"Output:"		"WBUS":0(default),"PPM":1
+   [19&0x0F] Number of sub protocols
+   [20..27] Sub protocol name [8], not null terminated if sub prototcol len == 8
+   If the current protocol is invalid [12..27] are all 0x00.
+
+   more information can be added by specifing a longer length of the type, the TX will just ignore these bytes
+  Type 0x02 Frksy S.port telemetry
+  Type 0x03 Frsky Hub telemetry
+	*No* usual frsky byte stuffing and without start/stop byte (0x7e)
+  Type 0x04 Spektrum telemetry data
+   data[0] TX RSSI
+   data[1-15] telemetry data
+  Type 0x05 DSM bind data
+	data[0-16] DSM bind data
+	technically DSM bind data is only 10 bytes but multi sends 16
+	like with telemtery, check length field)
+  Type 0x06 Flysky AFHDS2 telemetry data type 0xAA
+   length: 29
+   data[0] = RSSI value
+   data[1-28] telemetry data
+  Type 0x08 Input synchronisation
+	Informs the TX about desired rate and current delay
+	length: 4
+	data[0-1]     Desired refresh rate in ??s
+	data[2-3]     Time (??s) between last serial servo input received and servo input needed (lateness), TX should adjust its
+				  sending time to minimise this value.
+	data[4]		  Interval of this message in ms
+	data[5]		  Input delay target in 10??s
+   Note that there are protocols (AFHDS2A) that have a refresh rate that is smaller than the maximum achievable
+   refresh rate via the serial protocol, in this case, the TX should double the rate and also subract this
+   refresh rate from the input lag if the input lag is more than the desired refresh rate.
+   The remote should try to get to zero of  (inputdelay+target*10).
+  Type 0x0A Hitec telemetry data
+   length: 8
+   data[0] = TX RSSI value
+   data[1] = TX LQI value
+   data[2] = frame number
+   data[3-7] telemetry data
+   Full description at the bottom of Hitec_cc2500.ino
+  Type 0x0B Spectrum Scanner telemetry data
+   length: 6
+   data[0] = start channel (2400 + x*0.333 Mhz)
+   data[1-5] power levels
+  Type 0x0C Flysky AFHDS2 telemetry data type 0xAC
+   length: 29
+   data[0] = RSSI value
+   data[1-28] telemetry data
+  Type 0x0D RX channels forwarding
+   length: variable
+   data[0] = received packets per second
+   data[1] = rssi
+   data[2] = start channel
+   data[3] = number of channels to follow
+   data[4-]= packed channels data, 11 bit per channel
+  Type 0x0E HoTT telemetry
+   length: 14
+   data[0] = TX_RSSI
+   data[1] = TX_LQI
+   data[2] = type
+   data[3] = page
+   data[4-13] = data
+  Type 0x0F M-Link telemetry
+   length: 10
+   data[0] = TX_RSSI
+   data[1] = TX_LQI
+   data[2] = telem_type
+   data[3-9] = data
+  Type 0x10 Config telemetry
+   length: 22
+   data[0..21] = Config data
 */
 
 enum PROTOCOLS

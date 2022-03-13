@@ -27,6 +27,7 @@ void multiprotocolInit()
     // sbus.protocol = PROTO_AFHDS2A;
     // sbus.subProtocol = PWM_SBUS;
     // sbus.autoBindBit = 1;
+    sbus.lowPower = 0;
 }
 
 void multiprotocolBindEnable(SBUS_HandlerTypedef *sbus)
@@ -108,5 +109,5 @@ void makeOutputStream(SBUS_HandlerTypedef *sbus)
     sbus->outStream[23] = (uint8_t)((sbus->outputBuffer[13] & 0x07FF) >> 9 | (sbus->outputBuffer[14] & 0x07FF) << 2);
     sbus->outStream[24] = (uint8_t)((sbus->outputBuffer[14] & 0x07FF) >> 6 | (sbus->outputBuffer[15] & 0x07FF) << 5);
     sbus->outStream[25] = (uint8_t)((sbus->outputBuffer[15] & 0x07FF) >> 3);
-    sbus->outStream[26] = (uint8_t)0x08;
+    sbus->outStream[26] = (uint8_t)0x08 | (sbus->protocol & 0x60);
 }
