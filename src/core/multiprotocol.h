@@ -925,6 +925,7 @@ typedef struct
 	uint16_t bind;
 	uint16_t lowPower;
 	uint16_t rangeCheckBit;
+	uint16_t disableChMapping;
 	uint16_t autoBindBit;
 	uint16_t rxNum;
 	uint16_t outputBuffer[MAX_RC_CHANNEL];
