@@ -4,6 +4,7 @@
 #include "lv_gui_main_screen.h"
 #include "lv_gui_basic_multi_desc.h"
 #include "core/multiprotocol.h"
+#include "core/iosettings.h"
 
 static void back_button_handler(lv_event_t *e)
 {
@@ -44,7 +45,8 @@ static void usb_mode_dd_handler(lv_event_t *e)
 
     if (code == LV_EVENT_VALUE_CHANGED)
     {
-        /* code will be here */
+        CommonSettings.USBmode = lv_dropdown_get_selected(obj);
+        settings_changed();
     }
 }
 
@@ -155,6 +157,7 @@ lv_obj_t *lv_gui_basic(void)
 
     lv_obj_t *usb_mode_label = lv_current_label(screen, "USB mode");
     lv_obj_t *usb_mode_dd = lv_current_dropdawn(screen, usb_mode_dd_handler, usb_mode_opts);
+    lv_dropdown_set_selected(usb_mode_dd, CommonSettings.USBmode);
     lv_obj_t *protocol_label = lv_current_label(screen, "TX");
     lv_obj_t *bind_button = lv_button(screen, bind_button_handler, "Bind");
     lv_obj_t *protocols = lv_current_dropdawn(screen, protocol_mode_dd_handler, tx_protocol_opts);
