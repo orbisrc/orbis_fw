@@ -121,7 +121,7 @@ void cliPrint(const char *printString)
         return;
     }
 
-    strncpy((char *)cliRxBuffer, printString, APP_RX_DATA_SIZE);
+    strlcpy((char *)cliRxBuffer, printString, APP_RX_DATA_SIZE);
 
     while (CDC_Transmit_FS(cliRxBuffer, strlen((char *)cliRxBuffer)) == USBD_BUSY)
     {

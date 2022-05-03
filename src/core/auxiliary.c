@@ -244,7 +244,7 @@ void RCStimerSetName(const char *Name, RCTimerTypeDef *Timer)
 {
 	if(Name != NULL)
 	{
-		strncpy(Timer->Name, Name, MAX_RC_NAME);
+		strlcpy(Timer->Name, Name, MAX_RC_NAME);
 	}
 }
 
