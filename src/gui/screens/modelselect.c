@@ -99,7 +99,7 @@ void _ModelSelect() {
 
 					if (STappGetTextBuffState(&STApp) == Yes) {
 
-						strncpy(ModelSettings[i + 1].Name, STappGetInputTextBuff(&STApp),	MAX_RC_NAME);
+						strlcpy(ModelSettings[i + 1].Name, STappGetInputTextBuff(&STApp),	MAX_RC_NAME);
 
 						STappClearBuff(&STApp);
 

@@ -75,7 +75,7 @@ void _ModelProfile() {
 		}
 
 		if (STappGetTextBuffState(&STApp) == Yes) {
-			strncpy(ModelSettings[STgetCurrentModelID()].Name, STappGetInputTextBuff(&STApp),	MAX_RC_NAME);
+			strlcpy(ModelSettings[STgetCurrentModelID()].Name, STappGetInputTextBuff(&STApp),	MAX_RC_NAME);
 			STappClearBuff(&STApp);
 		}
 

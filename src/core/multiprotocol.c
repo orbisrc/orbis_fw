@@ -64,7 +64,6 @@ uint16_t multiprotocolGetSubProtocol(SBUS_HandlerTypedef *sbus)
 void multiprotocolAssignmentValues()
 {
     uint16_t i = 0;
-    static uint16_t test = 0;
     for (i = 0; i < MAX_RC_CHANNEL; i++)
     {
         multiprotocolSetChannel(&sbus, i, (uint16_t)((RCChanelGetValue(&RCChanel[i]) << 1) & 0x07FF));

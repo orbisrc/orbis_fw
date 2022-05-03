@@ -28,6 +28,7 @@ lv_obj_t *lv_button(lv_obj_t *parent, lv_event_cb_t event_cb, const char *title)
     lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 4, -4);
     lv_obj_set_size(btn, 72, 24);
     lv_obj_add_event_cb(btn, event_cb, LV_EVENT_ALL, NULL);
+    // lv_obj_set_style_bg_color(btn, lv_palette_main(LV_PALETTE_RED), LV_STATE_FOCUS_KEY);
 
     lv_obj_t *label = lv_label_create(btn);
     lv_label_set_text(label, title);

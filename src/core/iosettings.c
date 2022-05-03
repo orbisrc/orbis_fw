@@ -57,8 +57,8 @@ void STmodelProfileInit(void)
 		}
 
 		snprintf(ModelSettings[i].Name, MAX_RC_NAME, "Model %d", i);
-		strncpy(ModelSettings[i].Timer1Name, "Timer1", MAX_RC_NAME);
-		strncpy(ModelSettings[i].Timer2Name, "Timer2", MAX_RC_NAME);
+		strlcpy(ModelSettings[i].Timer1Name, "Timer1", MAX_RC_NAME);
+		strlcpy(ModelSettings[i].Timer2Name, "Timer2", MAX_RC_NAME);
 		ModelSettings[i].AlarmEnableT1 = 0;
 		ModelSettings[i].AlarmEnableT2 = 0;
 		ModelSettings[i].SecondSetpointT1 = 0;
@@ -119,8 +119,8 @@ void STsaveProfile(ModelSettingsTypeDef *ModelSettings)
 	/*
 	 * Timer settings
 	 */
-	strncpy(ModelSettings->Timer1Name, RCStimerGetName(&RCTimer1), MAX_RC_NAME);
-	strncpy(ModelSettings->Timer2Name, RCStimerGetName(&RCTimer2), MAX_RC_NAME);
+	strlcpy(ModelSettings->Timer1Name, RCStimerGetName(&RCTimer1), MAX_RC_NAME);
+	strlcpy(ModelSettings->Timer2Name, RCStimerGetName(&RCTimer2), MAX_RC_NAME);
 	ModelSettings->AlarmEnableT1 = RCStimerGetAlarmState(&RCTimer1);
 	ModelSettings->AlarmEnableT2 = RCStimerGetAlarmState(&RCTimer2);
 	ModelSettings->SecondSetpointT1 = RCStimerGetSecondSetpoint(&RCTimer1);

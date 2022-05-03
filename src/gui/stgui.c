@@ -103,7 +103,7 @@ void STappFillInputBuff(char *Buff, STApplicationTypeDef *STapp)
 	{
 		if (!STapp->BuffFull)
 		{
-			strncpy(STapp->InputBuff, Buff, TEXT_BUFF_SIZE);
+			strlcpy(STapp->InputBuff, Buff, TEXT_BUFF_SIZE);
 			STapp->BuffFull = Yes;
 		}
 
@@ -1456,7 +1456,7 @@ void STtextBoxInit(STtextBoxTypeDef *STtextBox)
 {
 	if(strcmp(STtextBox->Text, STtextBox->TextBuff) != 0)
 	{
-		strncpy(STtextBox->TextBuff, STtextBox->Text, TEXT_BUFF_SIZE);
+		strlcpy(STtextBox->TextBuff, STtextBox->Text, TEXT_BUFF_SIZE);
 	}
 }
 
@@ -1597,7 +1597,7 @@ void STtextBoxUpdate(STtextBoxTypeDef *STtextBox)
 				STtextBox->Style->Color,
 				STtextBox->Style->BackgroundColor);
 
-		strncpy(STtextBox->TextBuff, STtextBox->Text, TEXT_BUFF_SIZE);
+		strlcpy(STtextBox->TextBuff, STtextBox->Text, TEXT_BUFF_SIZE);
 		STtextBox->Text = NULL;
 		STtextBox->State = Idle;
 
@@ -1605,7 +1605,7 @@ void STtextBoxUpdate(STtextBoxTypeDef *STtextBox)
 
 	default:
 
-		strncpy(STtextBox->TextBuff, STtextBox->Text, TEXT_BUFF_SIZE);
+		strlcpy(STtextBox->TextBuff, STtextBox->Text, TEXT_BUFF_SIZE);
 		STtextBox->Text = NULL;
 		STtextBoxDraw(STtextBox);
 		break;
@@ -1635,11 +1635,11 @@ void STbuttonInit(STbuttonTypeDef *STbutton)
 
 //	if (STbutton->Text != NULL)
 //	{
-//		strncpy(STbutton->ButtonLabel, STbutton->Text, 32);
+//		strlcpy(STbutton->ButtonLabel, STbutton->Text, 32);
 //	}
 //	else
 //	{
-////		strncpy(STbutton->ButtonLabel, "---", 32);
+////		strlcpy(STbutton->ButtonLabel, "---", 32);
 //	}
 
 	STbutton->Style->ParentScreen->ItemCounter++;
@@ -3113,7 +3113,7 @@ void STlistBoxSetListItem(const char *Text, int16_t Item, STlistBoxTypeDef *STli
 {
 	if(strcmp(STlistBox->List[Item], Text) != 0)
 	{
-		strncpy(STlistBox->List[Item], Text, LISTBOX_BUFF_SIZE);
+		strlcpy(STlistBox->List[Item], Text, LISTBOX_BUFF_SIZE);
 	}
 }
 
