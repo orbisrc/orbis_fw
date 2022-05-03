@@ -1,0 +1,14 @@
+##!/bin/bash
+
+items=(Makefile_AIR_ILI9341 Makefile_AIR_S6D0154X Makefile_SURFACE_ILI9341 Makefile_SURFACE_S6D0154X)
+
+LYELLOW='\033[1;33m'
+YELLOW='\033[33m'
+
+for item in ${items[*]}
+do
+    echo -e "\r\n${YELLOW}$item"
+    tput sgr0
+    make clean
+    make -f $item
+done
