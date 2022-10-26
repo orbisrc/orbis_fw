@@ -27,6 +27,7 @@
 #include "core/buffer.h"
 
 RCChanelTypeDef RCChanel[MAX_RC_CHANNEL] = {0};
+uint16_t ___is_failsafe_changed = RC_BUSY;
 
 void RCChanelHandler(RCChanelTypeDef *Chanel)
 {
@@ -221,7 +222,7 @@ void RCChanelSetTrim(int32_t Value, RCChanelTypeDef *Chanel)
 	Chanel->Trim = Value;
 }
 
-void RCChanelSetADCCentr(uint32_t Value, RCChanelTypeDef *Chanel)
+void RCChanelSetADCCenter(uint32_t Value, RCChanelTypeDef *Chanel)
 {
 	Chanel->ADCCentral = Value;
 }
@@ -327,6 +328,44 @@ uint16_t RCChanelBufferGetItem(RCChanelTypeDef *Chanel)
 	return Chanel->ChannelBufferItem;
 }
 
+void RCChanelSetFailsafeValue(uint16_t Value, RCChanelTypeDef *Chanel)
+{
+	failsafeValueChanged();
+
+	if (Value >= FAILSAFE_CH_MAX)
+	{
+		Chanel->failsafeValue = FAILSAFE_CH_MAX;
+		return;
+	}
+	if (Value <= FAILSAFE_CH_MIN)
+	{
+		Chanel->failsafeValue = FAILSAFE_CH_MIN;
+		return;
+	}
+
+	Chanel->failsafeValue = Value;
+}
+
+uint16_t RCChanelGetFailsafeValue(RCChanelTypeDef *Chanel)
+{
+	return Chanel->failsafeValue;
+}
+
+void failsafeNewValueSetted()
+{
+	___is_failsafe_changed = RC_OK;
+}
+
+uint16_t isFailsafeChanged()
+{
+	return ___is_failsafe_changed;
+}
+
+void failsafeValueChanged()
+{
+	___is_failsafe_changed = RC_BUSY;
+}
+
 void RCChanelMain()
 {
 	uint16_t i = 0;
@@ -376,6 +415,7 @@ void RCChanelHandlerInit()
 		RCChanel[i].ExpCurveX = 0;
 		RCChanel[i].ChannelBufferItem = i;
 		RCChanel[i].Curve = ___Curve[i];
+		RCChanel[i].failsafeValue = (FAILSAFE_CH_MAX + FAILSAFE_CH_MIN) / 2;
 	}
 
 	for (i = 0; i < MAX_RC_CHANNEL; i++)

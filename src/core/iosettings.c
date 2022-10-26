@@ -54,6 +54,7 @@ void STmodelProfileInit(void)
 			ModelSettings[i].CurveType[j] = 0;
 			ModelSettings[i].ExpCurveX[j] = 0;
 			ModelSettings[i].ExpCurveY[j] = 0;
+			ModelSettings[i].FailsafeValue[j] = BASE_CENTRAL;
 		}
 
 		snprintf(ModelSettings[i].Name, MAX_RC_NAME, "Model %d", i);
@@ -79,7 +80,7 @@ void STmodelProfileInit(void)
 		CommonSettings.ADCmax[i] = ADC_MAX;
 	}
 
-	CommonSettings.DispplayBrightness = BRIGHTNESS_MAX;
+	CommonSettings.DisplayBrightness = BRIGHTNESS_MAX;
 	CommonSettings.CurrentModelID = 1;
 	CommonSettings.FistStartDO = 0xBEAF;
 	CommonSettings.BatteryAlarmValue = BATTERY_ALARM_LOW;
@@ -115,6 +116,7 @@ void STsaveProfile(ModelSettingsTypeDef *ModelSettings)
 		ModelSettings->CurveType[i] = RCChanelGetCurveType(&RCChanel[i]);
 		ModelSettings->ExpCurveX[i] = RCChanelGetExpoX(&RCChanel[i]);
 		ModelSettings->ExpCurveY[i] = RCChanelGetExpoY(&RCChanel[i]);
+		ModelSettings->FailsafeValue[i] = RCChanelGetFailsafeValue(&RCChanel[i]);
 	}
 	/*
 	 * Timer settings
@@ -151,6 +153,7 @@ void STloadProfile(ModelSettingsTypeDef *ModelSettings)
 		RCChanelSetHightRate(ModelSettings->HighRate[i], &RCChanel[i]);
 		RCChanelSetInvertState(ModelSettings->Invert[i], &RCChanel[i]);
 		RCChanelBufferSetItem(ModelSettings->ChannelBinding[i], &RCChanel[i]);
+		RCChanelSetFailsafeValue(ModelSettings->FailsafeValue[i], &RCChanel[i]);
 
 		/*
 		 * Curves
@@ -320,7 +323,7 @@ void STloadCommonSettings(CommonSettingsTypedef *Settings)
 		AIsetADCCenter(Settings->ADCcentr[i], &AnalogChannel[i]);
 	}
 
-	STLCDsetBrightness(Settings->DispplayBrightness);
+	STLCDsetBrightness(Settings->DisplayBrightness);
 	STappSetBeeperState(Settings->BeeperEnable, &STApp);
 	AIsetL(Settings->BatteryAlarmValue, &AnalogChannel[BatteryADC]);
 }
@@ -336,7 +339,7 @@ void STsaveCommonSettings(CommonSettingsTypedef *Settings)
 		Settings->ADCcentr[i] = AIgetADCCenter(&AnalogChannel[i]);
 	}
 
-	Settings->DispplayBrightness = STLCDgetBrightness();
+	Settings->DisplayBrightness = STLCDgetBrightness();
 	Settings->BatteryAlarmValue = AIgetL(&AnalogChannel[BatteryADC]);
 	Settings->BeeperEnable = STappGetBeeperState(&STApp);
 }

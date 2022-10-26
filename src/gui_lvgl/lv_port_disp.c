@@ -102,7 +102,7 @@ void lv_port_disp_init(void)
 static void disp_init(void)
 {
     STLCDinit();
-    STLCDsetBrightness(CommonSettings.DispplayBrightness); //
+    STLCDsetBrightness(CommonSettings.DisplayBrightness); //
     ShowLogo();
 }
 

@@ -71,10 +71,10 @@ void _STcalibrate() {
 			switch (CalibrateStep)
 			{
 				case 0:
-//					RCChanelSetADCCentr(Acentral,&RCChanel[0]);
-//					RCChanelSetADCCentr(Ecentral,&RCChanel[1]);
-//					RCChanelSetADCCentr(Tcentral,&RCChanel[2]);
-//					RCChanelSetADCCentr(Rcentral,&RCChanel[3]);
+//					RCChanelSetADCCenter(Acentral,&RCChanel[0]);
+//					RCChanelSetADCCenter(Ecentral,&RCChanel[1]);
+//					RCChanelSetADCCenter(Tcentral,&RCChanel[2]);
+//					RCChanelSetADCCenter(Rcentral,&RCChanel[3]);
 
 					AIsetADCMin(Amin, &AnalogChannel[0]);
 					AIsetADCMax(Amax, &AnalogChannel[0]);
@@ -104,10 +104,10 @@ void _STcalibrate() {
 //					RCChanelSetADCMax(Rmax, &RCChanel[3]);
 
 
-//					RCChanelSetADCCentr(Acentral,&RCChanel[0]);
-//					RCChanelSetADCCentr(Ecentral,&RCChanel[1]);
-//					RCChanelSetADCCentr(Tcentral,&RCChanel[2]);
-//					RCChanelSetADCCentr(Rcentral,&RCChanel[3]);
+//					RCChanelSetADCCenter(Acentral,&RCChanel[0]);
+//					RCChanelSetADCCenter(Ecentral,&RCChanel[1]);
+//					RCChanelSetADCCenter(Tcentral,&RCChanel[2]);
+//					RCChanelSetADCCenter(Rcentral,&RCChanel[3]);
 
 					AIsetADCCenter(Acentral,&AnalogChannel[0]);
 					AIsetADCCenter(Ecentral,&AnalogChannel[1]);

@@ -128,7 +128,7 @@ void _BasicSettings()
 		if (STinputBoxValueChange(&BasicSettingsDispplayBrightness)) {
 //			STLCDsetBrightness((uint16_t)STinputBoxGetValue(&BasicSettingsDispplayBrightness)*40);
 
-			CommonSettings.DispplayBrightness = (uint16_t)STinputBoxGetValue(&BasicSettingsDispplayBrightness)*40;
+			CommonSettings.DisplayBrightness = (uint16_t)STinputBoxGetValue(&BasicSettingsDispplayBrightness)*40;
 		}
 
 		if (STinputBoxValueChange(&BasicSettingsInactivity)) {

@@ -138,11 +138,13 @@
  * RC channel
  **********************************/
 
-#define GUI_CH_CENTRAL 0									   //
-#define GUI_CH_MIN -100										   //
-#define GUI_CH_MAX 100										   //
-#define BASE_CH_MIN 0										   //
-#define BASE_CH_MAX 1000									   //
+#define GUI_CH_CENTRAL 0	 //
+#define GUI_CH_MIN -100		 //
+#define GUI_CH_MAX 100		 //
+#define FAILSAFE_CH_MIN 10	 //
+#define FAILSAFE_CH_MAX 1000 //
+#define BASE_CH_MIN 0		 //
+#define BASE_CH_MAX 1000
 #define BASE_CENTRAL (uint16_t)(BASE_CH_MAX + BASE_CH_MIN) / 2 //
 #define DEADBAND 3											   //
 #define TRIM_CH_MIN -100									   //

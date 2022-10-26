@@ -32,6 +32,14 @@ typedef enum _RCCurveTypedef
 	VTR
 } RCCurveTypedef;
 
+typedef enum 
+{
+  RC_OK       = 0x00U,
+  RC_ERROR    = 0x01U,
+  RC_BUSY     = 0x02U,
+  RC_TIMEOUT  = 0x03U
+} RC_StatusTypeDef;
+
 typedef struct _RCChanelTypeDef
 {
 	uint16_t Value;	  /* Process value*/
@@ -62,6 +70,7 @@ typedef struct _RCChanelTypeDef
 	uint16_t HighRate;		  /* Throttle or Steering rates 0 - 100% ( 0 - 1000 ) */
 	int16_t Trim;			  /* Channel trimmer -100...0...100 */
 	uint16_t Invert;
+	uint16_t failsafeValue; /* Failsafe value*/
 
 	/* Curves  */
 	uint16_t CurveType;
@@ -70,11 +79,13 @@ typedef struct _RCChanelTypeDef
 	uint16_t *Curve; /* Curve Array */
 
 	/* Buffer */
-	uint16_t ChannelBufferItem;
+	uint16_t ChannelBufferItem; /* Channel number from common input buffer */
 
 } RCChanelTypeDef;
 
 extern RCChanelTypeDef RCChanel[MAX_RC_CHANNEL];
+
+extern uint16_t ___is_failsafe_changed;
 
 void RCChanelPutADCData(RCChanelTypeDef *Chanel);
 
@@ -98,7 +109,7 @@ void RCChanelSetADCMin(uint32_t Value, RCChanelTypeDef *Chanel);
 
 void RCChanelSetADCMax(uint32_t Value, RCChanelTypeDef *Chanel);
 
-void RCChanelSetADCCentr(uint32_t Value, RCChanelTypeDef *Chanel);
+void RCChanelSetADCCenter(uint32_t Value, RCChanelTypeDef *Chanel);
 
 void RCChanelSetCenter(uint32_t Value, RCChanelTypeDef *Chanel);
 
@@ -193,5 +204,15 @@ void RCChanelFilterSetState(uint16_t Value, RCChanelTypeDef *Chanel);
 void RCChanelBufferSetItem(uint16_t Value, RCChanelTypeDef *Chanel);
 
 uint16_t RCChanelBufferGetItem(RCChanelTypeDef *Chanel);
+
+void RCChanelSetFailsafeValue(uint16_t Value, RCChanelTypeDef *Chanel);
+
+uint16_t RCChanelGetFailsafeValue(RCChanelTypeDef *Chanel);
+
+void failsafeNewValueSetted();
+
+void failsafeValueChanged();
+
+uint16_t isFailsafeChanged();
 
 #endif /* ST_RCCHANNEL_H_ */

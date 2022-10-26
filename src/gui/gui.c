@@ -134,7 +134,7 @@ void GUI_DFU(void)
 void GUI_Init(void) {
 
 	STLCDinit();
-	STLCDsetBrightness(CommonSettings.DispplayBrightness); //
+	STLCDsetBrightness(CommonSettings.DisplayBrightness); //
 
 	ShowLogo();
 
@@ -237,10 +237,10 @@ void GUI(void) {
 
 	// 	LastEncoderCounter = EncoderGetCounter(&Encoder);
 
-	// 	STLCDsetBrightness(CommonSettings.DispplayBrightness);
+	// 	STLCDsetBrightness(CommonSettings.DisplayBrightness);
 	// }
 
-	STLCDsetBrightness(CommonSettings.DispplayBrightness);
+	STLCDsetBrightness(CommonSettings.DisplayBrightness);
 
 	/*
 	 * ScreenSaver

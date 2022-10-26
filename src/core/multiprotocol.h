@@ -30,7 +30,8 @@
 #define AUTO_BIND_BIT_MASK 0x40
 #define RANGE_CHECK_MASK 0x20
 #define MULTIPROTOCOL_FRAME_SIZE 27
-#define MULTIPROTOCOL_HEADER 0x55
+#define MULTIPROTOCOL_BASE_HEADER 0x55
+#define MULTIPROTOCOL_FAILSAFE_HEADER 0x57
 
 // https://github.com/pascallanger/DIY-Multiprotocol-TX-Module/blob/5afdff847716b4ace6d43d7f743b5008830fa398/Multiprotocol/Multiprotocol.h#L816
 //****************************************
@@ -931,7 +932,7 @@ typedef struct
 	uint16_t outputBuffer[MAX_RC_CHANNEL];
 	uint16_t inputBuffer[16];
 	uint8_t outStream[MULTIPROTOCOL_FRAME_SIZE];
-	uint8_t inputtStream[MULTIPROTOCOL_FRAME_SIZE];
+	uint8_t inputStream[MULTIPROTOCOL_FRAME_SIZE];
 } SBUS_HandlerTypedef;
 
 extern SBUS_HandlerTypedef sbus;
@@ -945,6 +946,10 @@ void multiprotocolBindEnable(SBUS_HandlerTypedef *sbus);
 void multiprotocolBindDisable(SBUS_HandlerTypedef *sbus);
 
 void multiprotocolSetProtocol(uint16_t protocol, SBUS_HandlerTypedef *sbus);
+
+void multiprotocolSetFailsafe(SBUS_HandlerTypedef *sbus);
+
+void multiprotocolResetFailsafe(SBUS_HandlerTypedef *sbus);
 
 void multiprotocolSetSubProtocol(uint16_t subProtocol, SBUS_HandlerTypedef *sbus);
 

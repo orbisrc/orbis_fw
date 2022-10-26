@@ -158,7 +158,7 @@ lv_obj_t *lv_gui_ch_settings(void)
 
     map_dd = lv_gui_dropdown(screen, map_change_handle, optionsDD);
     lv_dropdown_set_selected(map_dd, RCChanelGetExpoX(&RCChanel[current_channel]));
-    trim = lv_trim(screen, trim_change_handle, RCChanelBufferGetItem(&RCChanel[current_channel]), "Trim");
+    trim = lv_trim(screen, trim_change_handle, RCChanelBufferGetItem(&RCChanel[current_channel]), "Trim", NULL);
     endpoint = lv_endpoint(screen, endpoint_change_handle, ~(RCChanelGetLowRate(&RCChanel[current_channel])) + 1, RCChanelGetHighRate(&RCChanel[current_channel]));
 
     lv_obj_t *invert_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "Invert");

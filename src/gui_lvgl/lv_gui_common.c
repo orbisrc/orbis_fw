@@ -255,7 +255,6 @@ lv_obj_t *lv_ack_box(lv_obj_t *parent, void (*event_cb)(), const char *text)
     Info box
 */
 
-
 static void lv_info_box_button_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
@@ -281,10 +280,8 @@ lv_obj_t *lv_info_box(lv_obj_t *parent, void (*event_cb)(), const char *text)
 
     lv_obj_t *button = lv_button(container, lv_info_box_button_handler, "Ok");
 
-
     lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_align(button, LV_ALIGN_BOTTOM_MID, 0, -GUI_MARGIN);
-
 
     lv_obj_set_user_data(button, event_cb);
 
@@ -309,7 +306,7 @@ static void trim_call_cb(lv_event_t *e)
     event_cb(e->current_target);
 }
 
-lv_obj_t *lv_trim(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini, const char *name)
+lv_obj_t *lv_trim(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini, const char *name, void *user_data)
 {
 
     lv_obj_t *container = lv_obj_create(parent);
@@ -323,6 +320,7 @@ lv_obj_t *lv_trim(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini, con
     lv_slider_set_mode(slider, LV_SLIDER_MODE_SYMMETRICAL);
     lv_slider_set_range(slider, GUI_TRIM_MIN, GUI_TRIM_MAX);
     lv_slider_set_value(slider, ini, LV_ANIM_OFF);
+    lv_obj_set_user_data(slider, user_data);
 
     lv_obj_add_style(slider, &bar_bg, LV_PART_MAIN);
     lv_obj_add_style(slider, &bar_indic, LV_PART_INDICATOR);
