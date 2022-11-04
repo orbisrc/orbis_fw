@@ -18,7 +18,6 @@
 #include "multiprotocol.h"
 #include "core/rcchannel.h"
 #include "stconfig.h"
-#include "multiprotocol.h"
 
 SBUS_HandlerTypedef sbus = {0};
 
@@ -26,6 +25,8 @@ void multiprotocolInit()
 {
     sbus.lowPower = 0;
     sbus.disableChMapping = 1;
+
+    multiprotocolDescriptionInit();
 }
 
 void multiprotocolBindEnable(SBUS_HandlerTypedef *sbus)
@@ -68,23 +69,42 @@ void multiprotocolResetFailsafe(SBUS_HandlerTypedef *sbus)
     sbus->outStream[0] = MULTIPROTOCOL_BASE_HEADER;
 }
 
-void multiprotocolAssignmentValues()
+static uint16_t isRadiolink(SBUS_HandlerTypedef *sbus)
+{
+    if (sbus->protocol == PROTO_RADIOLINK)
+    {
+        return MULTITX_YES;
+    }
+    return MULTITX_NO;
+}
+
+static void multiprotocolFailsafeAssignmentValues()
 {
     uint16_t i = 0;
 
-    if (isFailsafeChanged() == RC_BUSY)
+    for (i = 0; i < MAX_RC_CHANNEL; i++)
     {
-        for (i = 0; i < MAX_RC_CHANNEL; i++)
-        {
-            multiprotocolSetChannel(&sbus, i, (uint16_t)((RCChanelGetFailsafeValue(&RCChanel[i]) << 1) & 0x07FF));
-        }
-
-        return;
+        multiprotocolSetChannel(&sbus, i, (uint16_t)(((RCChanelGetFailsafeValue(&RCChanel[i])) << 1) & 0x07FF));
     }
+
+    return;
+}
+
+static void multiprotocolAssignmentValues()
+{
+    uint16_t i = 0;
 
     for (i = 0; i < MAX_RC_CHANNEL; i++)
     {
         multiprotocolSetChannel(&sbus, i, (uint16_t)((RCChanelGetValue(&RCChanel[i]) << 1) & 0x07FF));
+    }
+
+    if (isRadiolink(&sbus) == MULTITX_YES)
+    {
+        for (i = 0; i < 8; i++)
+        {
+            multiprotocolSetChannel(&sbus, i + 8, (uint16_t)(((RCChanelGetFailsafeValue(&RCChanel[i])) << 1) & 0x07FF));
+        }
     }
 }
 
@@ -100,7 +120,12 @@ void makeOutputStream(SBUS_HandlerTypedef *sbus)
     if (isFailsafeChanged() == RC_BUSY)
     {
         header = MULTIPROTOCOL_FAILSAFE_HEADER;
+        multiprotocolFailsafeAssignmentValues();
         failsafeNewValueSetted();
+    }
+    else
+    {
+        multiprotocolAssignmentValues();
     }
 
     sbus->outStream[0] = header;

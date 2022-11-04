@@ -1,8 +1,8 @@
+#include <stdio.h>
 #include "lv_gui_ai.h"
 #include "lv_gui_common.h"
 #include "lv_gui.h"
 #include "lv_gui_main_screen.h"
-#include "lv_gui_basic_multi_desc.h"
 #include "core/multiprotocol.h"
 #include "core/iosettings.h"
 
@@ -19,7 +19,7 @@ static void back_button_handler(lv_event_t *e)
 static void beeper_switch_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t *obj = lv_event_get_target(e);
+    // lv_obj_t *obj = lv_event_get_target(e);
 
     if (code == LV_EVENT_VALUE_CHANGED)
     {
@@ -30,7 +30,7 @@ static void beeper_switch_handler(lv_event_t *e)
 static void trim_beeper_switch_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t *obj = lv_event_get_target(e);
+    // lv_obj_t *obj = lv_event_get_target(e);
 
     if (code == LV_EVENT_VALUE_CHANGED)
     {
@@ -57,35 +57,25 @@ static void protocol_mode_dd_handler(lv_event_t *e)
     if (code == LV_EVENT_VALUE_CHANGED)
     {
         lv_obj_t *obj = lv_event_get_target(e);
-        uint16_t selected = lv_dropdown_get_selected(obj);
-
-        /* code will be here */
-    }
-}
-
-static void multi_protocol_mode_dd_handler(lv_event_t *e)
-{
-    lv_event_code_t code = lv_event_get_code(e);
-
-    if (code == LV_EVENT_VALUE_CHANGED)
-    {
-        lv_obj_t *obj = lv_event_get_target(e);
         lv_obj_t *multi_sub_protocols = lv_obj_get_user_data(obj);
         uint16_t selected = lv_dropdown_get_selected(obj);
 
-        multiprotocolSetProtocol(selected, &sbus);
-        multiprotocolSetSubProtocol(0, &sbus);
-        settings_changed();
+        const MULTITX_PROTO_ItemTypedef *protocol = getProtocolByItemNumber(selected);
 
-        if (sub_protocols_opts[selected] != NULL)
+        multiprotocolSetProtocol(protocol->code, &sbus);
+        multiprotocolSetSubProtocol(0, &sbus);
+
+        const MULTITX_SUB_PROTO_ItemTypedef *subProtocol = protocol->subProtocols;
+
+        if (subProtocol != NULL)
         {
             lv_obj_clear_flag(multi_sub_protocols, LV_OBJ_FLAG_HIDDEN);
-            lv_dropdown_set_options(multi_sub_protocols, sub_protocols_opts[selected]);
+            lv_dropdown_set_options(multi_sub_protocols, getSubProtocolsOptions(protocol));
             lv_dropdown_set_selected(multi_sub_protocols, multiprotocolGetSubProtocol(&sbus));
         }
         else
         {
-            lv_dropdown_set_selected(multi_sub_protocols, multiprotocolGetSubProtocol(&sbus));
+            // lv_dropdown_set_selected(multi_sub_protocols, multiprotocolGetSubProtocol(&sbus));
             lv_obj_add_flag(multi_sub_protocols, LV_OBJ_FLAG_HIDDEN);
         }
     }
@@ -138,7 +128,8 @@ static lv_obj_t *lv_current_label(lv_obj_t *parrent, const char *text)
 
 lv_obj_t *lv_gui_basic(void)
 {
-    lv_multi_desc_init();
+    const uint16_t protocolItemNumber = getProtocolItemNumberByCode(multiprotocolGetProtocol(&sbus));
+    const MULTITX_PROTO_ItemTypedef *protocol = getProtocolByItemNumber(protocolItemNumber);
 
     lv_obj_t *screen = lv_screen("Basic settings", back_button_handler);
 
@@ -152,28 +143,24 @@ lv_obj_t *lv_gui_basic(void)
                                        "Joystick\n"
                                        "Media";
 
-    static const char *tx_protocol_opts = "PPM\n"
-                                          "Multi";
-
     lv_obj_t *usb_mode_label = lv_current_label(screen, "USB mode");
     lv_obj_t *usb_mode_dd = lv_current_dropdawn(screen, usb_mode_dd_handler, usb_mode_opts);
     lv_dropdown_set_selected(usb_mode_dd, CommonSettings.USBmode);
     lv_obj_t *protocol_label = lv_current_label(screen, "TX");
     lv_obj_t *bind_button = lv_button(screen, bind_button_handler, "Bind");
-    lv_obj_t *protocols = lv_current_dropdawn(screen, protocol_mode_dd_handler, tx_protocol_opts);
-    lv_dropdown_set_selected(protocols, 1);
-    lv_obj_t *multi_protocols = lv_current_dropdawn(screen, multi_protocol_mode_dd_handler, multi_protocols_opts);
-    lv_obj_t *multi_sub_protocols = lv_current_dropdawn(screen, multi_sub_protocol_mode_dd_handler, sub_protocols_opts[1]);
-    lv_dropdown_set_selected(multi_protocols, multiprotocolGetProtocol(&sbus));
-    lv_obj_set_user_data(multi_protocols, multi_sub_protocols);
-    if (sub_protocols_opts[multiprotocolGetProtocol(&sbus)] == NULL)
+    lv_obj_t *protocols = lv_current_dropdawn(screen, protocol_mode_dd_handler, getProtocolsOptions());
+    lv_dropdown_set_selected(protocols, protocolItemNumber);
+    lv_obj_t *multi_sub_protocols = lv_current_dropdawn(screen, multi_sub_protocol_mode_dd_handler, "Empty");
+    lv_obj_set_user_data(protocols, multi_sub_protocols);
+    if (protocol->subProtocols == NULL)
     {
         lv_obj_add_flag(multi_sub_protocols, LV_OBJ_FLAG_HIDDEN);
     }
     else
     {
-        lv_dropdown_set_options(multi_sub_protocols, sub_protocols_opts[multiprotocolGetProtocol(&sbus)]);
-        lv_dropdown_set_selected(multi_sub_protocols, multiprotocolGetSubProtocol(&sbus));
+        const uint16_t selectedSubProtocolItem = getSubProtocolItemNumberByCode(protocol, multiprotocolGetSubProtocol(&sbus));
+        lv_dropdown_set_options(multi_sub_protocols, getSubProtocolsOptions(protocol));
+        lv_dropdown_set_selected(multi_sub_protocols, selectedSubProtocolItem);
     }
 
     lv_obj_align_to(beeper_label, screen, LV_ALIGN_TOP_LEFT, GUI_MARGIN * 2, GUI_SCREEN_START_MARGIN * 1.5);
@@ -188,8 +175,7 @@ lv_obj_t *lv_gui_basic(void)
     lv_obj_align_to(protocol_label, usb_mode_label, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, GUI_MARGIN * 3);
     lv_obj_align_to(protocols, protocol_label, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN, 0);
     lv_obj_align_to(bind_button, protocols, LV_ALIGN_OUT_LEFT_MID, -GUI_MARGIN, 0);
-    lv_obj_align_to(multi_protocols, protocols, LV_ALIGN_OUT_BOTTOM_MID, 0, GUI_MARGIN);
-    lv_obj_align_to(multi_sub_protocols, multi_protocols, LV_ALIGN_OUT_BOTTOM_MID, 0, GUI_MARGIN);
+    lv_obj_align_to(multi_sub_protocols, protocols, LV_ALIGN_OUT_BOTTOM_MID, 0, GUI_MARGIN);
 
     return screen;
 }

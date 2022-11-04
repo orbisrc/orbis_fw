@@ -175,7 +175,6 @@ void RCloop(void)
 	AnalogInputMain();
 	ChannelBufferHandler();
 	RCChanelMain();
-	multiprotocolAssignmentValues();
 	PPMassignmentValues();
 
 	RCchLoopDuration = HAL_GetTick() - RCchLoopDuration;

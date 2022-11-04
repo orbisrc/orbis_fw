@@ -141,7 +141,7 @@
 #define GUI_CH_CENTRAL 0	 //
 #define GUI_CH_MIN -100		 //
 #define GUI_CH_MAX 100		 //
-#define FAILSAFE_CH_MIN 10	 //
+#define FAILSAFE_CH_MIN 1	 //
 #define FAILSAFE_CH_MAX 1000 //
 #define BASE_CH_MIN 0		 //
 #define BASE_CH_MAX 1000
