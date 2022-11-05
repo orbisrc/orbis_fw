@@ -30,7 +30,8 @@
 #define AUTO_BIND_BIT_MASK 0x40
 #define RANGE_CHECK_MASK 0x20
 #define MULTIPROTOCOL_FRAME_SIZE 27
-#define MULTIPROTOCOL_HEADER 0x55
+#define MULTIPROTOCOL_BASE_HEADER 0x55
+#define MULTIPROTOCOL_FAILSAFE_HEADER 0x57
 
 // https://github.com/pascallanger/DIY-Multiprotocol-TX-Module/blob/5afdff847716b4ace6d43d7f743b5008830fa398/Multiprotocol/Multiprotocol.h#L816
 //****************************************
@@ -558,7 +559,7 @@ enum PROTOCOLS
 	PROTO_JJRC345 = 71,		// =>NRF24L01
 	PROTO_Q90C = 72,		// =>NRF24L01 or CC2500
 	PROTO_KYOSHO = 73,		// =>A7105
-	PROTO_RLINK = 74,		// =>CC2500
+	PROTO_RADIOLINK = 74,	// =>CC2500
 	PROTO_REALACC = 76,		// =>NRF24L01
 	PROTO_OMP = 77,			// =>CC2500 & NRF24L01
 	PROTO_MLINK = 78,		// =>CYRF6936
@@ -575,6 +576,8 @@ enum PROTOCOLS
 	PROTO_LOSI = 89,		// =>CYRF6936
 	PROTO_MOULDKG = 90,		// =>NRF24L01
 	PROTO_XERALL = 91,		// =>NRF24L01
+	PROTO_MT99XX2 = 92,
+	PROTO_KYOSHO2 = 93,
 
 	PROTO_NANORF = 126, // =>NRF24L01
 	PROTO_TEST = 127,	// =>CC2500
@@ -918,7 +921,13 @@ enum evenParity
 	even
 };
 
-typedef struct
+enum MULTITX_SUB_PROTO_enum_
+{
+	MULTITX_NO,
+	MULTITX_YES
+} MULTITX_SUB_PROTO_enum;
+
+typedef struct SBUS_HandlerTypedef_
 {
 	uint16_t protocol;
 	uint16_t subProtocol;
@@ -931,12 +940,30 @@ typedef struct
 	uint16_t outputBuffer[MAX_RC_CHANNEL];
 	uint16_t inputBuffer[16];
 	uint8_t outStream[MULTIPROTOCOL_FRAME_SIZE];
-	uint8_t inputtStream[MULTIPROTOCOL_FRAME_SIZE];
+	uint8_t inputStream[MULTIPROTOCOL_FRAME_SIZE];
 } SBUS_HandlerTypedef;
+
+typedef struct MULTITX_SUB_PROTO_ItemTypedef_
+{
+	const char *name;
+	uint16_t chNumber;
+	uint16_t code;
+} MULTITX_SUB_PROTO_ItemTypedef;
+
+typedef struct MULTITX_PROTO_ItemTypedef_
+{
+	const char *name;
+	uint16_t code;
+	const MULTITX_SUB_PROTO_ItemTypedef *subProtocols;
+} MULTITX_PROTO_ItemTypedef;
 
 extern SBUS_HandlerTypedef sbus;
 
+extern const MULTITX_PROTO_ItemTypedef tx_protocols[];
+
 void multiprotocolInit();
+
+void multiprotocolDescriptionInit();
 
 void multiprotocolHandler(SBUS_HandlerTypedef *sbus);
 
@@ -946,16 +973,30 @@ void multiprotocolBindDisable(SBUS_HandlerTypedef *sbus);
 
 void multiprotocolSetProtocol(uint16_t protocol, SBUS_HandlerTypedef *sbus);
 
+void multiprotocolSetFailsafe(SBUS_HandlerTypedef *sbus);
+
+void multiprotocolResetFailsafe(SBUS_HandlerTypedef *sbus);
+
 void multiprotocolSetSubProtocol(uint16_t subProtocol, SBUS_HandlerTypedef *sbus);
 
 uint16_t multiprotocolGetProtocol(SBUS_HandlerTypedef *sbus);
 
 uint16_t multiprotocolGetSubProtocol(SBUS_HandlerTypedef *sbus);
 
-void multiprotocolAssignmentValues();
-
 void multiprotocolSetChannel(SBUS_HandlerTypedef *sbus, uint16_t channelNumber, uint16_t value);
 
 void makeOutputStream(SBUS_HandlerTypedef *sbus);
+
+/********************/
+
+const char *getProtocolsOptions();
+
+uint16_t getProtocolItemNumberByCode(uint16_t code);
+
+const MULTITX_PROTO_ItemTypedef *getProtocolByItemNumber(uint16_t number);
+
+const char *getSubProtocolsOptions(const MULTITX_PROTO_ItemTypedef *protocol);
+
+uint16_t getSubProtocolItemNumberByCode(const MULTITX_PROTO_ItemTypedef *protocol, uint16_t code);
 
 #endif /* __MULTIPROTOCOL__H__ */

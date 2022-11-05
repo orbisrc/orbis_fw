@@ -47,6 +47,7 @@ typedef struct{
 	uint16_t					CurveType[MAX_RC_CHANNEL];
 	uint16_t					ExpCurveX[MAX_RC_CHANNEL];
 	uint16_t					ExpCurveY[MAX_RC_CHANNEL];
+	uint16_t					FailsafeValue[MAX_RC_CHANNEL];
 
 	/*
 	 * Timers
@@ -78,7 +79,7 @@ typedef struct{
 	uint16_t					ADCcentr[ADC1_CH_NUM];
 	uint16_t					CurrentModelID;
 	uint16_t					VibroDuration;
-	uint16_t					DispplayBrightness;
+	uint16_t					DisplayBrightness;
 	uint16_t					FistStartDO;					/* First start flag. Need for first start wizard */
 	uint16_t					BatteryAlarmValue;				/* Battery minimum*/
 	uint16_t					InactivityDuration;

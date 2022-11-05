@@ -5,9 +5,15 @@
 #include "lv_gui_main_screen.h"
 #include "lv_gui_common.h"
 #include "core/rcchannel.h"
+#include "radio.h"
 
 static lv_obj_t *___lv_ch_bar[NUMBER_OF_CHANNELS];
 static lv_obj_t *___lv_ch_value[NUMBER_OF_CHANNELS];
+
+static uint16_t getChannelNumber()
+{
+    return getCurrentRadioChannelNumber();
+}
 
 static void back_button_handler(lv_event_t *e)
 {
@@ -23,7 +29,7 @@ static void back_button_handler(lv_event_t *e)
 
 static void channels_update_handler(lv_timer_t *timer)
 {
-    for (uint16_t i = 0; i < NUMBER_OF_CHANNELS; i++)
+    for (uint16_t i = 0; i < getChannelNumber(); i++)
     {
         lv_bar_set_value(___lv_ch_bar[i], RCChanelGetGUIValue(&RCChanel[i]), LV_ANIM_OFF);
         lv_label_set_text_fmt(___lv_ch_value[i], "%d", RCChanelGetGUIValue(&RCChanel[i]));
@@ -71,7 +77,6 @@ static lv_obj_t *lv_ch_value(lv_obj_t *parent, char *text)
 
 static lv_obj_t *lv_ch_bar(lv_obj_t *parent, uint32_t ini_value)
 {
-
     lv_obj_t *bar = lv_bar_create(parent);
 
     lv_obj_add_style(bar, &bar_bg, 0);
@@ -91,7 +96,7 @@ lv_obj_t *lv_gui_servoview(void)
 {
     lv_obj_t *screen = lv_screen("View", back_button_handler);
 
-    for (uint16_t i = 0; i < NUMBER_OF_CHANNELS; i++)
+    for (uint16_t i = 0; i < getChannelNumber(); i++)
     {
         ___lv_ch_bar[i] = lv_ch_bar(screen, 0);
         lv_obj_t *label = lv_ch_label(screen, CHLabelShort[i]);

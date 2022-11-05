@@ -23,7 +23,7 @@ lv_obj_t *lv_ack_box(lv_obj_t *parent, void (*event_cb)(), const char *text);
 
 lv_obj_t *lv_info_box(lv_obj_t *parent, void (*event_cb)(), const char *text);
 
-lv_obj_t *lv_trim(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini, const char *name);
+lv_obj_t *lv_trim(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini, const char *name, void *user_data);
 
 lv_obj_t *lv_trim_vertical(lv_obj_t *parent, st_gui_event_cb_t event_cb, int32_t ini, const char *name);
 

@@ -9,6 +9,7 @@
 #include "lv_gui_models.h"
 #include "lv_gui_calibrate.h"
 #include "lv_gui_basic.h"
+#include "lv_gui_failsafe.h"
 #include "core/auxiliary.h"
 #include "core/iosettings.h"
 #include "core/auxiliary.h"
@@ -118,17 +119,17 @@ static lv_obj_t *lv_main_menu(lv_obj_t *parent, const char *title)
 {
     const char *lv_menu_buttons_label[] = {"MODEL SELECT",
                                            "CH SETTINGS",
+                                           "FAILSAFE",
                                            "BASIC SETTINGS",
                                            "CALIBRATE",
-                                           "ANALOG INPUT",
                                            "INFO",
                                            "\n"};
 
     lv_obj_t *(*lv_menu_buttons_callback[])(void) = {lv_gui_models,
                                                      lv_gui_ch_settings,
+                                                     lv_gui_failsafe,
                                                      lv_gui_basic,
                                                      lv_gui_calibrate,
-                                                     lv_gui_ai,
                                                      lv_gui_info,
                                                      NULL};
 
@@ -157,8 +158,8 @@ lv_obj_t *lv_gui_main_screen(void)
     lv_obj_set_width(timer1_name, 180);
     lv_obj_set_width(timer2_name, 180);
 
-    lv_obj_t *st_trim = lv_trim(screen, st_trim_change_handle, RCChanelGetTrim(&RCChanel[0]), "ST");
-    lv_obj_t *th_trim = lv_trim(screen, th_trim_change_handle, RCChanelGetTrim(&RCChanel[1]), "TH");
+    lv_obj_t *st_trim = lv_trim(screen, st_trim_change_handle, RCChanelGetTrim(&RCChanel[0]), "ST", NULL);
+    lv_obj_t *th_trim = lv_trim(screen, th_trim_change_handle, RCChanelGetTrim(&RCChanel[1]), "TH", NULL);
 
     lv_obj_t *servoview_button = lv_button(screen, servoview_button_handler, "Monitor");
     lv_obj_t *settings_button = lv_button(screen, settings_button_handler, "Settings");

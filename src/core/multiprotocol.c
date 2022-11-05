@@ -18,17 +18,15 @@
 #include "multiprotocol.h"
 #include "core/rcchannel.h"
 #include "stconfig.h"
-#include "multiprotocol.h"
 
 SBUS_HandlerTypedef sbus = {0};
 
 void multiprotocolInit()
 {
-    // sbus.protocol = PROTO_AFHDS2A;
-    // sbus.subProtocol = PWM_SBUS;
-    // sbus.autoBindBit = 1;
     sbus.lowPower = 0;
     sbus.disableChMapping = 1;
+
+    multiprotocolDescriptionInit();
 }
 
 void multiprotocolBindEnable(SBUS_HandlerTypedef *sbus)
@@ -61,12 +59,52 @@ uint16_t multiprotocolGetSubProtocol(SBUS_HandlerTypedef *sbus)
     return sbus->subProtocol;
 }
 
-void multiprotocolAssignmentValues()
+void multiprotocolSetFailsafe(SBUS_HandlerTypedef *sbus)
+{
+    sbus->outStream[0] = MULTIPROTOCOL_FAILSAFE_HEADER;
+}
+
+void multiprotocolResetFailsafe(SBUS_HandlerTypedef *sbus)
+{
+    sbus->outStream[0] = MULTIPROTOCOL_BASE_HEADER;
+}
+
+static uint16_t isRadiolink(SBUS_HandlerTypedef *sbus)
+{
+    if (sbus->protocol == PROTO_RADIOLINK)
+    {
+        return MULTITX_YES;
+    }
+    return MULTITX_NO;
+}
+
+static void multiprotocolFailsafeAssignmentValues()
 {
     uint16_t i = 0;
+
+    for (i = 0; i < MAX_RC_CHANNEL; i++)
+    {
+        multiprotocolSetChannel(&sbus, i, (uint16_t)(((RCChanelGetFailsafeValue(&RCChanel[i])) << 1) & 0x07FF));
+    }
+
+    return;
+}
+
+static void multiprotocolAssignmentValues()
+{
+    uint16_t i = 0;
+
     for (i = 0; i < MAX_RC_CHANNEL; i++)
     {
         multiprotocolSetChannel(&sbus, i, (uint16_t)((RCChanelGetValue(&RCChanel[i]) << 1) & 0x07FF));
+    }
+
+    if (isRadiolink(&sbus) == MULTITX_YES)
+    {
+        for (i = 0; i < 8; i++)
+        {
+            multiprotocolSetChannel(&sbus, i + 8, (uint16_t)(((RCChanelGetFailsafeValue(&RCChanel[i])) << 1) & 0x07FF));
+        }
     }
 }
 
@@ -77,7 +115,20 @@ void multiprotocolSetChannel(SBUS_HandlerTypedef *sbus, uint16_t channelNumber, 
 
 void makeOutputStream(SBUS_HandlerTypedef *sbus)
 {
-    sbus->outStream[0] = MULTIPROTOCOL_HEADER;
+    uint8_t header = MULTIPROTOCOL_BASE_HEADER;
+
+    if (isFailsafeChanged() == RC_BUSY)
+    {
+        header = MULTIPROTOCOL_FAILSAFE_HEADER;
+        multiprotocolFailsafeAssignmentValues();
+        failsafeNewValueSetted();
+    }
+    else
+    {
+        multiprotocolAssignmentValues();
+    }
+
+    sbus->outStream[0] = header;
     sbus->outStream[1] = (uint8_t)((sbus->protocol & 0x001F) | (sbus->rangeCheckBit << 5) | (sbus->autoBindBit << 6) | (sbus->bind << 7));
     sbus->outStream[2] = (uint8_t)((sbus->rxNum & 0x000F) | (sbus->subProtocol << 4) | (sbus->lowPower << 7));
     sbus->outStream[3] = 0;

@@ -16,12 +16,13 @@ static lv_obj_t *ADC_current_label[GUI_CALIBRATE_CH_NUM] = {0};
 static lv_obj_t *ADC_min_label[GUI_CALIBRATE_CH_NUM] = {0};
 static lv_obj_t *ADC_max_label[GUI_CALIBRATE_CH_NUM] = {0};
 
-static enum calibrate_stem_enum_typedef {
+enum calibrate_stem_enum_typedef 
+{
     START_STEP,
     MIN_MAX_SET,
     CENTER_SET,
     CALIBRATE_DONE,
-    RETURN_TO_MAIN,
+    RETURN_TO_MAIN
 };
 
 static void back_button_handler(lv_event_t *e)
@@ -96,7 +97,7 @@ static void calibrate_handler(lv_timer_t *timer)
     case RETURN_TO_MAIN:
         lv_screen_change(lv_gui_main_screen());
         STsaveSettingsToFlash();
-        settings_changed();
+        // settings_changed();
         break;
     default:
         break;
