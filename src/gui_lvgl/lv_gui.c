@@ -180,12 +180,11 @@ const char *optionsDD = "ST\n"
 						"S14";
 #endif
 
-uint16_t change_settings_counter;
+static uint16_t change_settings_counter = 0;
+static uint16_t prev_change_settings_counter = 0;
 
 static void settings_update_handler(lv_timer_t *timer)
 {
-	static uint16_t prev_change_settings_counter = 0;
-
 	if (change_settings_counter == prev_change_settings_counter && prev_change_settings_counter != 0)
 	{
 		STsaveSettingsToFlash();

@@ -33,6 +33,8 @@ static void back_button_handler(lv_event_t *e)
     {
         lv_screen_change(lv_gui_main_screen());
     }
+
+    settings_changed();
 }
 
 static void calibrate_button_handler(lv_event_t *e)
@@ -97,7 +99,7 @@ static void calibrate_handler(lv_timer_t *timer)
     case RETURN_TO_MAIN:
         lv_screen_change(lv_gui_main_screen());
         STsaveSettingsToFlash();
-        // settings_changed();
+        // 
         break;
     default:
         break;

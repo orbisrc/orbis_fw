@@ -31,7 +31,7 @@ static void map_change_handle(lv_event_t *e)
 {
     uint16_t selected = lv_dropdown_get_selected(e->current_target);
     RCChanelBufferSetItem(selected, &RCChanel[current_channel]);
-    settings_changed();
+    
 }
 
 static void curve_type_change_handle(lv_event_t *e)
@@ -52,7 +52,7 @@ static void curve_type_change_handle(lv_event_t *e)
     RCChanelSetCurveType(selected, &RCChanel[current_channel]);
     STcurveFill(current_channel);
     lv_chart_refresh(curve_chart);
-    settings_changed();
+    
 }
 
 static void invert_switch_handler(lv_event_t *e)
@@ -64,14 +64,14 @@ static void invert_switch_handler(lv_event_t *e)
     {
         RCChanelSetInvertState(lv_obj_has_state(obj, LV_STATE_CHECKED) ? 1 : 0, &RCChanel[current_channel]);
     }
-    settings_changed();
+    
 }
 
 static void trim_change_handle(lv_obj_t *obj)
 {
     int32_t value = lv_slider_get_value(obj);
     RCChanelSetTrim(value, &RCChanel[current_channel]);
-    settings_changed();
+    
 }
 
 static void endpoint_change_handle(lv_obj_t *obj)
@@ -81,7 +81,7 @@ static void endpoint_change_handle(lv_obj_t *obj)
 
     RCChanelSetHightRate((uint16_t)value_right, &RCChanel[current_channel]);
     RCChanelSetLowRate((uint16_t) ~(value_left) + 1, &RCChanel[current_channel]);
-    settings_changed();
+    
 }
 
 static void expo_rate_change_handle(lv_obj_t *obj)
@@ -90,7 +90,7 @@ static void expo_rate_change_handle(lv_obj_t *obj)
     RCChanelSetExpoX((uint16_t)value, &RCChanel[current_channel]);
     STcurveFill(current_channel);
     lv_chart_refresh(curve_chart);
-    settings_changed();
+    
 }
 
 static void back_button_handler(lv_event_t *e)
@@ -101,6 +101,8 @@ static void back_button_handler(lv_event_t *e)
     {
         lv_screen_change(lv_gui_main_screen());
     }
+
+    settings_changed();
 }
 
 static lv_obj_t *lv_chart(lv_obj_t *parent)

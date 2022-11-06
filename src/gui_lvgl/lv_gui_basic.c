@@ -14,6 +14,8 @@ static void back_button_handler(lv_event_t *e)
     {
         lv_screen_change(lv_gui_main_screen());
     }
+
+    settings_changed();
 }
 
 static void beeper_switch_handler(lv_event_t *e)
@@ -46,7 +48,7 @@ static void usb_mode_dd_handler(lv_event_t *e)
     if (code == LV_EVENT_VALUE_CHANGED)
     {
         CommonSettings.USBmode = lv_dropdown_get_selected(obj);
-        settings_changed();
+        
     }
 }
 
@@ -90,7 +92,7 @@ static void multi_sub_protocol_mode_dd_handler(lv_event_t *e)
         lv_obj_t *obj = lv_event_get_target(e);
         uint16_t selected = lv_dropdown_get_selected(obj);
         multiprotocolSetSubProtocol(selected, &sbus);
-        settings_changed();
+        
     }
 }
 

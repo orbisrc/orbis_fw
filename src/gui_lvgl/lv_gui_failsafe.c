@@ -29,6 +29,8 @@ static void back_button_handler(lv_event_t *e)
     {
         lv_screen_change(lv_gui_main_screen());
     }
+
+    settings_changed();
 }
 
 static void failsafe_change_handler(lv_obj_t *obj)
