@@ -28,7 +28,7 @@ static void screen_delete_cb(lv_event_t *e)
 static void battery_update_handler(lv_timer_t *timer)
 {
     lv_obj_t *label = timer->user_data;
-    lv_label_set_text_fmt(label, "%.1fV", (float)AIgetValue(&AnalogChannel[BatteryADC]) / 100);
+    lv_label_set_text_fmt(label, "%.1fV", (float)(AIgetValue(&AnalogChannel[BatteryADC]) + CommonSettings.BatteryAdjustment) / 100);
 }
 
 static void st_trim_change_handle(lv_obj_t *obj)
@@ -148,7 +148,7 @@ lv_obj_t *lv_gui_main_screen(void)
     lv_obj_t *rssi_label = lv_label(screen, LV_TEXT_ALIGN_LEFT, NULL, "RSSI: ---");
     lv_obj_set_width(rssi_label, 100);
     lv_obj_t *battery_label = lv_label(screen, LV_TEXT_ALIGN_RIGHT, NULL, "0.0v");
-    lv_label_set_text_fmt(battery_label, "%.1fV", (float)AIgetValue(&AnalogChannel[BatteryADC]) / 100);
+    lv_label_set_text_fmt(battery_label, "%.1fV", (float)(AIgetValue(&AnalogChannel[BatteryADC]) + CommonSettings.BatteryAdjustment) / 100);
     lv_obj_t *battery_icon = lv_label(screen, LV_TEXT_ALIGN_RIGHT, NULL, LV_SYMBOL_BATTERY_2);
     lv_obj_t *model_name = lv_model_name(screen);
     lv_obj_t *timer1 = lv_timer(screen, set_timer1_data);

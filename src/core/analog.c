@@ -66,11 +66,6 @@ void AnalogInputInit (void)
 	AnalogChannel[BatteryADC].ScaleCenter = (uint16_t)(BATTERY_VOLTAGE_MAX + BATTERY_VOLTAGE_MIN)/2;
 	AnalogChannel[BatteryADC].EMA = BATTERY_EMA_ALPHA;
 	AIsetL(CommonSettings.BatteryAlarmValue, &AnalogChannel[BatteryADC]);
-
-//	AIsetADCEnableInverting(&AnalogChannel[AileronADC]);
-//	AIsetADCEnableInverting(&AnalogChannel[ThrottleADC]);
-
-//	HAL_ADC_Start_IT  (&hadc1);
 }
 
 void AnalogInputMain (void)

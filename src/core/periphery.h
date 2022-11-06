@@ -49,6 +49,7 @@ typedef struct {
 	uint16_t State;					//
 	uint16_t prevState;				//
 	uint16_t prevLongPressState;		//
+	uint16_t prevSimplePressState;		//
 	uint32_t prevTimerState;			//
 } BTN_HandlerTypeDef;
 
@@ -118,6 +119,7 @@ extern Beeper_HandlerTypeDef MainBeeper;
 void BTN_Init(void);
 uint16_t buttonPress(BTN_HandlerTypeDef *BTNx);
 uint16_t buttonPressLong(BTN_HandlerTypeDef *BTNx);
+uint16_t buttonPressSimple(BTN_HandlerTypeDef *BTNx);
 
 void BPR_Init(void);
 void BeeperHandler(Beeper_HandlerTypeDef *BPRx);

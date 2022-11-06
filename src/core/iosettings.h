@@ -92,7 +92,7 @@ typedef struct{
 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 * 1 - Joystick
 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 * 2 - SC card reader
 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 */
-	uint16_t					BatteryAdjustment;
+	int16_t					BatteryAdjustment;
 
 }CommonSettingsTypedef;
 

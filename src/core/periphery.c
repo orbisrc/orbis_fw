@@ -115,11 +115,6 @@ uint16_t buttonPress(BTN_HandlerTypeDef *BTNx)
 	return buttonState;
 }
 
-/*******************************************************************************
- * ������� ������� �� ������
- * ��������� ������ �� ������������, ��� ������.
- *
- */
 uint16_t buttonPressLong(BTN_HandlerTypeDef *BTNx)
 {
 	uint16_t buttonState = 0;
@@ -149,9 +144,28 @@ uint16_t buttonPressLong(BTN_HandlerTypeDef *BTNx)
 	return buttonState;
 }
 
-/*******************************************************************************
- * �������
- */
+uint16_t buttonPressSimple(BTN_HandlerTypeDef *BTNx)
+{
+	uint16_t buttonState = 0;
+
+	if (HAL_GPIO_ReadPin(BTNx->Port, BTNx->Pin) == PIN_PUSH)
+	{
+
+		if ((HAL_GetTick() - (uint32_t)BTNx->prevTimerState) >= (uint32_t)BTNx->shortPressDuration)
+		{
+
+			buttonState = BUTTON_PRESS;
+			BTNx->prevSimplePressState = BUTTON_PRESS;
+		}
+	}
+	else
+	{
+		BTNx->prevSimplePressState = BUTTON_NOT_PRESS;
+		BTNx->prevTimerState = HAL_GetTick();
+	}
+
+	return buttonState;
+}
 
 void BPR_Init()
 {

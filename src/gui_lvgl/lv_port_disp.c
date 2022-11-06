@@ -117,7 +117,7 @@ static void encoder_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
 
     static int32_t encoder_diff = 0;
 
-    data->state = buttonPress(&hbtnEnter);
+    data->state = buttonPressSimple(&hbtnEnter);
     data->enc_diff = EncoderGetCounter(&Encoder) - encoder_diff;
 
     encoder_diff = EncoderGetCounter(&Encoder);
