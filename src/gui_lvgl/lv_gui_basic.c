@@ -48,7 +48,17 @@ static void usb_mode_dd_handler(lv_event_t *e)
     if (code == LV_EVENT_VALUE_CHANGED)
     {
         CommonSettings.USBmode = lv_dropdown_get_selected(obj);
-        
+    }
+}
+
+static void battery_adjust_handler(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t *obj = lv_event_get_target(e);
+
+    if (code == LV_EVENT_VALUE_CHANGED)
+    {
+        CommonSettings.BatteryAdjustment = (int16_t)lv_spinbox_get_value(obj);
     }
 }
 
@@ -92,7 +102,6 @@ static void multi_sub_protocol_mode_dd_handler(lv_event_t *e)
         lv_obj_t *obj = lv_event_get_target(e);
         uint16_t selected = lv_dropdown_get_selected(obj);
         multiprotocolSetSubProtocol(selected, &sbus);
-        
     }
 }
 
@@ -115,7 +124,7 @@ static void bind_button_handler(lv_event_t *e)
 static lv_obj_t *lv_current_dropdawn(lv_obj_t *parent, lv_event_cb_t event_cb, const char *items)
 {
     lv_obj_t *dd = lv_gui_dropdown(parent, event_cb, items);
-    lv_obj_set_size(dd, 124, 32);
+    lv_obj_set_size(dd, 124, 36);
 
     return dd;
 }
@@ -126,6 +135,21 @@ static lv_obj_t *lv_current_label(lv_obj_t *parrent, const char *text)
     lv_obj_set_size(label, 98, 22);
 
     return label;
+}
+
+static lv_obj_t *lv_battery_adjust(lv_obj_t *parent)
+{
+    lv_obj_t *spinbox = lv_spinbox_create(parent);
+    lv_spinbox_set_range(spinbox, -1 * BATTERY_VOLTAGE_MAX, BATTERY_VOLTAGE_MAX);
+    lv_spinbox_set_digit_format(spinbox, 4, 2);
+    lv_spinbox_step_prev(spinbox);
+    lv_obj_set_size(spinbox, 124, 36);
+    lv_obj_center(spinbox);
+    lv_obj_add_event_cb(spinbox, battery_adjust_handler, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_spinbox_set_value(spinbox, CommonSettings.BatteryAdjustment);
+    lv_spinbox_set_pos(spinbox, 0);
+
+    return spinbox;
 }
 
 lv_obj_t *lv_gui_basic(void)
@@ -148,6 +172,10 @@ lv_obj_t *lv_gui_basic(void)
     lv_obj_t *usb_mode_label = lv_current_label(screen, "USB mode");
     lv_obj_t *usb_mode_dd = lv_current_dropdawn(screen, usb_mode_dd_handler, usb_mode_opts);
     lv_dropdown_set_selected(usb_mode_dd, CommonSettings.USBmode);
+
+    lv_obj_t *battery_adjust_label = lv_current_label(screen, "Battery adj");
+    lv_obj_t *battery_adjust = lv_battery_adjust(screen);
+
     lv_obj_t *protocol_label = lv_current_label(screen, "TX");
     lv_obj_t *bind_button = lv_button(screen, bind_button_handler, "Bind");
     lv_obj_t *protocols = lv_current_dropdawn(screen, protocol_mode_dd_handler, getProtocolsOptions());
@@ -174,7 +202,10 @@ lv_obj_t *lv_gui_basic(void)
     lv_obj_align_to(usb_mode_label, trim_beeper_label, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, GUI_MARGIN * 2);
     lv_obj_align_to(usb_mode_dd, usb_mode_label, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN, 0);
 
-    lv_obj_align_to(protocol_label, usb_mode_label, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, GUI_MARGIN * 3);
+    lv_obj_align_to(battery_adjust_label, usb_mode_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, GUI_MARGIN * 4);
+    lv_obj_align_to(battery_adjust, battery_adjust_label, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN, 0);
+
+    lv_obj_align_to(protocol_label, battery_adjust_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, GUI_MARGIN * 4);
     lv_obj_align_to(protocols, protocol_label, LV_ALIGN_OUT_RIGHT_MID, GUI_MARGIN, 0);
     lv_obj_align_to(bind_button, protocols, LV_ALIGN_OUT_LEFT_MID, -GUI_MARGIN, 0);
     lv_obj_align_to(multi_sub_protocols, protocols, LV_ALIGN_OUT_BOTTOM_MID, 0, GUI_MARGIN);
