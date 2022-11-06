@@ -44,7 +44,7 @@ static void load_profile_button_handler(lv_event_t *e)
     {
         CommonSettings.CurrentModelID = profile->ID;
         STloadProfile(&ModelSettings[CommonSettings.CurrentModelID]);
-        settings_changed();
+        
         lv_screen_change(lv_gui_main_screen());
     }
 }
@@ -91,7 +91,7 @@ static void keyboard_accept_handler(lv_event_t *e)
     ModelSettingsTypeDef *profile = e->user_data;
 
     strlcpy(profile->Name, lv_textarea_get_text(text), MAX_RC_NAME);
-    settings_changed();
+    
     lv_screen_change(lv_gui_models());
 }
 
