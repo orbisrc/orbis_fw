@@ -818,6 +818,7 @@ enum XK
 {
 	X450 = 0,
 	X420 = 1,
+	XK_CARS = 2,
 };
 enum XN297DUMP
 {
@@ -925,7 +926,7 @@ enum MULTITX_SUB_PROTO_enum_
 {
 	MULTITX_NO,
 	MULTITX_YES
-} MULTITX_SUB_PROTO_enum;
+};
 
 typedef struct SBUS_HandlerTypedef_
 {

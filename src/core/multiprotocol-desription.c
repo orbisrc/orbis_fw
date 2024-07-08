@@ -265,6 +265,7 @@ const MULTITX_SUB_PROTO_ItemTypedef sub_protocol_v911s[] = {
 const MULTITX_SUB_PROTO_ItemTypedef sub_protocol_xk[] = {
     CLI_SUB_PROTOCOL_DEF("X450", 16, X450),
     CLI_SUB_PROTOCOL_DEF("X420", 16, X420),
+    CLI_SUB_PROTOCOL_DEF("Cars", 16, XK_CARS),
     CLI_SUB_PROTOCOL_DEF(NULL, 0, 0)};
 
 const MULTITX_SUB_PROTO_ItemTypedef sub_protocol_xn297dump[] = {

@@ -168,7 +168,7 @@ LDFLAGS = 	$(MCU) -specs=nano.specs \
 			-Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref \
 			-Wl,--gc-sections,--print-memory-usage
 # default action: build all
-all: current_target copy  dfu
+all: current_target copy
 
 current_target: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
