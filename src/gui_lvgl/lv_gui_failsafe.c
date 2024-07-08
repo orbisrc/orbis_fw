@@ -9,8 +9,6 @@
 
 static lv_obj_t *___lv_failsafe_ch_bar[FAILSAFE_CHANNEL_NUMBER];
 
-lv_obj_t *trim;
-
 static uint16_t guiToValue(int16_t value)
 {
     return (uint16_t)((value - GUI_TRIM_MIN) * (FAILSAFE_CH_MAX - FAILSAFE_CH_MIN) / (GUI_TRIM_MAX - GUI_TRIM_MIN) + FAILSAFE_CH_MIN);
