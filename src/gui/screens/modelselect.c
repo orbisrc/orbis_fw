@@ -103,6 +103,8 @@ void _ModelSelect() {
 
 						STappClearBuff(&STApp);
 
+						STsaveSettingsToFlash();
+
 						rename_wait_flag[i] = 0;
 					}
 			 }

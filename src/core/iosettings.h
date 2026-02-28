@@ -19,6 +19,7 @@
 #ifndef ST_IOSETTINGS_H_
 #define ST_IOSETTINGS_H_
 
+#include <stdint.h>
 #include "main.h"
 #include "stconfig.h"
 
@@ -26,11 +27,13 @@
 #define BOOTLOADER_RESET						0x00000000
 #define OBJECT_RESET_REASON						1
 
-#define	SYSTEM_SETTINGS_FLASH_START_ADDRESS		0x000000
-#define	MODEL_PROFILE_FLASH_START_ADDRESS		0x001000
+#define	SYSTEM_SETTINGS_FLASH_START_ADDRESS		0x000000	/* sector A (primary)  */
+#define	SYSTEM_SETTINGS_FLASH_START_ADDRESS_B	0x001000	/* sector B (backup)   */
+#define	MODEL_PROFILE_FLASH_START_ADDRESS		0x002000	/* sector 2            */
 
-#define	SYSTEM_SETTINGS_FLASH_SECTOR			0x00
-#define	MODEL_PROFILE_FLASH_SECTOR				0x01
+#define	SYSTEM_SETTINGS_FLASH_SECTOR_A			0x00		/* CommonSettings primary */
+#define	SYSTEM_SETTINGS_FLASH_SECTOR_B			0x01		/* CommonSettings backup  */
+#define	MODEL_PROFILE_FLASH_SECTOR				0x02
 
 typedef struct{
 
@@ -93,6 +96,8 @@ typedef struct{
 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 * 2 - SC card reader
 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 */
 	int16_t					BatteryAdjustment;
+
+	uint32_t				Checksum;				/* CRC-sum — MUST be the last field */
 
 }CommonSettingsTypedef;
 

@@ -35,6 +35,27 @@
 ModelSettingsTypeDef ModelSettings[MODEL_FLASH_NUM] = {0};
 CommonSettingsTypedef CommonSettings;
 
+/*
+ * Compute additive checksum over all fields of CommonSettings except the
+ * Checksum field itself (which is always the last field in the struct).
+ */
+static uint32_t STcomputeSettingsChecksum(const CommonSettingsTypedef *s)
+{
+	const uint8_t *data = (const uint8_t *)s;
+	uint32_t size = sizeof(CommonSettingsTypedef) - sizeof(uint32_t);
+	uint32_t sum = 0xA5A5A5A5UL;
+
+	for (uint32_t i = 0; i < size; i++)
+		sum += data[i];
+
+	return sum;
+}
+
+static uint8_t STvalidateCommonSettings(const CommonSettingsTypedef *s)
+{
+	return s->Checksum == STcomputeSettingsChecksum(s);
+}
+
 void STmodelProfileInit(void)
 {
 	uint16_t i = 0;
@@ -82,6 +103,7 @@ void STmodelProfileInit(void)
 
 	CommonSettings.DisplayBrightness = BRIGHTNESS_MAX;
 	CommonSettings.CurrentModelID = 1;
+	CommonSettings.VibroDuration = 0;
 	CommonSettings.FistStartDO = 0xBEAF;
 	CommonSettings.BatteryAlarmValue = BATTERY_ALARM_LOW;
 	CommonSettings.InactivityDuration = INACTIVITY_TIME;
@@ -209,38 +231,57 @@ void STreadSettingsFromFlash(void)
 
 #elif MODEL_PROFILE_STORAGE == 1
 
-	uint8_t *SettingsPointer;
+	uint8_t valid = 0;
 
 	/*
-	 * Read system settings
+	 * Try primary CommonSettings (sector A).
 	 */
-	SettingsPointer = (void *)&CommonSettings;
-	W25qxx_ReadBytes(SettingsPointer, SYSTEM_SETTINGS_FLASH_START_ADDRESS, sizeof(CommonSettings));
+	W25qxx_ReadBytes((uint8_t *)&CommonSettings, SYSTEM_SETTINGS_FLASH_START_ADDRESS, sizeof(CommonSettings));
 
-	/*
-	 * Read model profile
-	 */
-
-	SettingsPointer = (void *)&ModelSettings;
-	W25qxx_ReadBytes(SettingsPointer, MODEL_PROFILE_FLASH_START_ADDRESS, sizeof(ModelSettings));
-
-	/*
-	 * If first use
-	 */
-	if (CommonSettings.FistStartDO != 0xBEAF)
+	if (STvalidateCommonSettings(&CommonSettings))
 	{
+		valid = 1;
+	}
+	else
+	{
+		/*
+		 * Primary corrupted (e.g. power loss during write).
+		 * Try backup CommonSettings (sector B).
+		 */
+		W25qxx_ReadBytes((uint8_t *)&CommonSettings, SYSTEM_SETTINGS_FLASH_START_ADDRESS_B, sizeof(CommonSettings));
+
+		if (STvalidateCommonSettings(&CommonSettings))
+		{
+			valid = 1;
+
+			/* Restore primary from backup so next boot is normal. */
+			W25qxx_EraseSector(SYSTEM_SETTINGS_FLASH_SECTOR_A);
+			W25qxx_WriteSector((uint8_t *)&CommonSettings, SYSTEM_SETTINGS_FLASH_SECTOR_A, 0, sizeof(CommonSettings));
+		}
+	}
+
+	if (!valid)
+	{
+		/*
+		 * Both sectors corrupted or first start — initialise defaults.
+		 */
 		STmodelProfileInit();
 
 		STloadCommonSettings(&CommonSettings);
 
 		STloadProfile(&ModelSettings[CommonSettings.CurrentModelID]);
-	}
-	else
-	{
-		STloadCommonSettings(&CommonSettings);
 
-		STloadProfile(&ModelSettings[CommonSettings.CurrentModelID]);
+		return;
 	}
+
+	/*
+	 * Read model profiles.
+	 */
+	W25qxx_ReadBytes((uint8_t *)&ModelSettings, MODEL_PROFILE_FLASH_START_ADDRESS, sizeof(ModelSettings));
+
+	STloadCommonSettings(&CommonSettings);
+
+	STloadProfile(&ModelSettings[CommonSettings.CurrentModelID]);
 
 #endif
 }
@@ -284,19 +325,29 @@ void STsaveSettingsToFlash(void)
 	HAL_FLASH_Lock();
 #elif MODEL_PROFILE_STORAGE == 1
 
-	uint8_t *SettingsPointer;
+	/*
+	 * Compute checksum before writing.
+	 */
+	CommonSettings.Checksum = STcomputeSettingsChecksum(&CommonSettings);
 
-	SettingsPointer = (void *)&CommonSettings;
+	/*
+	 * Atomic write for CommonSettings:
+	 * 1. Write to backup sector B first.
+	 * 2. Then erase + write primary sector A.
+	 * If power is lost between steps 1 and 2, sector B is still valid
+	 * and settings will be recovered on next boot.
+	 */
+	W25qxx_EraseSector(SYSTEM_SETTINGS_FLASH_SECTOR_B);
+	W25qxx_WriteSector((uint8_t *)&CommonSettings, SYSTEM_SETTINGS_FLASH_SECTOR_B, 0, sizeof(CommonSettings));
 
-	W25qxx_EraseSector(SYSTEM_SETTINGS_FLASH_SECTOR);
+	W25qxx_EraseSector(SYSTEM_SETTINGS_FLASH_SECTOR_A);
+	W25qxx_WriteSector((uint8_t *)&CommonSettings, SYSTEM_SETTINGS_FLASH_SECTOR_A, 0, sizeof(CommonSettings));
 
-	W25qxx_WriteSector(SettingsPointer, SYSTEM_SETTINGS_FLASH_SECTOR, 0, sizeof(CommonSettings));
-
-	SettingsPointer = (void *)ModelSettings;
-
+	/*
+	 * Save model profiles.
+	 */
 	W25qxx_EraseSector(MODEL_PROFILE_FLASH_SECTOR);
-
-	W25qxx_WriteSector(SettingsPointer, MODEL_PROFILE_FLASH_SECTOR, 0, sizeof(ModelSettings));
+	W25qxx_WriteSector((uint8_t *)ModelSettings, MODEL_PROFILE_FLASH_SECTOR, 0, sizeof(ModelSettings));
 
 #endif
 }
@@ -411,8 +462,8 @@ void JumpToBootloader(void)
 
 void AllReset(void)
 {
-	W25qxx_EraseSector(SYSTEM_SETTINGS_FLASH_SECTOR);
-
+	W25qxx_EraseSector(SYSTEM_SETTINGS_FLASH_SECTOR_A);
+	W25qxx_EraseSector(SYSTEM_SETTINGS_FLASH_SECTOR_B);
 	W25qxx_EraseSector(MODEL_PROFILE_FLASH_SECTOR);
 
 	NVIC_SystemReset();
