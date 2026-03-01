@@ -66,10 +66,13 @@ static FlashFsmState  flash_fsm        = FSM_FLASH_IDLE;
 static uint8_t        save_requested   = 0;
 static uint8_t        flash_page_idx   = 0;    /* current page index during write models */
 static uint8_t        flash_page_total = 0;    /* total pages for models */
+static uint8_t        dma_complete     = 1;    /* DMA transfer complete flag */
+static uint8_t        fsm_active       = 0;    /* FSM is running (using DMA) */
 
 /* Snapshots: we don't write directly from live buffers during async save */
 static CommonSettingsTypedef  snap_common;
 static ModelSettingsTypeDef   snap_models[MODEL_FLASH_NUM];
+
 
 void STrequestSettingsSave(void)
 {
@@ -81,6 +84,45 @@ uint8_t STisFlashSaving(void)
 	return flash_fsm != FSM_FLASH_IDLE;
 }
 
+/* --- Async DMA Write Page Function --- */
+void STw25qxxWritePageStartDMA(uint8_t *pBuffer, uint32_t page_addr, uint32_t num_bytes)
+{
+	if (num_bytes == 0 || num_bytes > w25qxx.PageSize)
+		num_bytes = w25qxx.PageSize;
+
+	uint32_t addr = page_addr * w25qxx.PageSize;
+
+	dma_complete = 0;
+
+	/* WriteEnable without delay */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_RESET);
+	W25qxx_Spi(0x06);  /* WREN */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
+
+	/* Page Program 0x02 */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_RESET);
+	W25qxx_Spi(0x02);
+	W25qxx_Spi((addr & 0xFF0000) >> 16);
+	W25qxx_Spi((addr & 0xFF00) >> 8);
+	W25qxx_Spi(addr & 0xFF);
+
+	/* Use DMA for data transmission */
+	HAL_SPI_Transmit_DMA(&_W25QXX_SPI, pBuffer, num_bytes);
+	/* Flash will start programming internally after CS goes high */
+}
+
+uint8_t STw25qxxIsDMAComplete(void)
+{
+	return dma_complete;
+}
+
+void STw25qxxSetDMAComplete(void)
+{
+	/* Only set DMA complete flag when FSM is actively using DMA */
+	if (fsm_active)
+		dma_complete = 1;
+}
+
 void STflashSaveTick(void)
 {
 	switch (flash_fsm) {
@@ -88,6 +130,7 @@ void STflashSaveTick(void)
 		if (!save_requested)
 			return;
 		save_requested = 0;
+		fsm_active = 1;  /* Enable DMA callbacks */
 		flash_fsm = FSM_FLASH_SNAPSHOT;
 		break;
 
@@ -192,13 +235,15 @@ void STflashSaveTick(void)
 		uint32_t offset     = flash_page_idx * w25qxx.PageSize;
 		uint32_t remaining  = sizeof(snap_models) - offset;
 		uint32_t chunk      = remaining < w25qxx.PageSize ? remaining : w25qxx.PageSize;
-		STw25qxxWritePageStart((uint8_t*)snap_models + offset,
-							   first_page + flash_page_idx, chunk);
+		STw25qxxWritePageStartDMA((uint8_t*)snap_models + offset,
+								  first_page + flash_page_idx, chunk);
 		flash_fsm = FSM_FLASH_WAIT_WRITE_MODELS;
 		break;
 	}
 
 	case FSM_FLASH_WAIT_WRITE_MODELS:
+		if (!STw25qxxIsDMAComplete())
+			return;
 		if (STw25qxxIsBusy())
 			return;
 		flash_page_idx++;
@@ -206,6 +251,7 @@ void STflashSaveTick(void)
 		break;
 
 	case FSM_FLASH_DONE:
+		fsm_active = 0;  /* Disable DMA callbacks */
 		flash_fsm = FSM_FLASH_IDLE;
 		break;
 	}
@@ -326,6 +372,7 @@ void STmodelProfileInit(void)
 
 	STloadCommonSettings(&CommonSettings);
 
+	/* Use synchronous save at init (one-time, fast operation) */
 	STsaveSettingsToFlash();
 }
 

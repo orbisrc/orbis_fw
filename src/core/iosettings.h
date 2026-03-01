@@ -152,6 +152,11 @@ uint8_t  STw25qxxIsBusy(void);
 void     STw25qxxEraseSectorStart(uint32_t SectorAddr);
 void     STw25qxxWritePageStart(uint8_t *pBuffer, uint32_t page_addr, uint32_t num_bytes);
 
+/* W25Q16 DMA async write functions */
+void     STw25qxxWritePageStartDMA(uint8_t *pBuffer, uint32_t page_addr, uint32_t num_bytes);
+uint8_t  STw25qxxIsDMAComplete(void);
+void     STw25qxxSetDMAComplete(void);
+
 
 /*
  * Common
