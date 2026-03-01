@@ -75,7 +75,7 @@ void _ModelMenu()
 			 *
 			 */
 
-			STsaveSettingsToFlash();
+			STrequestSettingsSave();
 		}
 		/*
 		 * ������� �� ����� ���������� ��������� �������

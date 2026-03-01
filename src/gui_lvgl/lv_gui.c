@@ -187,7 +187,7 @@ static void settings_update_handler(lv_timer_t *timer)
 {
 	if (change_settings_counter == prev_change_settings_counter && prev_change_settings_counter != 0)
 	{
-		STsaveSettingsToFlash();
+		STrequestSettingsSave();
 		change_settings_counter = 0;
 	}
 

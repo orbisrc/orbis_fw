@@ -74,7 +74,7 @@ void _ModelSelect() {
 		if (STbuttonPressed(&BackToModelMenuButtonMS)) {
 			STappSetScreen(ModelMenu, &STApp);
 
-			STsaveSettingsToFlash();
+			STrequestSettingsSave();
 		}
 
 		for (i = 0; i < LIST_COUNTER; i++) {
@@ -103,7 +103,7 @@ void _ModelSelect() {
 
 						STappClearBuff(&STApp);
 
-						STsaveSettingsToFlash();
+						STrequestSettingsSave();
 
 						rename_wait_flag[i] = 0;
 					}

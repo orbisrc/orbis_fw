@@ -21,6 +21,7 @@
 #include "spi.h"
 #include "gui_lvgl/lv_port_disp.h"
 #include "S6D0154X.h"
+#include "core/iosettings.h"
 
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
@@ -224,9 +225,18 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef *spiHandle)
 }
 
 /* USER CODE BEGIN 1 */
+
+#include "w25qxxConf.h"
+
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-  if (hspi == &hspi2)
+  if (hspi == &hspi1)
+  {
+    /* W25Q16 Flash DMA write complete - raise CS to finish command */
+    HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
+    STw25qxxSetDMAComplete();
+  }
+  else if (hspi == &hspi2)
   {
 #if LCD_BOARD == 1
 
@@ -237,6 +247,16 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 
 #endif
     lv_disp_flush_ready(&disp_drv);
+  }
+}
+
+void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
+{
+  if (hspi == &hspi1)
+  {
+    /* Mark DMA complete even on error to avoid infinite wait, raise CS */
+    HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
+    STw25qxxSetDMAComplete();
   }
 }
 /* USER CODE END 1 */

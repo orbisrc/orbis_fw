@@ -34,6 +34,7 @@
 #define	SYSTEM_SETTINGS_FLASH_SECTOR_A			0x00		/* CommonSettings primary */
 #define	SYSTEM_SETTINGS_FLASH_SECTOR_B			0x01		/* CommonSettings backup  */
 #define	MODEL_PROFILE_FLASH_SECTOR				0x02
+#define	MODEL_PROFILE_FLASH_SECTOR_2			0x03		/* Extra sector for large model data */
 
 typedef struct{
 
@@ -101,6 +102,24 @@ typedef struct{
 
 }CommonSettingsTypedef;
 
+typedef enum {
+	FSM_FLASH_IDLE = 0,
+	FSM_FLASH_SNAPSHOT,           /* snapshot RAM → buffer         */
+	FSM_FLASH_ERASE_COMMON_B,     /* start sector B erase           */
+	FSM_FLASH_WAIT_ERASE_B,       /* wait for erase B to complete   */
+	FSM_FLASH_WRITE_COMMON_B,     /* start writing page            */
+	FSM_FLASH_WAIT_WRITE_B,       /* wait for write to complete     */
+	FSM_FLASH_ERASE_COMMON_A,
+	FSM_FLASH_WAIT_ERASE_A,
+	FSM_FLASH_WRITE_COMMON_A,
+	FSM_FLASH_WAIT_WRITE_A,
+	FSM_FLASH_ERASE_MODELS,
+	FSM_FLASH_WAIT_ERASE_MODELS,
+	FSM_FLASH_WRITE_MODELS,       /* loop through pages             */
+	FSM_FLASH_WAIT_WRITE_MODELS,
+	FSM_FLASH_DONE,
+} FlashFsmState;
+
 extern ModelSettingsTypeDef ModelSettings[MODEL_FLASH_NUM];
 
 extern CommonSettingsTypedef CommonSettings;
@@ -122,6 +141,21 @@ uint8_t STreadSettingsFromSDcard(void);
 void STsaveSettingsToFlash(void);
 
 void STreadSettingsFromFlash(void);
+
+/* Async flash save API */
+void STrequestSettingsSave(void);   /* request async save */
+void STflashSaveTick(void);         /* call from main loop */
+uint8_t STisFlashSaving(void);      /* 1 if save in progress */
+
+/* W25Q16 async helper functions (non-blocking) */
+uint8_t  STw25qxxIsBusy(void);
+void     STw25qxxEraseSectorStart(uint32_t SectorAddr);
+void     STw25qxxWritePageStart(uint8_t *pBuffer, uint32_t page_addr, uint32_t num_bytes);
+
+/* W25Q16 DMA async write functions */
+void     STw25qxxWritePageStartDMA(uint8_t *pBuffer, uint32_t page_addr, uint32_t num_bytes);
+uint8_t  STw25qxxIsDMAComplete(void);
+void     STw25qxxSetDMAComplete(void);
 
 
 /*

@@ -60,7 +60,7 @@ void _MainMenu() {
 		if (STbuttonPressed(&MainScreenButton))
 		{
 			STappSetScreen(MainScreenScr, &STApp);
-			STsaveSettingsToFlash();
+			STrequestSettingsSave();
 		}
 
 		for(i = 0; i < MAIN_MENU_BUTTON_NUM; i++)
