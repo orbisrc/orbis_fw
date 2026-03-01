@@ -50,7 +50,7 @@ void _ModelProfile() {
 			 *
 			 */
 
-			STsaveSettingsToFlash();
+			STrequestSettingsSave();
 		}
 
 		/*
@@ -77,7 +77,7 @@ void _ModelProfile() {
 		if (STappGetTextBuffState(&STApp) == Yes) {
 			strlcpy(ModelSettings[STgetCurrentModelID()].Name, STappGetInputTextBuff(&STApp),	MAX_RC_NAME);
 			STappClearBuff(&STApp);
-			STsaveSettingsToFlash();
+			STrequestSettingsSave();
 		}
 
 		/*

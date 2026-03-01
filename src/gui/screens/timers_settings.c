@@ -111,7 +111,7 @@ void _TimerSet()
 	if (STscreenShowNow(&TimerSetST)) {
 		if (STbuttonPressed(&BackToModelMenuButtonTimSet)) {
 
-			STsaveSettingsToFlash();
+			STrequestSettingsSave();
 
 			STappSetScreen(MainScreenScr, &STApp);
 		}

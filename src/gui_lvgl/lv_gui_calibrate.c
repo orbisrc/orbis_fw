@@ -98,7 +98,7 @@ static void calibrate_handler(lv_timer_t *timer)
 
     case RETURN_TO_MAIN:
         lv_screen_change(lv_gui_main_screen());
-        STsaveSettingsToFlash();
+        STrequestSettingsSave();
         // 
         break;
     default:

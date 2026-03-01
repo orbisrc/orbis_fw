@@ -120,6 +120,8 @@ void CommonRun(void)
 
 	StartTimePoint = HAL_GetTick();
 
+	STflashSaveTick();
+
 	lv_gui();
 	DiscreteInputMain();
 	DiscretBufferHandler();

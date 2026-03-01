@@ -121,7 +121,7 @@ void _BasicSettings()
 		{
 			STappSetScreen(SystemMenu, &STApp);
 
-			STsaveSettingsToFlash();
+			STrequestSettingsSave();
 		}
 
 

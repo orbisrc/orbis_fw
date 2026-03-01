@@ -24,6 +24,7 @@
 #include "stm32f4xx_hal.h"
 #include "periphery/adc.h"
 #include "w25qxx.h"
+#include "w25qxxConf.h"
 #include "gui/stdispdriver.h"
 #include "gui/stapp.h"
 #include "core/auxiliary.h"
@@ -34,6 +35,10 @@
 
 ModelSettingsTypeDef ModelSettings[MODEL_FLASH_NUM] = {0};
 CommonSettingsTypedef CommonSettings;
+
+/* Verify that ModelSettings fits in 2 sectors (8KB = 2 × 4096) */
+_Static_assert(sizeof(ModelSettings) <= 2 * 4096,
+	"ModelSettings exceeds 2 W25Q16 sectors (8KB)");
 
 /*
  * Compute additive checksum over all fields of CommonSettings except the
@@ -54,6 +59,211 @@ static uint32_t STcomputeSettingsChecksum(const CommonSettingsTypedef *s)
 static uint8_t STvalidateCommonSettings(const CommonSettingsTypedef *s)
 {
 	return s->Checksum == STcomputeSettingsChecksum(s);
+}
+
+/* --- Async Flash Save State Machine --- */
+static FlashFsmState  flash_fsm        = FSM_FLASH_IDLE;
+static uint8_t        save_requested   = 0;
+static uint8_t        flash_page_idx   = 0;    /* current page index during write models */
+static uint8_t        flash_page_total = 0;    /* total pages for models */
+
+/* Snapshots: we don't write directly from live buffers during async save */
+static CommonSettingsTypedef  snap_common;
+static ModelSettingsTypeDef   snap_models[MODEL_FLASH_NUM];
+
+void STrequestSettingsSave(void)
+{
+	save_requested = 1;
+}
+
+uint8_t STisFlashSaving(void)
+{
+	return flash_fsm != FSM_FLASH_IDLE;
+}
+
+void STflashSaveTick(void)
+{
+	switch (flash_fsm) {
+	case FSM_FLASH_IDLE:
+		if (!save_requested)
+			return;
+		save_requested = 0;
+		flash_fsm = FSM_FLASH_SNAPSHOT;
+		break;
+
+	case FSM_FLASH_SNAPSHOT:
+		STsaveCommonSettings(&CommonSettings);
+		STsaveProfile(&ModelSettings[CommonSettings.CurrentModelID]);
+		CommonSettings.Checksum = STcomputeSettingsChecksum(&CommonSettings);
+		memcpy(&snap_common, &CommonSettings, sizeof(CommonSettings));
+		memcpy(snap_models,  ModelSettings,   sizeof(ModelSettings));
+		flash_fsm = FSM_FLASH_ERASE_COMMON_B;
+		break;
+
+	case FSM_FLASH_ERASE_COMMON_B:
+		STw25qxxEraseSectorStart(SYSTEM_SETTINGS_FLASH_SECTOR_B);
+		flash_fsm = FSM_FLASH_WAIT_ERASE_B;
+		break;
+
+	case FSM_FLASH_WAIT_ERASE_B:
+		if (STw25qxxIsBusy())
+			return;
+		flash_page_idx = 0;
+		flash_fsm = FSM_FLASH_WRITE_COMMON_B;
+		break;
+
+	case FSM_FLASH_WRITE_COMMON_B: {
+		uint32_t first_page = W25qxx_SectorToPage(SYSTEM_SETTINGS_FLASH_SECTOR_B);
+		uint32_t offset     = flash_page_idx * w25qxx.PageSize;
+		uint32_t remaining  = sizeof(snap_common) > offset
+							  ? sizeof(snap_common) - offset : 0;
+		if (remaining == 0) {
+			flash_fsm = FSM_FLASH_ERASE_COMMON_A;
+			break;
+		}
+		uint32_t chunk = remaining < w25qxx.PageSize ? remaining : w25qxx.PageSize;
+		STw25qxxWritePageStart((uint8_t*)&snap_common + offset,
+							   first_page + flash_page_idx, chunk);
+		flash_fsm = FSM_FLASH_WAIT_WRITE_B;
+		break;
+	}
+
+	case FSM_FLASH_WAIT_WRITE_B:
+		if (STw25qxxIsBusy())
+			return;
+		flash_page_idx++;
+		flash_fsm = FSM_FLASH_WRITE_COMMON_B;  /* loop back and check remaining */
+		break;
+
+	case FSM_FLASH_ERASE_COMMON_A:
+		STw25qxxEraseSectorStart(SYSTEM_SETTINGS_FLASH_SECTOR_A);
+		flash_fsm = FSM_FLASH_WAIT_ERASE_A;
+		break;
+
+	case FSM_FLASH_WAIT_ERASE_A:
+		if (STw25qxxIsBusy())
+			return;
+		flash_page_idx = 0;
+		flash_fsm = FSM_FLASH_WRITE_COMMON_A;
+		break;
+
+	case FSM_FLASH_WRITE_COMMON_A: {
+		uint32_t first_page = W25qxx_SectorToPage(SYSTEM_SETTINGS_FLASH_SECTOR_A);
+		uint32_t offset     = flash_page_idx * w25qxx.PageSize;
+		uint32_t remaining  = sizeof(snap_common) > offset
+							  ? sizeof(snap_common) - offset : 0;
+		if (remaining == 0) {
+			flash_fsm = FSM_FLASH_ERASE_MODELS;
+			break;
+		}
+		uint32_t chunk = remaining < w25qxx.PageSize ? remaining : w25qxx.PageSize;
+		STw25qxxWritePageStart((uint8_t*)&snap_common + offset,
+							   first_page + flash_page_idx, chunk);
+		flash_fsm = FSM_FLASH_WAIT_WRITE_A;
+		break;
+	}
+
+	case FSM_FLASH_WAIT_WRITE_A:
+		if (STw25qxxIsBusy())
+			return;
+		flash_page_idx++;
+		flash_fsm = FSM_FLASH_WRITE_COMMON_A;  /* loop back */
+		break;
+
+	case FSM_FLASH_ERASE_MODELS:
+		STw25qxxEraseSectorStart(MODEL_PROFILE_FLASH_SECTOR);
+		flash_fsm = FSM_FLASH_WAIT_ERASE_MODELS;
+		break;
+
+	case FSM_FLASH_WAIT_ERASE_MODELS:
+		if (STw25qxxIsBusy())
+			return;
+		flash_page_idx   = 0;
+		flash_page_total = (sizeof(snap_models) + w25qxx.PageSize - 1) / w25qxx.PageSize;
+		flash_fsm = FSM_FLASH_WRITE_MODELS;
+		break;
+
+	case FSM_FLASH_WRITE_MODELS: {
+		if (flash_page_idx >= flash_page_total) {
+			flash_fsm = FSM_FLASH_DONE;
+			break;
+		}
+		uint32_t first_page = W25qxx_SectorToPage(MODEL_PROFILE_FLASH_SECTOR);
+		uint32_t offset     = flash_page_idx * w25qxx.PageSize;
+		uint32_t remaining  = sizeof(snap_models) - offset;
+		uint32_t chunk      = remaining < w25qxx.PageSize ? remaining : w25qxx.PageSize;
+		STw25qxxWritePageStart((uint8_t*)snap_models + offset,
+							   first_page + flash_page_idx, chunk);
+		flash_fsm = FSM_FLASH_WAIT_WRITE_MODELS;
+		break;
+	}
+
+	case FSM_FLASH_WAIT_WRITE_MODELS:
+		if (STw25qxxIsBusy())
+			return;
+		flash_page_idx++;
+		flash_fsm = FSM_FLASH_WRITE_MODELS;  /* loop back */
+		break;
+
+	case FSM_FLASH_DONE:
+		flash_fsm = FSM_FLASH_IDLE;
+		break;
+	}
+}
+
+/* --- W25Q16 Async Helper Functions --- */
+#define W25QXX_DUMMY_BYTE 0xA5
+
+uint8_t STw25qxxIsBusy(void)
+{
+	uint8_t status;
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_RESET);
+	W25qxx_Spi(0x05);  /* READ STATUS REGISTER-1 */
+	status = W25qxx_Spi(W25QXX_DUMMY_BYTE);
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
+	return status & 0x01;  /* BUSY bit (bit 0) */
+}
+
+void STw25qxxEraseSectorStart(uint32_t SectorAddr)
+{
+	uint32_t addr = SectorAddr * w25qxx.SectorSize;
+
+	/* WriteEnable without delay */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_RESET);
+	W25qxx_Spi(0x06);  /* WREN */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
+
+	/* Sector Erase 0x20 */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_RESET);
+	W25qxx_Spi(0x20);
+	W25qxx_Spi((addr & 0xFF0000) >> 16);
+	W25qxx_Spi((addr & 0xFF00) >> 8);
+	W25qxx_Spi(addr & 0xFF);
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
+	/* Flash starts erase internally - no waiting here */
+}
+
+void STw25qxxWritePageStart(uint8_t *pBuffer, uint32_t page_addr, uint32_t num_bytes)
+{
+	if (num_bytes == 0 || num_bytes > w25qxx.PageSize)
+		num_bytes = w25qxx.PageSize;
+
+	uint32_t addr = page_addr * w25qxx.PageSize;
+
+	/* WriteEnable without delay */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_RESET);
+	W25qxx_Spi(0x06);  /* WREN */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
+
+	/* Page Program 0x02 */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_RESET);
+	W25qxx_Spi(0x02);
+	W25qxx_Spi((addr & 0xFF0000) >> 16);
+	W25qxx_Spi((addr & 0xFF00) >> 8);
+	W25qxx_Spi(addr & 0xFF);
+	HAL_SPI_Transmit(&_W25QXX_SPI, pBuffer, num_bytes, 100);  /* ~50us @ 42MHz */
+	HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
+	/* Flash starts programming internally - no waiting here */
 }
 
 void STmodelProfileInit(void)
