@@ -54,7 +54,7 @@
 /**********************************
  *Memory
  *********************************/
-#define MODEL_MEMORY_NUM 12
+#define MODEL_MEMORY_NUM 8
 #define MODEL_FLASH_NUM MODEL_MEMORY_NUM + 1
 
 #define MODEL_PROFILE_STORAGE 1 /* 0 - Internal flash \

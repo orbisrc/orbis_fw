@@ -39,6 +39,8 @@ STbuttonTypeDef BackToModelProfileButton = { 0 };		//
 void _ModelProfile() {
 	if (STscreenShowNow(&ModelProfileST)) {
 
+		static uint16_t name_edit_flag = 0;
+
 		/*
 		 * ������� � �������� ����
 		 */
@@ -72,12 +74,14 @@ void _ModelProfile() {
 		 */
 		if (STbuttonPressed(&ModelNameMP)) {
 			STappSetScreen(Keyboard, &STApp);
+			name_edit_flag = Yes;
 		}
 
-		if (STappGetTextBuffState(&STApp) == Yes) {
+		if (name_edit_flag && STappGetTextBuffState(&STApp) == Yes) {
 			strlcpy(ModelSettings[STgetCurrentModelID()].Name, STappGetInputTextBuff(&STApp),	MAX_RC_NAME);
 			STappClearBuff(&STApp);
 			STrequestSettingsSave();
+			name_edit_flag = No;
 		}
 
 		/*
