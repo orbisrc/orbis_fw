@@ -554,7 +554,7 @@ void STsaveSettingsToFlash(void)
 	W25qxx_WriteSector((uint8_t *)&CommonSettings, SYSTEM_SETTINGS_FLASH_SECTOR_A, 0, sizeof(CommonSettings));
 
 	/*
-	 * Save model profiles.
+	 * Save model profiles (9 models fit in 1 sector after reducing from 13 to 8 models).
 	 */
 	W25qxx_EraseSector(MODEL_PROFILE_FLASH_SECTOR);
 	W25qxx_WriteSector((uint8_t *)ModelSettings, MODEL_PROFILE_FLASH_SECTOR, 0, sizeof(ModelSettings));
